@@ -178,6 +178,24 @@ function handleContactSubmit(event) {
 // Make function globally available
 window.handleContactSubmit = handleContactSubmit;
 
+function parseCSV(data) {
+    const lines = data.split('\n');
+    const header = lines[0].split(',').map(h => h.trim());
+    const rows = [];
+    for (let i = 1; i < lines.length; i++) {
+        if (!lines[i]) continue;
+        const values = lines[i].split(',');
+        const row = {};
+        for (let j = 0; j < header.length; j++) {
+            if (values[j]) {
+                row[header[j]] = values[j].trim();
+            }
+        }
+        rows.push(row);
+    }
+    return rows;
+}
+
 document.addEventListener('DOMContentLoaded', function() {
     const navLinks = document.querySelectorAll('.nav-menu a');
     
@@ -201,4 +219,97 @@ document.addEventListener('DOMContentLoaded', function() {
             behavior: 'smooth'
         });
     });
+
+    // Fetch and process data for charts
+    fetch('crime_dataset_india.csv')
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok: ' + response.statusText);
+            }
+            return response.text();
+        })
+        .then(data => {
+            console.log("CSV data loaded successfully.");
+            const parsedData = parseCSV(data);
+            
+            const cityCounts = {};
+            const crimeDomainCounts = {};
+
+            parsedData.forEach(row => {
+                if (row.City) {
+                    cityCounts[row.City] = (cityCounts[row.City] || 0) + 1;
+                }
+                if (row['Crime Domain']) {
+                    crimeDomainCounts[row['Crime Domain']] = (crimeDomainCounts[row['Crime Domain']] || 0) + 1;
+                }
+            });
+
+            console.log("City Counts:", cityCounts);
+            console.log("Crime Domain Counts:", crimeDomainCounts);
+
+            // Bar Chart
+            const barCtx = document.getElementById('barChart').getContext('2d');
+            if (Object.keys(cityCounts).length > 0) {
+                new Chart(barCtx, {
+                    type: 'bar',
+                    data: {
+                        labels: Object.keys(cityCounts),
+                        datasets: [{
+                            label: '# of Crimes',
+                            data: Object.values(cityCounts),
+                            backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                            borderColor: 'rgba(75, 192, 192, 1)',
+                            borderWidth: 1
+                        }]
+                    },
+                    options: {
+                        scales: {
+                            y: {
+                                beginAtZero: true
+                            }
+                        }
+                    }
+                });
+            } else {
+                console.error("No data available for the bar chart.");
+            }
+
+
+            // Pie Chart
+            const pieCtx = document.getElementById('pieChart').getContext('2d');
+            if (Object.keys(crimeDomainCounts).length > 0) {
+                new Chart(pieCtx, {
+                    type: 'pie',
+                    data: {
+                        labels: Object.keys(crimeDomainCounts),
+                        datasets: [{
+                            label: 'Crime Domain Distribution',
+                            data: Object.values(crimeDomainCounts),
+                            backgroundColor: [
+                                'rgba(255, 99, 132, 0.2)',
+                                'rgba(54, 162, 235, 0.2)',
+                                'rgba(255, 206, 86, 0.2)',
+                                'rgba(75, 192, 192, 0.2)',
+                                'rgba(153, 102, 255, 0.2)',
+                                'rgba(255, 159, 64, 0.2)'
+                            ],
+                            borderColor: [
+                                'rgba(255, 99, 132, 1)',
+                                'rgba(54, 162, 235, 1)',
+                                'rgba(255, 206, 86, 1)',
+                                'rgba(75, 192, 192, 1)',
+                                'rgba(153, 102, 255, 1)',
+                                'rgba(255, 159, 64, 1)'
+                            ],
+                            borderWidth: 1
+                        }]
+                    }
+                });
+            } else {
+                console.error("No data available for the pie chart.");
+            }
+        })
+        .catch(error => {
+            console.error('Error fetching or parsing CSV data:', error);
+        });
 });

@@ -408,6 +408,39 @@ blockquote {
     transform: translateY(-2px);
 }
 
+/* Data Visualization Section */
+.data-viz-section {
+    padding: 6rem 2rem;
+    text-align: center;
+}
+
+.data-viz-section h2 {
+    font-size: 3rem;
+    margin-bottom: 2rem;
+    font-weight: 700;
+    background: linear-gradient(45deg, #ff6b6b, #feca57, #ff9ff3);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.chart-container {
+    background: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(12px);
+    border-radius: 20px;
+    padding: 2rem;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    box-shadow: 0 12px 40px 0 rgba(0, 0, 0, 0.5);
+    margin: 2rem auto;
+    max-width: 800px;
+}
+
+.chart-container h3 {
+    font-size: 1.8rem;
+    margin-bottom: 1.5rem;
+    color: white;
+}
+
 /* Footer */
 .footer {
     background: #111;
