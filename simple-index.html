@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LawHub - Learn the Constitution</title>
+    <link rel="stylesheet" href="simple-style.css">
+</head>
+<body>
+
+    <div class="header">
+        <div class="nav-container">
+            <h2 class="logo">LawHub</h2>
+            <div class="nav-menu">
+                <a href="#home">Home</a>
+                <a href="#about">About Us</a>
+                <a href="#features">Why LawHub</a>
+                <a href="#contact">Contact Us</a>
+            </div>
+            <div class="auth-section">
+                <button class="login-button">Login</button>
+                <button class="signup-button">Sign Up</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="home" class="hero-section">
+        <h1>Your Journey to Understanding the Constitution Starts Here.</h1>
+        <p class="hero-quote">"The safety of the people shall be the highest law." - Cicero</p>
+        <button class="discover-button">Discover More</button>
+    </div>
+
+    <div id="about" class="about-section">
+        <div class="content-box">
+            <h2>About Us</h2>
+            <blockquote>"The law is reason, free from passion." - Aristotle</blockquote>
+            <p>
+                Welcome to LawHub, your dedicated platform for mastering the intricacies of the constitution. 
+                We believe that understanding the foundational laws of a nation is not just for lawyers and scholars, 
+                but for every citizen. Our mission is to make constitutional education accessible, engaging, and clear 
+                for everyone, empowering you with the knowledge to become a more informed and active member of society.
+            </p>
+        </div>
+    </div>
+
+    <div id="features" class="features-section">
+        <h2>Why LawHub?</h2>
+        
+   
+        <div class="feature-card" id="card1">
+            <div class="feature-image">
+                <img src="https://images.unsplash.com/photo-1589829545856-d10d557cf95f?q=80&w=2070&auto=format&fit=crop" alt="Interactive Learning">
+            </div>
+            <div class="feature-content">
+                <h3>⚖️ Interactive Learning</h3>
+                <p>Transform complex legal text into engaging, easy-to-understand lessons with real-world examples and interactive exercises.</p>
+                <div class="nav-buttons">
+                    <button onclick="showPrevCard()">❮</button>
+                    <button onclick="showNextCard()">❯</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="feature-card" id="card2" style="display: none;">
+            <div class="feature-image">
+                <img src="https://images.unsplash.com/photo-1481627834876-b7833e8f5570?q=80&w=2070&auto=format&fit=crop" alt="Comprehensive Content">
+            </div>
+            <div class="feature-content">
+                <h3>📚 Comprehensive Content</h3>
+                <p>Access simplified summaries and detailed explanations of constitutional principles, amendments, and landmark cases.</p>
+                <div class="nav-buttons">
+                    <button onclick="showPrevCard()">❮</button>
+                    <button onclick="showNextCard()">❯</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Feature 3 -->
+        <div class="feature-card" id="card3" style="display: none;">
+            <div class="feature-image">
+                <img src="https://images.unsplash.com/photo-1434030216411-0b793f4b4173?q=80&w=2070&auto=format&fit=crop" alt="Self-Paced Learning">
+            </div>
+            <div class="feature-content">
+                <h3>🎯 Self-Paced Learning</h3>
+                <p>Learn at your own pace with personalized progress tracking, adaptive learning paths, and achievement badges.</p>
+                <div class="nav-buttons">
+                    <button onclick="showPrevCard()">❮</button>
+                    <button onclick="showNextCard()">❯</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Dots indicator -->
+        <div class="dots-container">
+            <span class="dot active-dot" onclick="showCard(1)"></span>
+            <span class="dot" onclick="showCard(2)"></span>
+            <span class="dot" onclick="showCard(3)"></span>
+        </div>
+    </div>
+    <div id="contact" class="contact-section">
+        <div class="contact-box">
+            <h2>Contact Us</h2>
+            <p>Have questions or feedback? We'd love to hear from you.</p>
+            
+            <form class="contact-form">
+                <input type="text" placeholder="Your Name" required>
+                <input type="email" placeholder="Your Email" required>
+                <textarea placeholder="Your Message" rows="3" required></textarea>
+                <button type="submit">Send Message</button>
+            </form>
+        </div>
+    </div>
+
+    <div class="footer">
+        <p>&copy; 2025 LawHub. All Rights Reserved.</p>
+    </div>
+
+    <script src="simple-script.js"></script>
+</body>
+</html>
