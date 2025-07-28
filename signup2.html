@@ -2,69 +2,190 @@
 <html>
   <head>
     <title>LAW HUB - Sign Up</title>
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+    <link rel="stylesheet" href="simple-style.css">
+    <script src="simple-script.js"></script>
     <style>
       body {
         font-family: Arial, sans-serif;
         background: grey;
+        background-image: url("https://images.unsplash.com/photo-1521587760476-6c12a4b040da?q=80&w=2070&auto=format&fit=crop");
+        height: 100vh;
+        background-size: cover;
+        background-position: center;
+        background-attachment: fixed;
         margin: 0;
         padding: 0;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        opacity: 0;
+        animation: fadeIn 0.8s ease-in-out forwards;
+      }
+      @keyframes fadeIn {
+        to {
+          opacity: 1;
+        }
       }
       .container {
         max-width: 400px;
-        margin: 60px auto;
-        background: #fff;
-        padding: 30px;
-        border-radius: 10px;
-        box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+        width: 90%;
+        background: rgba(255, 255, 255, 0.25);
+        backdrop-filter: blur(8px);
+        -webkit-backdrop-filter: blur(8px);
+        border: 1px solid rgba(255, 255, 255, 0.4);
+        padding: 2rem;
+        border-radius: 20px;
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+        color: white;
+        transform: translateY(30px);
+        animation: slideUp 0.8s ease-out 0.2s forwards;
+      }
+      @keyframes slideUp {
+        to {
+          transform: translateY(0);
+        }
       }
       h1 {
         text-align: center;
-        color: #222;
+        color: #fff;
+        font-size: 2rem;
+        margin-bottom: 1.5rem;
+        text-shadow: 2px 2px 6px rgba(0,0,0,0.8);
       }
       form {
-        margin-top: 20px;
+        margin-top: 1rem;
       }
       input {
         width: 100%;
-        padding: 10px;
+        padding: 12px;
         margin: 10px 0;
-        border: 1px solid #ccc;
-        border-radius: 4px;
+        border: 1px solid rgba(255, 255, 255, 0.4);
+        border-radius: 10px;
         font-size: 15px;
+        background: rgba(255, 255, 255, 0.3);
+        color: #333;
+        font-weight: 500;
+        box-sizing: border-box;
+      }
+      input::placeholder {
+        color: rgba(0, 0, 0, 0.7);
+        font-weight: 500;
+      }
+      input:focus {
+        outline: none;
+        border-color: rgba(255, 255, 255, 0.6);
+        background: rgba(255, 255, 255, 0.4);
+        color: #222;
       }
       button {
         width: 100%;
-        padding: 10px;
-        background: #444;
+        padding: 12px;
+        background: linear-gradient(45deg, #ff6b6b, #feca57);
         color: #fff;
         border: none;
-        border-radius: 4px;
+        border-radius: 10px;
         font-size: 16px;
+        font-weight: 600;
         cursor: pointer;
-        margin-top: 10px;
+        margin-top: 15px;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 15px rgba(255, 107, 107, 0.4);
       }
       button:hover {
-        background: #0056b3;
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(255, 107, 107, 0.6);
       }
       .footer {
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        right: 0;
         text-align: center;
-        margin-top: 20px;
+        padding: 1rem;
+        background: rgba(0, 0, 0, 0.5);
+        backdrop-filter: blur(10px);
         color: #fff;
+        border-top: 1px solid rgba(255, 255, 255, 0.1);
       }
       .error-message {
-        color: red;
+        color: #ff6b6b;
         font-size: 14px;
         margin-bottom: 10px;
         text-align: center;
       }
       .success-message {
-        color: green;
+        color: #4ecdc4;
         font-size: 15px;
         margin-bottom: 10px;
         text-align: center;
       }
+      a {
+        color: #feca57;
+        text-decoration: none;
+        transition: all 0.3s ease;
+        padding: 5px 10px;
+        border-radius: 5px;
+        display: inline-block;
+      }
+      a:hover {
+        color: #ff6b6b;
+        background: rgba(255, 255, 255, 0.1);
+        transform: translateY(-2px);
+      }
+      .t{
+        font-size: 25px;
+        color:white;
+        font-style: italic;
+      }
+      .back-button {
+        position: fixed;
+        top: 20px;
+        left: 20px;
+        background: rgba(0, 0, 0, 0.7);
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(255, 255, 255, 0.3);
+        border-radius: 50%;
+        width: 50px;
+        height: 50px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        color: white;
+        font-size: 20px;
+        font-weight: bold;
+        z-index: 1000;
+      }
+      .back-button:hover {
+        background: rgba(0, 0, 0, 0.9);
+        transform: translateY(-2px);
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
+      }
     </style>
     <script>
+      // Firebase Configuration - Your actual config
+      const firebaseConfig = {
+        apiKey: "AIzaSyCRRUDtxro6CzgGLswaxegPGQ9LOpEjqjE",
+        authDomain: "lawhub-10c9e.firebaseapp.com",
+        projectId: "lawhub-10c9e",
+        storageBucket: "lawhub-10c9e.firebasestorage.app",
+        messagingSenderId: "581132854584",
+        appId: "1:581132854584:web:020ecec1d70f8049694dcd",
+        measurementId: "G-T5ERFNRJ37"
+      };
+
+      // Initialize Firebase
+      firebase.initializeApp(firebaseConfig);
+      const auth = firebase.auth();
+
+      // Set language preference (optional)
+      auth.languageCode = 'en'; // or use auth.useDeviceLanguage();
+
       function validateSignup(event) {
         event.preventDefault();
         document.getElementById('signup-error').textContent = '';
@@ -74,12 +195,10 @@
         const email = document.getElementById('signup-email').value.trim();
         const password = document.getElementById('signup-password').value;
         const confirmPassword = document.getElementById('signup-confirm').value;
-        const mobile = document.getElementById('signup-mobile').value.trim();
-        const code = document.getElementById('signup-code').value.trim();
+        const submitButton = document.getElementById('signup-button');
 
         const emailPattern = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
         const passPattern = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{8,}$/;
-        const mobilePattern = /^\d{10}$/;
 
         if (name === '') {
           document.getElementById('signup-error').textContent = 'Please enter your name.';
@@ -97,23 +216,61 @@
           document.getElementById('signup-error').textContent = 'Passwords do not match.';
           return;
         }
-        if (!mobilePattern.test(mobile)) {
-          document.getElementById('signup-error').textContent = 'Mobile number must be 10 digits.';
-          return;
-        }
-        if (code === '') {
-          document.getElementById('signup-error').textContent = 'Please enter the verification code sent to your email.';
-          return;
-        }
 
-        document.getElementById('signup-success').textContent = 'Signed up successfully!';
-        document.getElementById('signup-form').reset();
+        // Start loading state
+        setButtonLoading(submitButton, true);
+
+        // Create Firebase account - simple email/password
+        auth.createUserWithEmailAndPassword(email, password)
+          .then((userCredential) => {
+            const user = userCredential.user;
+            
+            // Update user profile
+            return user.updateProfile({
+              displayName: name
+            });
+          })
+          .then(() => {
+            // Stop loading state
+            setButtonLoading(submitButton, false);
+            
+            showSignupSuccessDialog(() => {
+              window.location.href = 'login2.html';
+            });
+          })
+          .catch((error) => {
+            // Stop loading state on error
+            setButtonLoading(submitButton, false);
+            
+            console.error('Signup error:', error);
+            document.getElementById('signup-error').textContent = getSignupErrorMessage(error.code);
+          });
+      }
+
+      function getSignupErrorMessage(errorCode) {
+        switch(errorCode) {
+          case 'auth/email-already-in-use':
+            return '⚠️ This email is already registered. Please use the Login page or try a different email.';
+          case 'auth/weak-password':
+            return '🔒 Password is too weak. Please use a stronger password.';
+          case 'auth/invalid-email':
+            return '📧 Invalid email address format.';
+          case 'auth/operation-not-allowed':
+            return '🚫 Email/password accounts are not enabled. Please contact support.';
+          case 'auth/network-request-failed':
+            return '🌐 Network error. Please check your internet connection.';
+          default:
+            return '❌ Signup failed: ' + errorCode + '. Please try again.';
+        }
       }
     </script>
   </head>
   <body>
+    <div class="back-button" onclick="window.location.href='simple-index.html'" title="Back to Home">
+      ←
+    </div>
     <div class="container">
-      <h1>Sign Up</h1>
+      <h1 class="t">Join LawHub ⚖️</h1>
       <form id="signup-form" onsubmit="validateSignup(event)">
         <div id="signup-error" class="error-message"></div>
         <div id="signup-success" class="success-message"></div>
@@ -121,16 +278,15 @@
         <input id="signup-email" type="text" placeholder="Email" required>
         <input id="signup-password" type="password" placeholder="Password" required>
         <input id="signup-confirm" type="password" placeholder="Confirm Password" required>
-        <input id="signup-mobile" type="text" placeholder="Mobile Number" required>
-	<input id="signup-code" type="text" placeholder="verification code" required>
-        <button type="submit">Sign Up</button>
+        
+        <button type="submit" id="signup-button">Sign Up</button>
       </form>
-      <div style="text-align:center; margin-top:10px;">
-        Already have an account? <a href="login.html">Login</a>
+      <div style="text-align:center; margin-top:20px; color: rgba(255, 255, 255, 0.8);">
+        Already have an account? <a href="login2.html">Login</a>
       </div>
     </div>
     <div class="footer">
-      &copy; LAW HUB! All laws reserved.
+      <footer>&copy; LAW HUB! All laws reserved.</footer>
     </div>
   </body>
 </html>
