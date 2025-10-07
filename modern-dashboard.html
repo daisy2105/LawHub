@@ -1,0 +1,4085 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LawHub - Modern Learning Dashboard</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: url('https://static.vecteezy.com/system/resources/thumbnails/024/664/322/small_2x/judge-gavel-or-hammer-on-wooden-background-law-concept-of-justice-judicial-jurisprudence-created-by-generative-ai-technology-photo.jpg') center/cover;
+            background-attachment: fixed;
+            background-repeat: no-repeat;
+            min-height: 100vh;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, rgba(85, 107, 47, 0.7), rgba(107, 142, 35, 0.6), rgba(128, 128, 0, 0.5));
+            z-index: -1;
+        }
+
+        /* Justice Elements Background */
+        body::after {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: 
+                linear-gradient(rgba(85, 107, 47, 0.3), rgba(107, 142, 35, 0.3)),
+                url('https://images.unsplash.com/photo-1589829545856-d10d557cf95f?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&h=1080&q=80');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            background-attachment: fixed;
+            z-index: -1;
+        }
+
+        .justice-elements {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -2;
+            overflow: hidden;
+        }
+
+        .floating-symbol {
+            position: absolute;
+            opacity: 0.1;
+            font-size: 40px;
+            color: #64748b;
+            animation: float 15s ease-in-out infinite;
+        }
+
+        .floating-symbol.scales {
+            font-size: 60px;
+            color: #556b2f;
+            animation: floatScales 20s ease-in-out infinite;
+        }
+
+        .floating-symbol.gavel {
+            font-size: 50px;
+            color: #8b5cf6;
+            animation: floatGavel 18s ease-in-out infinite;
+        }
+
+        .floating-symbol.book {
+            font-size: 45px;
+            color: #10b981;
+            animation: floatBook 22s ease-in-out infinite;
+        }
+
+        @keyframes floatScales {
+            0%, 100% { transform: translate(100px, 200px) rotate(0deg); opacity: 0.05; }
+            25% { transform: translate(300px, 100px) rotate(5deg); opacity: 0.15; }
+            50% { transform: translate(500px, 300px) rotate(-5deg); opacity: 0.1; }
+            75% { transform: translate(200px, 400px) rotate(3deg); opacity: 0.08; }
+        }
+
+        @keyframes floatGavel {
+            0%, 100% { transform: translate(400px, 150px) rotate(0deg); opacity: 0.08; }
+            33% { transform: translate(100px, 350px) rotate(-10deg); opacity: 0.12; }
+            66% { transform: translate(600px, 250px) rotate(8deg); opacity: 0.06; }
+        }
+
+        @keyframes floatBook {
+            0%, 100% { transform: translate(200px, 350px) rotate(0deg); opacity: 0.06; }
+            50% { transform: translate(450px, 80px) rotate(-3deg); opacity: 0.1; }
+        }
+
+        /* Legal Document Scroll Effect */
+        .legal-scroll {
+            position: fixed;
+            top: 0;
+            left: -400px;
+            width: 350px;
+            height: 100vh;
+            background: linear-gradient(45deg, #fefce8, #fef3c7);
+            border-right: 3px solid #d97706;
+            z-index: 1000;
+            transition: left 0.6s ease;
+            font-family: 'Times New Roman', serif;
+            color: #78350f;
+            padding: 30px;
+            overflow-y: auto;
+            box-shadow: 5px 0 20px rgba(0, 0, 0, 0.3);
+        }
+
+        .legal-scroll.active {
+            left: 0;
+        }
+
+        .legal-header {
+            text-align: center;
+            border-bottom: 2px solid #d97706;
+            padding-bottom: 15px;
+            margin-bottom: 25px;
+        }
+
+        .legal-article {
+            margin: 15px 0;
+            padding: 10px;
+            background: rgba(255, 255, 255, 0.5);
+            border-left: 4px solid #d97706;
+            font-size: 14px;
+            line-height: 1.6;
+        }
+
+        .article-number {
+            font-weight: bold;
+            color: #92400e;
+        }
+
+        .dashboard-container {
+            display: grid;
+            grid-template-columns: 280px 1fr;
+            min-height: 100vh;
+            gap: 0;
+        }
+
+        /* Modern Sidebar */
+        .sidebar {
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.88) 0%, rgba(248, 250, 252, 0.85) 100%);
+            padding: 25px 20px;
+            box-shadow: 2px 0 15px rgba(85, 107, 47, 0.2);
+            position: relative;
+            z-index: 100;
+            color: #2d3748;
+            border-right: 1px solid rgba(85, 107, 47, 0.3);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
+            transform: translateX(0);
+        }
+
+        .sidebar.collapsed {
+            transform: translateX(-100%);
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .sidebar::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('https://static.vecteezy.com/system/resources/thumbnails/024/664/322/small_2x/judge-gavel-or-hammer-on-wooden-background-law-concept-of-justice-judicial-jurisprudence-created-by-generative-ai-technology-photo.jpg') center/cover;
+            opacity: 0.05;
+            z-index: -1;
+        }
+
+        /* Justice Border Animation */
+        .sidebar::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 4px;
+            height: 100%;
+            background: linear-gradient(180deg, #556b2f, #6b8e23, #808000, #556b2f);
+            background-size: 100% 400%;
+            animation: justiceFlow 4s ease-in-out infinite;
+        }
+
+        @keyframes justiceFlow {
+            0%, 100% { background-position: 0% 0%; }
+            50% { background-position: 0% 100%; }
+        }
+
+        .logo-section {
+            text-align: center;
+            margin-bottom: 40px;
+            padding-bottom: 25px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .logo-section h1 {
+            color: #556b2f;
+            font-size: 28px;
+            font-weight: 800;
+            margin-bottom: 8px;
+            text-shadow: 0 2px 4px rgba(85, 107, 47, 0.3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .logo-section h1 i {
+            animation: balanceScale 3s ease-in-out infinite;
+        }
+
+        @keyframes balanceScale {
+            0%, 100% { transform: rotate(0deg); }
+            25% { transform: rotate(-2deg); }
+            75% { transform: rotate(2deg); }
+        }
+
+        .logo-section p {
+            color: #64748b;
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .nav-menu {
+            list-style: none;
+            margin-bottom: 30px;
+        }
+
+        .nav-item {
+            margin-bottom: 8px;
+        }
+
+        .nav-link {
+            display: flex;
+            align-items: center;
+            padding: 14px 16px;
+            color: #64748b;
+            text-decoration: none;
+            border-radius: 12px;
+            transition: all 0.3s ease;
+            font-weight: 500;
+            font-size: 15px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .nav-link::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            height: 100%;
+            width: 4px;
+            background: linear-gradient(180deg, #556b2f, #6b8e23);
+            transform: scaleY(0);
+            transition: transform 0.3s ease;
+        }
+
+        .nav-link:hover, .nav-link.active {
+            background: linear-gradient(135deg, rgba(85, 107, 47, 0.1), rgba(107, 142, 35, 0.1));
+            color: #556b2f;
+            transform: translateX(8px);
+            box-shadow: 0 4px 15px rgba(85, 107, 47, 0.2);
+        }
+
+        .nav-link:hover::before, .nav-link.active::before {
+            transform: scaleY(1);
+        }
+
+        .nav-link i {
+            margin-right: 12px;
+            width: 20px;
+            font-size: 18px;
+        }
+
+        .progress-card {
+            background: linear-gradient(135deg, #ffffff, #f8fafc);
+            border: 1px solid #e2e8f0;
+            border-radius: 16px;
+            padding: 20px;
+            color: #1e293b;
+            margin-top: 20px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .progress-card h4 {
+            font-size: 16px;
+            margin-bottom: 15px;
+            font-weight: 600;
+        }
+
+        .progress-item {
+            margin-bottom: 12px;
+        }
+
+        .progress-label {
+            font-size: 12px;
+            margin-bottom: 6px;
+            display: flex;
+            justify-content: space-between;
+            opacity: 0.9;
+        }
+
+        .progress-bar {
+            height: 6px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 3px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #556b2f, #6b8e23);
+            border-radius: 3px;
+            transition: width 0.3s ease;
+        }
+
+        /* Main Content Area */
+        .main-content {
+            padding: 25px 30px;
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            overflow-y: auto;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* Top Header */
+        .top-header {
+            display: grid;
+            grid-template-columns: 1fr 2fr 1fr;
+            align-items: center;
+            gap: 20px;
+            margin-bottom: 30px;
+            background: linear-gradient(135deg, #ffffff, #f8fafc);
+            padding: 20px 24px;
+            border-radius: 16px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            color: #1e293b;
+            position: relative;
+            overflow: hidden;
+            border: 1px solid #e2e8f0;
+        }
+
+        .top-header::before {
+            content: '⚖️';
+            position: absolute;
+            top: 10px;
+            right: 20px;
+            font-size: 40px;
+            opacity: 0.1;
+            animation: justiceFloat 6s ease-in-out infinite;
+        }
+
+        @keyframes justiceFloat {
+            0%, 100% { transform: translateY(0px); opacity: 0.1; }
+            50% { transform: translateY(-10px); opacity: 0.2; }
+        }
+
+        .welcome-section, .header-actions, .search-center {
+            position: relative;
+            z-index: 2;
+        }
+
+        .welcome-section h2 {
+            font-size: 24px;
+            font-weight: 700;
+            color: #556b2f;
+            margin-bottom: 4px;
+        }
+
+        .welcome-section p {
+            color: #64748b;
+            font-size: 14px;
+        }
+
+        .search-center {
+            display: flex;
+            justify-content: center;
+        }
+
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            justify-content: flex-end;
+        }
+
+        .search-container {
+            position: relative;
+        }
+
+        .search-box {
+            display: flex;
+            align-items: center;
+            background: rgba(255, 255, 255, 0.9);
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            padding: 10px 16px;
+            width: 350px;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .search-box:focus-within {
+            border-color: #556b2f;
+            box-shadow: 0 0 0 3px rgba(85, 107, 47, 0.1);
+            transform: scale(1.02);
+        }
+
+        .search-box i {
+            color: #556b2f;
+            margin-right: 10px;
+        }
+
+        .search-box input {
+            flex: 1;
+            background: none;
+            border: none;
+            color: #1e293b;
+            font-size: 14px;
+            outline: none;
+        }
+
+        .search-box input::placeholder {
+            color: #64748b;
+        }
+
+        .search-btn {
+            background: linear-gradient(135deg, #556b2f, #6b8e23);
+            border: none;
+            border-radius: 8px;
+            color: white;
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-left: 8px;
+        }
+
+        .search-btn:hover {
+            background: linear-gradient(135deg, #6b8e23, #808000);
+            transform: scale(1.05);
+        }
+
+        .logout-btn {
+            background: linear-gradient(135deg, #dc2626, #ef4444) !important;
+        }
+
+        .logout-btn:hover {
+            background: linear-gradient(135deg, #b91c1c, #dc2626) !important;
+        }
+
+        /* Responsive Design for Header */
+        @media (max-width: 1024px) {
+            .top-header {
+                grid-template-columns: 1fr;
+                gap: 15px;
+                text-align: center;
+            }
+            
+            .search-center {
+                order: 2;
+            }
+            
+            .header-actions {
+                order: 3;
+                justify-content: center;
+            }
+            
+            .search-box {
+                width: 100%;
+                max-width: 400px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .header-actions {
+                flex-direction: column;
+                gap: 8px;
+            }
+            
+            .action-btn {
+                width: 100%;
+                max-width: 200px;
+                justify-content: center;
+            }
+            
+            .search-box {
+                width: 100%;
+            }
+        }
+
+        .action-btn {
+            background: linear-gradient(135deg, #556b2f, #6b8e23);
+            color: white;
+            border: 2px solid transparent;
+            padding: 10px 16px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            box-shadow: 0 4px 15px rgba(85, 107, 47, 0.3);
+        }
+
+        .action-btn:hover {
+            background: linear-gradient(135deg, #6b8e23, #808000);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(85, 107, 47, 0.4);
+        }
+
+        /* Stats Cards */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background: linear-gradient(135deg, #ffffff, #f8fafc);
+            border-radius: 16px;
+            padding: 24px;
+            text-align: center;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            border: 1px solid #e2e8f0;
+        }
+
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+        }
+
+        .stat-card.personal::before {
+            background: linear-gradient(90deg, #ec4899, #f472b6);
+            box-shadow: 0 0 20px #ec4899;
+        }
+
+        .stat-card.study::before {
+            background: linear-gradient(90deg, #22d3ee, #06b6d4);
+            box-shadow: 0 0 20px #22d3ee;
+        }
+
+        .stat-card.life::before {
+            background: linear-gradient(90deg, #facc15, #eab308);
+            box-shadow: 0 0 20px #facc15;
+        }
+
+        .stat-card.work::before {
+            background: linear-gradient(90deg, #8b5cf6, #a855f7);
+            box-shadow: 0 0 20px #8b5cf6;
+        }
+
+        .stat-number {
+            font-size: 36px;
+            font-weight: 800;
+            margin-bottom: 8px;
+            line-height: 1;
+            color: #556b2f;
+        }
+
+        .stat-label {
+            font-size: 14px;
+            font-weight: 500;
+            color: #64748b;
+        }
+
+        .stat-icon {
+            font-size: 24px;
+            margin-bottom: 12px;
+            color: #556b2f;
+        }
+
+        /* Main Content Grid */
+        .content-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+
+        /* Featured Course Card */
+        .featured-course {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 20px;
+            padding: 30px;
+            position: relative;
+            overflow: hidden;
+            color: white;
+            box-shadow: 0 8px 32px rgba(102, 126, 234, 0.3);
+        }
+
+        .featured-course::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 150px;
+            height: 150px;
+            background: url('https://images.unsplash.com/photo-1589994965851-a8f479c573a9?w=300&h=300&fit=crop&crop=center') center/cover;
+            border-radius: 50%;
+            transform: translate(50px, -50px);
+            z-index: 1;
+            opacity: 0.2;
+        }
+
+        .featured-content {
+            position: relative;
+            z-index: 2;
+        }
+
+        .featured-course h3 {
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 12px;
+            color: white;
+        }
+
+        .featured-course p {
+            font-size: 16px;
+            margin-bottom: 20px;
+            line-height: 1.5;
+            color: rgba(255, 255, 255, 0.9);
+        }
+
+        .start-btn {
+            background: rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(10px);
+            color: white;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            padding: 12px 24px;
+            border-radius: 12px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .start-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: translateY(-2px);
+        }
+
+        /* Quick Actions */
+        .quick-actions {
+            background: white;
+            border-radius: 20px;
+            padding: 24px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        }
+
+        .quick-actions h3 {
+            font-size: 20px;
+            font-weight: 700;
+            color: #1e293b;
+            margin-bottom: 20px;
+        }
+
+        .action-item {
+            display: flex;
+            align-items: center;
+            padding: 16px;
+            border-radius: 12px;
+            margin-bottom: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+            position: relative;
+            overflow: hidden;
+            background: #f8fafc;
+        }
+
+        .action-item::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            opacity: 0.05;
+            background-size: cover;
+            background-position: center;
+            z-index: 1;
+        }
+
+        .action-item.chat::before {
+            background-image: url('https://images.unsplash.com/photo-1516387938699-a93567ec168e?w=300&h=200&fit=crop&crop=center');
+        }
+
+        .action-item.search::before {
+            background-image: url('https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=300&h=200&fit=crop&crop=center');
+        }
+
+        .action-item.expert::before {
+            background-image: url('https://images.unsplash.com/photo-1560472354-b33ff0c44a43?w=300&h=200&fit=crop&crop=center');
+        }
+
+        .action-item:hover {
+            background: white;
+            border-color: #e2e8f0;
+            transform: translateX(4px);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .action-icon, .action-text {
+            position: relative;
+            z-index: 2;
+        }
+
+        .action-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 16px;
+            font-size: 20px;
+            color: white;
+        }
+
+        .action-icon.chat {
+            background: #10b981;
+        }
+
+        .action-icon.search {
+            background: #f59e0b;
+        }
+
+        .action-icon.expert {
+            background: #8b5cf6;
+        }
+
+        .action-text h4 {
+            font-size: 16px;
+            font-weight: 600;
+            color: #1e293b;
+            margin-bottom: 4px;
+        }
+
+        .action-text p {
+            font-size: 14px;
+            color: #64748b;
+        }
+
+        /* Course Grid */
+        .courses-section {
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            margin-bottom: 30px;
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+        }
+
+        .section-header h3 {
+            font-size: 22px;
+            font-weight: 700;
+            color: #1e293b;
+        }
+
+        .view-all-btn {
+            color: #6366f1;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        .course-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+        }
+
+        .course-card {
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(20px);
+            border-radius: 16px;
+            padding: 0;
+            box-shadow: 0 0 30px rgba(255, 215, 0, 0.2);
+            transition: all 0.5s ease;
+            border: 1px solid rgba(255, 215, 0, 0.3);
+            overflow: hidden;
+            position: relative;
+        }
+
+        .course-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 215, 0, 0.1), transparent);
+            transition: left 0.5s ease;
+            z-index: 1;
+        }
+
+        .course-card:hover::before {
+            left: 100%;
+        }
+
+        .course-card:hover {
+            transform: translateY(-10px) rotateY(5deg);
+            box-shadow: 0 0 60px rgba(255, 215, 0, 0.5);
+            border-color: #ffd700;
+        }
+
+        .course-image {
+            width: 100%;
+            height: 180px;
+            background-size: cover;
+            background-position: center;
+            position: relative;
+            filter: brightness(0.7) contrast(1.2);
+        }
+
+        .course-image::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 60px;
+            background: linear-gradient(transparent, rgba(0,0,0,0.9));
+        }
+
+        .course-content {
+            padding: 20px;
+            position: relative;
+            z-index: 2;
+        }
+
+        .course-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+
+        .course-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 16px;
+            font-size: 20px;
+            color: white;
+        }
+
+        .course-icon.constitutional {
+            background: #6366f1;
+        }
+
+        .course-icon.criminal {
+            background: #ef4444;
+        }
+
+        .course-icon.contract {
+            background: #10b981;
+        }
+
+        .course-icon.research {
+            background: #f59e0b;
+        }
+
+        .course-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: #ffd700;
+            margin-bottom: 8px;
+            text-shadow: 0 0 10px rgba(255, 215, 0, 0.3);
+        }
+
+        .course-desc {
+            font-size: 14px;
+            color: rgba(255, 255, 255, 0.8);
+            line-height: 1.5;
+            margin-bottom: 16px;
+        }
+
+        .course-meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+
+        .course-level {
+            background: #e0f2fe;
+            color: #0369a1;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .course-duration {
+            color: #64748b;
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .enroll-btn {
+            width: 100%;
+            background: linear-gradient(45deg, #ffd700, #ff6b35);
+            color: black;
+            border: none;
+            padding: 12px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            box-shadow: 0 0 20px rgba(255, 215, 0, 0.3);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .enroll-btn:hover {
+            background: linear-gradient(45deg, #ff6b35, #ffd700);
+            transform: translateY(-2px);
+            box-shadow: 0 0 30px rgba(255, 215, 0, 0.6);
+        }
+
+        /* Chat Button */
+        .chat-fab {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            width: 60px;
+            height: 60px;
+            background: #10b981;
+            border-radius: 50%;
+            border: none;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3);
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 24px;
+            transition: all 0.3s ease;
+        }
+
+        .chat-fab:hover {
+            transform: scale(1.05);
+            background: #059669;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .dashboard-container {
+                grid-template-columns: 1fr;
+            }
+            
+            .sidebar {
+                position: fixed;
+                top: 0;
+                left: 0;
+                height: 100vh;
+                z-index: 1000;
+                width: 280px;
+            }
+            
+            .sidebar.collapsed {
+                transform: translateX(-100%);
+            }
+            
+            .content-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .search-box {
+                width: 200px;
+            }
+            
+            .sidebar-toggle-btn {
+                display: flex;
+            }
+        }
+
+        @media (min-width: 769px) {
+            .sidebar-toggle-btn {
+                display: flex;
+            }
+        }
+
+        /* Section Content Styles */
+        .section-content {
+            display: none;
+        }
+
+        .section-content.active {
+            display: block;
+        }
+
+        .section-card {
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: #64748b;
+        }
+
+        .empty-state i {
+            font-size: 64px;
+            margin-bottom: 20px;
+            opacity: 0.5;
+            color: #6366f1;
+        }
+
+        .empty-state h3 {
+            font-size: 20px;
+            font-weight: 600;
+            margin-bottom: 12px;
+            color: #1e293b;
+        }
+
+        .empty-state p {
+            font-size: 16px;
+            line-height: 1.5;
+        }
+
+        /* Chart Container */
+        .chart-container {
+            background: white;
+            border-radius: 16px;
+            padding: 20px;
+            margin-top: 20px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .progress-chart {
+            position: relative;
+            height: 200px;
+        }
+
+        /* Instagram/Facebook Style Chat Interface */
+        .chat-interface {
+            position: fixed;
+            bottom: 100px;
+            right: 20px;
+            width: 350px;
+            height: 500px;
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.88), rgba(248, 250, 252, 0.85));
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border-radius: 20px;
+            box-shadow: 0 10px 40px rgba(85, 107, 47, 0.3);
+            z-index: 1000;
+            display: none;
+            flex-direction: column;
+            overflow: hidden;
+            border: 1px solid rgba(85, 107, 47, 0.2);
+        }
+
+        .chat-interface.active {
+            display: flex;
+        }
+
+        .chat-header {
+            background: linear-gradient(135deg, #556b2f, #6b8e23);
+            color: white;
+            padding: 15px 20px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            position: relative;
+        }
+
+        .chat-header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('https://static.vecteezy.com/system/resources/thumbnails/024/664/322/small_2x/judge-gavel-or-hammer-on-wooden-background-law-concept-of-justice-judicial-jurisprudence-created-by-generative-ai-technology-photo.jpg') center/cover;
+            opacity: 0.1;
+            z-index: -1;
+        }
+
+        .lawyer-selection {
+            padding: 20px;
+            flex: 1;
+            overflow-y: auto;
+        }
+
+        .lawyer-card {
+            display: flex;
+            align-items: center;
+            padding: 12px;
+            margin-bottom: 10px;
+            background: rgba(255, 255, 255, 0.8);
+            border-radius: 15px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 1px solid rgba(85, 107, 47, 0.1);
+        }
+
+        .lawyer-card:hover {
+            background: rgba(85, 107, 47, 0.1);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(85, 107, 47, 0.2);
+        }
+
+        .lawyer-avatar {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #556b2f, #6b8e23);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            margin-right: 12px;
+        }
+
+        .lawyer-info h4 {
+            margin: 0;
+            color: #2d3748;
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .lawyer-info p {
+            margin: 2px 0 0 0;
+            color: #556b2f;
+            font-size: 12px;
+        }
+
+        .lawyer-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .experience {
+            font-size: 11px;
+            color: #6b8e23;
+            font-weight: 500;
+        }
+
+        .rating {
+            font-size: 12px;
+            margin-top: 4px;
+        }
+
+        .status-indicator {
+            margin-left: auto;
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            position: relative;
+        }
+
+        .status-indicator.online {
+            background: #10b981;
+            box-shadow: 0 0 8px rgba(16, 185, 129, 0.4);
+        }
+
+        .status-indicator.offline {
+            background: #ef4444;
+            box-shadow: 0 0 8px rgba(239, 68, 68, 0.4);
+        }
+
+        .lawyer-status {
+            margin-left: auto;
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: #10b981;
+        }
+
+        .chat-conversation {
+            display: none;
+            flex-direction: column;
+            height: 100%;
+        }
+
+        .chat-conversation.active {
+            display: flex;
+        }
+
+        .chat-messages {
+            flex: 1;
+            padding: 15px;
+            overflow-y: auto;
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.9), rgba(248, 250, 252, 0.8));
+        }
+
+        .message {
+            margin-bottom: 15px;
+            display: flex;
+            align-items: flex-end;
+            gap: 8px;
+        }
+
+        .message.sent {
+            flex-direction: row-reverse;
+        }
+
+        .message-bubble {
+            max-width: 70%;
+            padding: 12px 16px;
+            border-radius: 18px;
+            font-size: 14px;
+            line-height: 1.4;
+        }
+
+        .message.received .message-bubble {
+            background: linear-gradient(135deg, #556b2f, #6b8e23);
+            color: white;
+            border-bottom-left-radius: 5px;
+        }
+
+        .message.sent .message-bubble {
+            background: rgba(85, 107, 47, 0.1);
+            color: #2d3748;
+            border-bottom-right-radius: 5px;
+        }
+
+        .message-time {
+            font-size: 11px;
+            color: #64748b;
+            margin-top: 4px;
+        }
+
+        .chat-input-container {
+            padding: 15px;
+            background: rgba(255, 255, 255, 0.9);
+            border-top: 1px solid rgba(85, 107, 47, 0.1);
+        }
+
+        .chat-input-box {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: rgba(255, 255, 255, 0.8);
+            border: 1px solid rgba(85, 107, 47, 0.2);
+            border-radius: 25px;
+            padding: 8px 15px;
+        }
+
+        .chat-input {
+            flex: 1;
+            border: none;
+            outline: none;
+            background: none;
+            font-size: 14px;
+            color: #2d3748;
+        }
+
+        .chat-send-btn {
+            background: linear-gradient(135deg, #556b2f, #6b8e23);
+            color: white;
+            border: none;
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+        }
+
+        .chat-send-btn:hover {
+            transform: scale(1.1);
+            box-shadow: 0 5px 15px rgba(85, 107, 47, 0.3);
+        }
+
+        .chat-close-btn {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 18px;
+            cursor: pointer;
+            margin-left: auto;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+        }
+
+        .chat-close-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        /* Magic Wand for Inspiring Quotes */
+        .magic-wand {
+            position: fixed;
+            bottom: 110px;
+            right: 24px;
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, #556b2f, #6b8e23);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            z-index: 1001;
+            box-shadow: 0 5px 20px rgba(85, 107, 47, 0.4);
+            transition: all 0.3s ease;
+            animation: wandGlow 3s ease-in-out infinite;
+        }
+
+        .magic-wand:hover {
+            transform: scale(1.1) rotate(15deg);
+        }
+
+        .magic-wand i {
+            color: white;
+            font-size: 24px;
+            animation: sparkle 2s ease-in-out infinite;
+        }
+
+        @keyframes wandGlow {
+            0%, 100% { box-shadow: 0 5px 20px rgba(85, 107, 47, 0.4); }
+            50% { box-shadow: 0 5px 30px rgba(85, 107, 47, 0.6), 0 0 20px rgba(255, 215, 0, 0.3); }
+        }
+
+        @keyframes sparkle {
+            0%, 100% { transform: rotate(0deg) scale(1); }
+            25% { transform: rotate(10deg) scale(1.1); }
+            75% { transform: rotate(-10deg) scale(1.1); }
+        }
+
+        .quote-popup {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.95), rgba(248, 250, 252, 0.9));
+            backdrop-filter: blur(20px);
+            border-radius: 20px;
+            padding: 30px;
+            max-width: 500px;
+            box-shadow: 0 20px 60px rgba(85, 107, 47, 0.3);
+            z-index: 1002;
+            display: none;
+            text-align: center;
+            border: 1px solid rgba(85, 107, 47, 0.2);
+        }
+
+        .quote-popup.active {
+            display: block;
+            animation: quoteAppear 0.5s ease;
+        }
+
+        @keyframes quoteAppear {
+            from { opacity: 0; transform: translate(-50%, -50%) scale(0.8); }
+            to { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+        }
+
+        .quote-text {
+            font-size: 18px;
+            color: #2d3748;
+            font-style: italic;
+            margin-bottom: 15px;
+            line-height: 1.6;
+        }
+
+        .quote-author {
+            font-size: 14px;
+            color: #556b2f;
+            font-weight: 600;
+            margin-bottom: 20px;
+        }
+
+        .quote-close-btn {
+            background: linear-gradient(135deg, #556b2f, #6b8e23);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .quote-close-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(85, 107, 47, 0.3);
+        }
+
+        /* Profile Setup Modal */
+        .profile-setup-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(10px);
+            z-index: 2000;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            overflow-y: auto;
+        }
+
+        .profile-setup-modal.active {
+            display: flex;
+        }
+
+        .profile-setup-container {
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.95), rgba(248, 250, 252, 0.9));
+            backdrop-filter: blur(20px);
+            border-radius: 20px;
+            padding: 40px;
+            max-width: 600px;
+            width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 25px 80px rgba(85, 107, 47, 0.3);
+            border: 1px solid rgba(85, 107, 47, 0.2);
+            animation: modalSlideIn 0.5s ease;
+        }
+
+        @keyframes modalSlideIn {
+            from { opacity: 0; transform: translateY(-50px) scale(0.9); }
+            to { opacity: 1; transform: translateY(0) scale(1); }
+        }
+
+        .profile-setup-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .profile-setup-header h2 {
+            color: #556b2f;
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+
+        .profile-setup-header p {
+            color: #64748b;
+            font-size: 16px;
+            line-height: 1.5;
+        }
+
+        /* Profile Picture Section */
+        .profile-picture-section {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 30px;
+        }
+
+        .profile-picture-container {
+            text-align: center;
+        }
+
+        .profile-picture-preview {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #556b2f, #6b8e23);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 15px;
+            overflow: hidden;
+            border: 4px solid rgba(85, 107, 47, 0.2);
+            transition: all 0.3s ease;
+        }
+
+        .profile-picture-preview i {
+            font-size: 40px;
+            color: white;
+        }
+
+        .profile-picture-preview img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .upload-btn {
+            background: linear-gradient(135deg, #556b2f, #6b8e23);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin: 0 auto;
+        }
+
+        .upload-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(85, 107, 47, 0.3);
+        }
+
+        /* Form Styling */
+        .profile-setup-form {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .form-group.full-width {
+            grid-column: 1 / -1;
+        }
+
+        .form-group label {
+            font-weight: 600;
+            color: #1e293b;
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+
+        .form-group input,
+        .form-group select {
+            padding: 12px 16px;
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            font-size: 14px;
+            background: white;
+            transition: all 0.3s ease;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: #556b2f;
+            box-shadow: 0 0 0 3px rgba(85, 107, 47, 0.1);
+        }
+
+        /* Interests Grid */
+        .interests-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin-top: 10px;
+        }
+
+        .interest-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 12px 16px;
+            background: rgba(255, 255, 255, 0.8);
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .interest-item:hover {
+            border-color: #556b2f;
+            background: rgba(85, 107, 47, 0.05);
+        }
+
+        .interest-item input[type="checkbox"] {
+            accent-color: #556b2f;
+        }
+
+        .interest-item input[type="checkbox"]:checked + span {
+            color: #556b2f;
+            font-weight: 600;
+        }
+
+        /* Form Actions */
+        .form-actions {
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .save-profile-btn {
+            background: linear-gradient(135deg, #556b2f, #6b8e23);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin: 0 auto 15px;
+        }
+
+        .save-profile-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(85, 107, 47, 0.4);
+        }
+
+        .required-note {
+            color: #64748b;
+            font-size: 12px;
+            margin: 0;
+        }
+
+        /* Responsive Design for Profile Modal */
+        @media (max-width: 768px) {
+            .profile-setup-container {
+                padding: 30px 20px;
+                margin: 10px;
+            }
+            
+            .form-row {
+                grid-template-columns: 1fr;
+                gap: 15px;
+            }
+            
+            .interests-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .profile-picture-preview {
+                width: 100px;
+                height: 100px;
+            }
+        }
+
+        /* Profile Display Section */
+        .profile-display {
+            max-width: 600px;
+        }
+
+        .profile-placeholder {
+            text-align: center;
+            padding: 40px 20px;
+            color: #64748b;
+        }
+
+        .profile-content {
+            display: grid;
+            gap: 30px;
+        }
+
+        .profile-header {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            padding: 20px;
+            background: rgba(85, 107, 47, 0.05);
+            border-radius: 16px;
+            border: 1px solid rgba(85, 107, 47, 0.1);
+        }
+
+        .profile-avatar {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #556b2f, #6b8e23);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            border: 3px solid rgba(85, 107, 47, 0.2);
+        }
+
+        .profile-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .profile-avatar i {
+            color: white;
+            font-size: 30px;
+        }
+
+        .profile-info h3 {
+            color: #556b2f;
+            font-size: 24px;
+            margin: 0 0 5px 0;
+        }
+
+        .profile-info p {
+            color: #64748b;
+            margin: 0;
+            font-size: 14px;
+        }
+
+        .profile-details {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+
+        .detail-card {
+            background: rgba(255, 255, 255, 0.8);
+            border: 1px solid #e2e8f0;
+            border-radius: 12px;
+            padding: 20px;
+        }
+
+        .detail-card h4 {
+            color: #556b2f;
+            font-size: 16px;
+            margin: 0 0 15px 0;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .detail-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px 0;
+            border-bottom: 1px solid #f1f5f9;
+        }
+
+        .detail-item:last-child {
+            border-bottom: none;
+        }
+
+        .detail-label {
+            color: #64748b;
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .detail-value {
+            color: #1e293b;
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .interests-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 10px;
+        }
+
+        .interest-tag {
+            background: rgba(85, 107, 47, 0.1);
+            color: #556b2f;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+    </style>
+</head>
+<body>
+    <!-- Justice Elements Background -->
+    <div class="justice-elements">
+        <div class="floating-symbol scales" style="top: 10%; left: 15%;">⚖️</div>
+        <div class="floating-symbol gavel" style="top: 60%; left: 75%;">🔨</div>
+        <div class="floating-symbol book" style="top: 30%; left: 80%;">📚</div>
+        <div class="floating-symbol scales" style="top: 80%; left: 5%;">⚖️</div>
+        <div class="floating-symbol book" style="top: 20%; left: 50%;">📖</div>
+        <div class="floating-symbol gavel" style="top: 70%; left: 25%;">⚖️</div>
+    </div>
+
+    <!-- Legal Articles Scroll -->
+    <div class="legal-scroll" id="legalScroll">
+        <div class="legal-header">
+            <h3>📜 CONSTITUTION OF INDIA</h3>
+            <p>Fundamental Rights & Duties</p>
+        </div>
+        <div id="legalContent">
+            <div class="legal-article">
+                <span class="article-number">Article 14:</span> 
+                Right to Equality - The State shall not deny to any person equality before the law or the equal protection of the laws within the territory of India.
+            </div>
+            <div class="legal-article">
+                <span class="article-number">Article 19:</span> 
+                Protection of certain rights regarding freedom of speech, etc.
+            </div>
+            <div class="legal-article">
+                <span class="article-number">Article 21:</span> 
+                Protection of life and personal liberty - No person shall be deprived of his life or personal liberty except according to procedure established by law.
+            </div>
+            <div class="legal-article">
+                <span class="article-number">Article 25:</span> 
+                Freedom of conscience and free profession, practice and propagation of religion.
+            </div>
+            <div class="legal-article">
+                <span class="article-number">Article 32:</span> 
+                Right to Constitutional Remedies - The right to constitutional remedies is the heart and soul of the constitution.
+            </div>
+            <div class="legal-article">
+                <span class="article-number">Recent Update:</span> 
+                Supreme Court landmark judgment on digital privacy rights (2024)
+            </div>
+            <div class="legal-article">
+                <span class="article-number">Case Law:</span> 
+                Kesavananda Bharati vs State of Kerala - Basic Structure Doctrine
+            </div>
+        </div>
+    </div>
+
+    <div class="dashboard-container">
+        <!-- Modern Sidebar -->
+        <div class="sidebar">
+            <div class="logo-section">
+                <h1><i class="fas fa-balance-scale"></i> LawHub</h1>
+                <p>Your Legal Learning Companion</p>
+            </div>
+            
+            <ul class="nav-menu">
+                <li class="nav-item">
+                    <a href="#" class="nav-link active" data-section="dashboard">
+                        <i class="fas fa-home"></i>
+                        Dashboard
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#" class="nav-link" data-section="courses">
+                        <i class="fas fa-graduation-cap"></i>
+                        My Courses
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#" class="nav-link" data-section="search">
+                        <i class="fas fa-search"></i>
+                        Law Search
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#" class="nav-link" data-section="community">
+                        <i class="fas fa-users"></i>
+                        Community
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#" class="nav-link" data-section="experts">
+                        <i class="fas fa-user-tie"></i>
+                        Find Experts
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#" class="nav-link" data-section="resources">
+                        <i class="fas fa-book"></i>
+                        Resources
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#" class="nav-link" data-section="certificates">
+                        <i class="fas fa-award"></i>
+                        Certificates
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#" class="nav-link" data-section="profile">
+                        <i class="fas fa-user"></i>
+                        Profile
+                    </a>
+                </li>
+            </ul>
+
+            <div class="progress-card">
+                <h4><i class="fas fa-chart-line"></i> Learning Progress</h4>
+                <div class="progress-item">
+                    <div class="progress-label">
+                        <span>Constitutional Law</span>
+                        <span>0%</span>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: 0%"></div>
+                    </div>
+                </div>
+                <div class="progress-item">
+                    <div class="progress-label">
+                        <span>Criminal Law</span>
+                        <span>0%</span>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: 0%"></div>
+                    </div>
+                </div>
+                <div class="progress-item">
+                    <div class="progress-label">
+                        <span>Civil Procedure</span>
+                        <span>0%</span>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: 0%"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <!-- Top Header -->
+            <div class="top-header">
+                <div class="welcome-section">
+                    <h2 id="welcomeUser">Hello, Guest! 👋</h2>
+                    <p>What will you learn today?</p>
+                </div>
+                <div class="search-center">
+                    <div class="search-container">
+                        <div class="search-box">
+                            <i class="fas fa-search"></i>
+                            <input type="text" placeholder="Search laws, cases, articles..." id="globalSearch">
+                            <button class="search-btn" onclick="performSearch()">
+                                <i class="fas fa-arrow-right"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <div class="header-actions">
+                    <button class="action-btn" onclick="openExpertModal()">
+                        <i class="fas fa-user-tie"></i>
+                        Become Expert
+                    </button>
+                    <button class="action-btn logout-btn" onclick="logout()">
+                        <i class="fas fa-sign-out-alt"></i>
+                        Logout
+                    </button>
+                </div>
+            </div>
+
+            <!-- Dashboard Content -->
+            <div id="dashboard-section" class="section-content active">
+                <!-- Category Header -->
+                <div style="margin-bottom: 30px;">
+                    <h2 style="font-size: 18px; font-weight: 600; color: #64748b; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 20px;">DASHBOARD</h2>
+                    <div style="display: flex; gap: 16px; margin-bottom: 20px;">
+                        <div style="background: #fdf2f8; border: 2px solid #ec4899; border-radius: 12px; padding: 12px 20px; color: #ec4899; font-weight: 600; font-size: 14px;">PERSONAL</div>
+                        <div style="background: #f0fdff; border: 2px solid #22d3ee; border-radius: 12px; padding: 12px 20px; color: #22d3ee; font-weight: 600; font-size: 14px;">STUDY</div>
+                        <div style="background: #fefce8; border: 2px solid #facc15; border-radius: 12px; padding: 12px 20px; color: #facc15; font-weight: 600; font-size: 14px;">LIFE</div>
+                        <div style="background: #f3f4f6; border: 2px solid #8b5cf6; border-radius: 12px; padding: 12px 20px; color: #8b5cf6; font-weight: 600; font-size: 14px;">WORK</div>
+                        <div style="background: #fef2f2; border: 2px solid #ef4444; border-radius: 12px; padding: 12px 20px; color: #ef4444; font-weight: 600; font-size: 14px;">HOME</div>
+                    </div>
+                </div>
+
+                <!-- Stats Grid -->
+                <div class="stats-grid">
+                    <div class="stat-card personal">
+                        <div class="stat-icon">
+                            <i class="fas fa-graduation-cap"></i>
+                        </div>
+                        <div class="stat-number">0</div>
+                        <div class="stat-label">Courses Completed</div>
+                    </div>
+                    <div class="stat-card study">
+                        <div class="stat-icon">
+                            <i class="fas fa-clock"></i>
+                        </div>
+                        <div class="stat-number">0</div>
+                        <div class="stat-label">Hours Learned</div>
+                    </div>
+                    <div class="stat-card life">
+                        <div class="stat-icon">
+                            <i class="fas fa-certificate"></i>
+                        </div>
+                        <div class="stat-number">0</div>
+                        <div class="stat-label">Certificates</div>
+                    </div>
+                    <div class="stat-card work">
+                        <div class="stat-icon">
+                            <i class="fas fa-trophy"></i>
+                        </div>
+                        <div class="stat-number">0</div>
+                        <div class="stat-label">Achievements</div>
+                    </div>
+                </div>
+
+                <!-- Main Content Grid -->
+                <div class="content-grid">
+                    <div class="featured-course">
+                        <div class="featured-content">
+                            <h3>🏛️ Constitutional Law Mastery</h3>
+                            <p>Master the fundamentals of constitutional principles, rights, and government structure. Learn through interactive cases and real-world examples.</p>
+                            <button class="start-btn">Start Learning Now</button>
+                        </div>
+                    </div>
+
+                    <div class="quick-actions">
+                        <h3>Quick Actions</h3>
+                        
+                        <div class="action-item chat" onclick="openChatModal()">
+                            <div class="action-icon chat">
+                                <i class="fas fa-comments"></i>
+                            </div>
+                            <div class="action-text">
+                                <h4>Chat with Lawyer</h4>
+                                <p>Get instant legal advice</p>
+                            </div>
+                        </div>
+
+                        <div class="action-item search" onclick="openLawSearch()">
+                            <div class="action-icon search">
+                                <i class="fas fa-search"></i>
+                            </div>
+                            <div class="action-text">
+                                <h4>Search by Situation</h4>
+                                <p>Find relevant laws for your case</p>
+                            </div>
+                        </div>
+
+                        <div class="action-item expert" onclick="openExpertModal()">
+                            <div class="action-icon expert">
+                                <i class="fas fa-user-tie"></i>
+                            </div>
+                            <div class="action-text">
+                                <h4>Expert Consultation</h4>
+                                <p>Book 1-on-1 sessions</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Courses Section -->
+                <div class="courses-section">
+                    <div class="section-header">
+                        <h3>📚 Popular Courses</h3>
+                        <a href="#" class="view-all-btn">View All</a>
+                    </div>
+                    
+                    <div class="course-grid">
+                        <div class="course-card">
+                            <div class="course-image" style="background-image: url('https://images.unsplash.com/photo-1589994965851-a8f479c573a9?w=400&h=200&fit=crop&crop=center');">
+                            </div>
+                            <div class="course-content">
+                                <div class="course-header">
+                                    <div class="course-icon constitutional">
+                                        <i class="fas fa-landmark"></i>
+                                    </div>
+                                    <div>
+                                        <div class="course-title">Constitutional Law</div>
+                                        <div class="course-meta">
+                                            <span class="course-level">Beginner</span>
+                                            <span class="course-duration">8 weeks</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="course-desc">
+                                    Learn constitutional principles, fundamental rights, and government structure.
+                                </div>
+                                <button class="enroll-btn">Enroll Now</button>
+                            </div>
+                        </div>
+
+                        <div class="course-card">
+                            <div class="course-image" style="background-image: url('https://images.unsplash.com/photo-1504384308090-c894fdcc538d?w=400&h=200&fit=crop&crop=center');">
+                            </div>
+                            <div class="course-content">
+                                <div class="course-header">
+                                    <div class="course-icon criminal">
+                                        <i class="fas fa-gavel"></i>
+                                    </div>
+                                    <div>
+                                        <div class="course-title">Criminal Law Basics</div>
+                                        <div class="course-meta">
+                                            <span class="course-level">Beginner</span>
+                                            <span class="course-duration">10 weeks</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="course-desc">
+                                    Understanding criminal procedures, offenses, and legal principles.
+                                </div>
+                                <button class="enroll-btn">Enroll Now</button>
+                            </div>
+                        </div>
+
+                        <div class="course-card">
+                            <div class="course-image" style="background-image: url('https://images.unsplash.com/photo-1450101499163-c8848c66ca85?w=400&h=200&fit=crop&crop=center');">
+                            </div>
+                            <div class="course-content">
+                                <div class="course-header">
+                                    <div class="course-icon contract">
+                                        <i class="fas fa-handshake"></i>
+                                    </div>
+                                    <div>
+                                        <div class="course-title">Contract Law</div>
+                                        <div class="course-meta">
+                                            <span class="course-level">Intermediate</span>
+                                            <span class="course-duration">6 weeks</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="course-desc">
+                                    Master contract formation, interpretation, and enforcement.
+                                </div>
+                                <button class="enroll-btn">Enroll Now</button>
+                            </div>
+                        </div>
+
+                        <div class="course-card">
+                            <div class="course-image" style="background-image: url('https://images.unsplash.com/photo-1481627834876-b7833e8f5570?w=400&h=200&fit=crop&crop=center');">
+                            </div>
+                            <div class="course-content">
+                                <div class="course-header">
+                                    <div class="course-icon research">
+                                        <i class="fas fa-book-open"></i>
+                                    </div>
+                                    <div>
+                                        <div class="course-title">Legal Research</div>
+                                        <div class="course-meta">
+                                            <span class="course-level">Beginner</span>
+                                            <span class="course-duration">4 weeks</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="course-desc">
+                                    Essential skills for legal research and professional writing.
+                                </div>
+                                <button class="enroll-btn">Enroll Now</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- My Courses Section -->
+            <div id="courses-section" class="section-content">
+                <div class="section-card">
+                    <div class="section-header">
+                        <h3>📚 My Courses</h3>
+                    </div>
+                    <div class="empty-state">
+                        <i class="fas fa-graduation-cap"></i>
+                        <h3>No courses enrolled yet</h3>
+                        <p>Start your legal learning journey by enrolling in a course from the dashboard.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Law Search Section -->
+            <div id="search-section" class="section-content">
+                <div class="section-card">
+                    <div class="section-header">
+                        <h3>🔍 Law Search by Situation</h3>
+                    </div>
+                    <div style="margin-bottom: 30px;">
+                        <div class="search-box" style="width: 100%; max-width: 600px; margin: 0 auto;">
+                            <i class="fas fa-search"></i>
+                            <input type="text" placeholder="Describe your legal situation..." id="situationSearch">
+                        </div>
+                    </div>
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px;">
+                        <div class="course-card">
+                            <div class="course-header">
+                                <div class="course-icon constitutional">
+                                    <i class="fas fa-home"></i>
+                                </div>
+                                <div>
+                                    <div class="course-title">Property Disputes</div>
+                                </div>
+                            </div>
+                            <div class="course-desc">
+                                Find laws related to property disputes, ownership issues, and real estate matters.
+                            </div>
+                        </div>
+                        <div class="course-card">
+                            <div class="course-header">
+                                <div class="course-icon criminal">
+                                    <i class="fas fa-briefcase"></i>
+                                </div>
+                                <div>
+                                    <div class="course-title">Employment Law</div>
+                                </div>
+                            </div>
+                            <div class="course-desc">
+                                Workplace rights, labor laws, and employment-related legal issues.
+                            </div>
+                        </div>
+                        <div class="course-card">
+                            <div class="course-header">
+                                <div class="course-icon contract">
+                                    <i class="fas fa-heart"></i>
+                                </div>
+                                <div>
+                                    <div class="course-title">Family Law</div>
+                                </div>
+                            </div>
+                            <div class="course-desc">
+                                Marriage, divorce, child custody, and family-related legal matters.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Community Section -->
+            <div id="community-section" class="section-content">
+                <div class="section-card">
+                    <div class="section-header">
+                        <h3>👥 Legal Community</h3>
+                    </div>
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px;">
+                        <div class="course-card">
+                            <div class="course-header">
+                                <div class="course-icon constitutional">
+                                    <i class="fas fa-comments"></i>
+                                </div>
+                                <div>
+                                    <div class="course-title">Discussion Forums</div>
+                                </div>
+                            </div>
+                            <div class="course-desc">
+                                Join discussions on constitutional law, criminal law, and more.
+                            </div>
+                        </div>
+                        <div class="course-card">
+                            <div class="course-header">
+                                <div class="course-icon criminal">
+                                    <i class="fas fa-question-circle"></i>
+                                </div>
+                                <div>
+                                    <div class="course-title">Q&A Section</div>
+                                </div>
+                            </div>
+                            <div class="course-desc">
+                                Ask questions and get answers from legal experts and peers.
+                            </div>
+                        </div>
+                        <div class="course-card">
+                            <div class="course-header">
+                                <div class="course-icon contract">
+                                    <i class="fas fa-users"></i>
+                                </div>
+                                <div>
+                                    <div class="course-title">Study Groups</div>
+                                </div>
+                            </div>
+                            <div class="course-desc">
+                                Form study groups with other learners in your area.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Experts Directory Section -->
+            <div id="experts-section" class="section-content">
+                <div class="section-card">
+                    <div class="section-header">
+                        <h3>👨‍⚖️ Find Legal Experts</h3>
+                        <p>Connect with certified legal professionals for expert advice</p>
+                    </div>
+                    
+                    <!-- Search and Filter -->
+                    <div style="margin-bottom: 30px;">
+                        <div style="display: grid; grid-template-columns: 1fr 200px 200px; gap: 15px; margin-bottom: 20px;">
+                            <input type="text" id="expertSearch" placeholder="Search experts by name or specialization..." 
+                                   style="padding: 12px; border: 1px solid #ddd; border-radius: 8px; background: rgba(255,255,255,0.9);">
+                            <select id="specializationFilter" style="padding: 12px; border: 1px solid #ddd; border-radius: 8px; background: rgba(255,255,255,0.9);">
+                                <option value="">All Specializations</option>
+                            </select>
+                            <select id="experienceFilter" style="padding: 12px; border: 1px solid #ddd; border-radius: 8px; background: rgba(255,255,255,0.9);">
+                                <option value="">All Experience</option>
+                                <option value="0-2">0-2 years</option>
+                                <option value="3-5">3-5 years</option>
+                                <option value="6-10">6-10 years</option>
+                                <option value="11-15">11-15 years</option>
+                                <option value="16+">16+ years</option>
+                            </select>
+                        </div>
+                        <button onclick="searchExperts()" style="padding: 12px 25px; background: linear-gradient(135deg, #667eea, #764ba2); color: white; border: none; border-radius: 8px; cursor: pointer;">
+                            <i class="fas fa-search"></i> Search Experts
+                        </button>
+                    </div>
+                    
+                    <!-- Experts Grid -->
+                    <div id="expertsGrid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(350px, 1fr)); gap: 20px;">
+                        <div style="text-align: center; color: #666; padding: 40px;">
+                            <i class="fas fa-spinner fa-spin" style="font-size: 24px; margin-bottom: 15px;"></i>
+                            <p>Loading experts...</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Resources Section -->
+            <div id="resources-section" class="section-content">
+                <div class="section-card">
+                    <div class="section-header">
+                        <h3>📖 Legal Resources</h3>
+                    </div>
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px;">
+                        <div class="course-card">
+                            <div class="course-header">
+                                <div class="course-icon constitutional">
+                                    <i class="fas fa-file-pdf"></i>
+                                </div>
+                                <div>
+                                    <div class="course-title">Constitution of India</div>
+                                </div>
+                            </div>
+                            <div class="course-desc">
+                                Complete text with amendments and annotations.
+                            </div>
+                        </div>
+                        <div class="course-card">
+                            <div class="course-header">
+                                <div class="course-icon criminal">
+                                    <i class="fas fa-gavel"></i>
+                                </div>
+                                <div>
+                                    <div class="course-title">Landmark Cases</div>
+                                </div>
+                            </div>
+                            <div class="course-desc">
+                                Important Supreme Court judgments and analyses.
+                            </div>
+                        </div>
+                        <div class="course-card">
+                            <div class="course-header">
+                                <div class="course-icon contract">
+                                    <i class="fas fa-book"></i>
+                                </div>
+                                <div>
+                                    <div class="course-title">Legal Articles</div>
+                                </div>
+                            </div>
+                            <div class="course-desc">
+                                Scholarly articles and legal commentary.
+                            </div>
+                        </div>
+                        <div class="course-card">
+                            <div class="course-header">
+                                <div class="course-icon research">
+                                    <i class="fas fa-calendar"></i>
+                                </div>
+                                <div>
+                                    <div class="course-title">Legal Calendar</div>
+                                </div>
+                            </div>
+                            <div class="course-desc">
+                                Important dates, deadlines, and legal events.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Certificates Section -->
+            <div id="certificates-section" class="section-content">
+                <div class="section-card">
+                    <div class="section-header">
+                        <h3>🏆 My Certificates</h3>
+                    </div>
+                    <div class="empty-state">
+                        <i class="fas fa-award"></i>
+                        <h3>No certificates earned yet</h3>
+                        <p>Complete courses to earn certificates and showcase your achievements.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Profile Section -->
+            <div id="profile-section" class="section-content">
+                <div class="section-card">
+                    <div class="section-header">
+                        <h3>👤 My Profile</h3>
+                        <button class="action-btn" onclick="showProfileSetupModal()" style="font-size: 12px; padding: 8px 16px;">
+                            <i class="fas fa-edit"></i> Edit Profile
+                        </button>
+                    </div>
+                    
+                    <div class="profile-display" id="profileDisplay">
+                        <!-- Profile content will be dynamically loaded here -->
+                        <div class="profile-placeholder">
+                            <i class="fas fa-user-circle" style="font-size: 60px; color: #64748b; margin-bottom: 15px;"></i>
+                            <h3>Complete Your Profile</h3>
+                            <p>Set up your profile to get a personalized learning experience.</p>
+                            <button class="action-btn" onclick="showProfileSetupModal()">
+                                <i class="fas fa-plus"></i> Setup Profile
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Magic Wand for Inspiring Quotes -->
+    <div class="magic-wand" onclick="showInspirationalQuote()">
+        <i class="fas fa-magic"></i>
+    </div>
+
+    <!-- Quote Popup -->
+    <div class="quote-popup" id="quotePopup">
+        <div class="quote-text" id="quoteText">
+            "Justice delayed is justice denied."
+        </div>
+        <div class="quote-author" id="quoteAuthor">
+            - William E. Gladstone
+        </div>
+        <button class="quote-close-btn" onclick="closeQuotePopup()">Close</button>
+    </div>
+
+    <!-- Instagram/Facebook Style Chat Interface -->
+    <div class="chat-interface" id="chatInterface">
+        <!-- Lawyer Selection View -->
+        <div class="lawyer-selection" id="lawyerSelection">
+            <div class="chat-header">
+                <i class="fas fa-comments"></i>
+                <div>
+                    <h3 style="margin: 0; font-size: 16px;">Legal Experts</h3>
+                    <p style="margin: 0; font-size: 12px; opacity: 0.9;">Choose a lawyer to chat with</p>
+                </div>
+                <button class="chat-close-btn" onclick="closeChatInterface()">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            
+            <div style="padding: 20px;">
+                <div class="lawyer-grid">
+                    <!-- Lawyers will be dynamically loaded here -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Chat Conversation View -->
+        <div class="chat-conversation" id="chatConversation">
+            <div class="chat-header">
+                <button style="background: none; border: none; color: white; cursor: pointer;" onclick="backToLawyerSelection()">
+                    <i class="fas fa-arrow-left"></i>
+                </button>
+                <div class="lawyer-avatar" style="width: 40px; height: 40px; font-size: 14px;" id="chatLawyerAvatar">PS</div>
+                <div>
+                    <h3 style="margin: 0; font-size: 16px;" id="chatLawyerName">Dr. Priya Sharma</h3>
+                    <p style="margin: 0; font-size: 12px; opacity: 0.9;">Online</p>
+                </div>
+                <button class="chat-close-btn" onclick="closeChatInterface()">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+
+            <div class="chat-messages" id="chatMessages">
+                <div class="message received">
+                    <div class="message-bubble">
+                        Hello! I'm here to help you with your legal queries. How can I assist you today?
+                    </div>
+                </div>
+            </div>
+
+            <div class="chat-input-container">
+                <div class="chat-input-box">
+                    <input type="text" class="chat-input" placeholder="Type your message..." id="chatInput" onkeypress="handleChatEnter(event)">
+                    <button class="chat-send-btn" onclick="sendMessage()">
+                        <i class="fas fa-paper-plane"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Chat FAB -->
+    <button class="chat-fab" onclick="openChatInterface()" style="background: linear-gradient(135deg, #556b2f, #6b8e23);">
+        <i class="fas fa-comments"></i>
+    </button>
+
+    <!-- Profile Setup Modal for First Time Users -->
+    <div class="profile-setup-modal" id="profileSetupModal">
+        <div class="profile-setup-container">
+            <div class="profile-setup-header">
+                <h2>🎯 Complete Your Profile</h2>
+                <p>Welcome to LawHub! Let's set up your profile to personalize your learning experience.</p>
+            </div>
+            
+            <form id="profileSetupForm" class="profile-setup-form">
+                <!-- Profile Picture Section -->
+                <div class="profile-picture-section">
+                    <div class="profile-picture-container">
+                        <div class="profile-picture-preview" id="profilePicturePreview">
+                            <i class="fas fa-user"></i>
+                        </div>
+                        <input type="file" id="profilePictureInput" accept="image/*" style="display: none;">
+                        <button type="button" class="upload-btn" onclick="document.getElementById('profilePictureInput').click()">
+                            <i class="fas fa-camera"></i> Upload Photo
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Personal Details -->
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="dateOfBirth">Date of Birth *</label>
+                        <input type="date" id="dateOfBirth" name="dateOfBirth" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="phone">Phone Number *</label>
+                        <input type="tel" id="phone" name="phone" placeholder="+91 XXXXX XXXXX" required>
+                    </div>
+                </div>
+
+                <!-- Education/Work Status -->
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="status">I am a *</label>
+                        <select id="status" name="status" required onchange="toggleStatusFields()">
+                            <option value="">Select your status</option>
+                            <option value="student">Student</option>
+                            <option value="employee">Employee</option>
+                            <option value="professional">Legal Professional</option>
+                            <option value="other">Other</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="city">City *</label>
+                        <input type="text" id="city" name="city" placeholder="Enter your city" required>
+                    </div>
+                </div>
+
+                <!-- Dynamic Fields Based on Status -->
+                <div class="form-row" id="studentFields" style="display: none;">
+                    <div class="form-group">
+                        <label for="collegeName">College/University Name</label>
+                        <input type="text" id="collegeName" name="collegeName" placeholder="Enter institution name">
+                    </div>
+                    <div class="form-group">
+                        <label for="course">Course/Degree</label>
+                        <input type="text" id="course" name="course" placeholder="e.g., B.A. LLB, LLM">
+                    </div>
+                </div>
+
+                <div class="form-row" id="employeeFields" style="display: none;">
+                    <div class="form-group">
+                        <label for="companyName">Company/Organization</label>
+                        <input type="text" id="companyName" name="companyName" placeholder="Enter company name">
+                    </div>
+                    <div class="form-group">
+                        <label for="designation">Designation</label>
+                        <input type="text" id="designation" name="designation" placeholder="Your job title">
+                    </div>
+                </div>
+
+                <!-- Learning Goals -->
+                <div class="form-row">
+                    <div class="form-group full-width">
+                        <label for="learningGoal">Primary Learning Goal *</label>
+                        <select id="learningGoal" name="learningGoal" required>
+                            <option value="">Select your goal</option>
+                            <option value="exam-prep">Competitive Exam Preparation</option>
+                            <option value="career-change">Career Change to Law</option>
+                            <option value="professional-dev">Professional Development</option>
+                            <option value="general-knowledge">General Legal Knowledge</option>
+                            <option value="specific-area">Specific Legal Area</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Interests -->
+                <div class="form-row">
+                    <div class="form-group full-width">
+                        <label>Areas of Interest (Select multiple)</label>
+                        <div class="interests-grid">
+                            <label class="interest-item">
+                                <input type="checkbox" name="interests" value="constitutional">
+                                <span>Constitutional Law</span>
+                            </label>
+                            <label class="interest-item">
+                                <input type="checkbox" name="interests" value="criminal">
+                                <span>Criminal Law</span>
+                            </label>
+                            <label class="interest-item">
+                                <input type="checkbox" name="interests" value="corporate">
+                                <span>Corporate Law</span>
+                            </label>
+                            <label class="interest-item">
+                                <input type="checkbox" name="interests" value="family">
+                                <span>Family Law</span>
+                            </label>
+                            <label class="interest-item">
+                                <input type="checkbox" name="interests" value="property">
+                                <span>Property Law</span>
+                            </label>
+                            <label class="interest-item">
+                                <input type="checkbox" name="interests" value="labor">
+                                <span>Labor Law</span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Form Actions -->
+                <div class="form-actions">
+                    <button type="submit" class="save-profile-btn">
+                        <i class="fas fa-check"></i> Complete Profile Setup
+                    </button>
+                    <p class="required-note">* Required fields</p>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Expert Application Modal -->
+    <div class="profile-setup-modal" id="expertApplicationModal">
+        <div class="profile-setup-container">
+            <div class="profile-setup-header">
+                <h2>⚖️ Become a Legal Expert</h2>
+                <p>Join our network of certified legal professionals and help others with their legal queries.</p>
+                <button class="close-modal-btn" onclick="closeExpertApplicationModal()" style="position: absolute; top: 15px; right: 20px; background: none; border: none; font-size: 24px; color: #666; cursor: pointer;">&times;</button>
+            </div>
+            
+            <form id="expertApplicationForm" class="profile-setup-form">
+                <!-- Professional Details -->
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="expertBarCouncilId">Bar Council ID *</label>
+                        <input type="text" id="expertBarCouncilId" name="barCouncilId" placeholder="e.g., BAR/2020/12345" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="expertLicenseYear">Year of Admission *</label>
+                        <input type="number" id="expertLicenseYear" name="licenseYear" placeholder="e.g., 2015" min="1950" max="2025" required>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="expertExperience">Years of Experience *</label>
+                        <select id="expertExperience" name="experience" required>
+                            <option value="">Select experience</option>
+                            <option value="0-2">0-2 years (Junior)</option>
+                            <option value="3-5">3-5 years</option>
+                            <option value="6-10">6-10 years</option>
+                            <option value="11-15">11-15 years (Senior)</option>
+                            <option value="16+">16+ years (Expert)</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="expertSpecialization">Primary Specialization *</label>
+                        <select id="expertSpecialization" name="specialization" required>
+                            <option value="">Select specialization</option>
+                            <option value="constitutional">Constitutional Law</option>
+                            <option value="criminal">Criminal Law</option>
+                            <option value="corporate">Corporate Law</option>
+                            <option value="family">Family Law</option>
+                            <option value="property">Property Law</option>
+                            <option value="labor">Labor Law</option>
+                            <option value="tax">Tax Law</option>
+                            <option value="intellectual">Intellectual Property</option>
+                            <option value="environmental">Environmental Law</option>
+                            <option value="human-rights">Human Rights</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Practice Details -->
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="expertFirmName">Law Firm/Practice Name</label>
+                        <input type="text" id="expertFirmName" name="firmName" placeholder="Enter firm name or 'Independent Practice'">
+                    </div>
+                    <div class="form-group">
+                        <label for="expertLocation">Practice Location *</label>
+                        <input type="text" id="expertLocation" name="location" placeholder="City, State" required>
+                    </div>
+                </div>
+
+                <!-- Education -->
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="expertEducation">Legal Education *</label>
+                        <input type="text" id="expertEducation" name="education" placeholder="e.g., LL.B from XYZ University" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="expertCourts">Courts of Practice</label>
+                        <input type="text" id="expertCourts" name="courts" placeholder="e.g., High Court, District Court">
+                    </div>
+                </div>
+
+                <!-- Additional Qualifications -->
+                <div class="form-row">
+                    <div class="form-group full-width">
+                        <label for="expertBio">Professional Bio *</label>
+                        <textarea id="expertBio" name="bio" rows="4" placeholder="Brief description of your legal practice, notable cases, achievements..." required></textarea>
+                    </div>
+                </div>
+
+                <!-- Certifications -->
+                <div class="form-row">
+                    <div class="form-group full-width">
+                        <label for="expertCertifications">Additional Certifications</label>
+                        <textarea id="expertCertifications" name="certifications" rows="3" placeholder="Any additional certifications, specializations, awards..."></textarea>
+                    </div>
+                </div>
+
+                <!-- Languages -->
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="expertLanguages">Languages Spoken *</label>
+                        <input type="text" id="expertLanguages" name="languages" placeholder="e.g., English, Hindi, Tamil" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="expertAvailability">Preferred Consultation Hours</label>
+                        <select id="expertAvailability" name="availability">
+                            <option value="9am-5pm">9 AM - 5 PM</option>
+                            <option value="10am-6pm">10 AM - 6 PM</option>
+                            <option value="flexible">Flexible Hours</option>
+                            <option value="evenings">Evening Hours</option>
+                            <option value="weekends">Weekends Only</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Document Upload -->
+                <div class="form-row">
+                    <div class="form-group full-width">
+                        <label for="expertDocuments">Upload Supporting Documents</label>
+                        <input type="file" id="expertDocuments" name="documents" multiple accept=".pdf,.jpg,.jpeg,.png">
+                        <small style="color: #666; font-size: 12px;">Upload Bar Council certificate, degree certificates, etc. (Max 5MB each)</small>
+                    </div>
+                </div>
+
+                <!-- Terms and Conditions -->
+                <div class="form-row">
+                    <div class="form-group full-width">
+                        <label class="interest-item">
+                            <input type="checkbox" name="termsAccepted" required>
+                            <span class="checkmark"></span>
+                            I agree to the <strong>Terms of Service</strong> and <strong>Expert Code of Conduct</strong> *
+                        </label>
+                        <label class="interest-item">
+                            <input type="checkbox" name="dataConsent" required>
+                            <span class="checkmark"></span>
+                            I consent to verification of my credentials and background check *
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Form Actions -->
+                <div class="form-actions">
+                    <button type="submit" class="save-profile-btn">
+                        <i class="fas fa-gavel"></i> Submit Expert Application
+                    </button>
+                    <button type="button" class="cancel-btn" onclick="closeExpertApplicationModal()" style="margin-left: 10px; background: #666;">
+                        <i class="fas fa-times"></i> Cancel
+                    </button>
+                    <p class="required-note">* Required fields | Application will be reviewed by our admin team</p>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // Navigation functionality
+        document.addEventListener('DOMContentLoaded', function() {
+            const navLinks = document.querySelectorAll('.nav-link');
+            const sections = document.querySelectorAll('.section-content');
+            
+            // Animate command lines
+            animateCommandLines();
+            
+            // Auto-toggle command terminal
+            setInterval(() => {
+                toggleCommandTerminal();
+            }, 10000);
+            
+            navLinks.forEach(link => {
+                link.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    
+                    // Remove active class from all links
+                    navLinks.forEach(l => l.classList.remove('active'));
+                    
+                    // Add active class to clicked link
+                    this.classList.add('active');
+                    
+                    // Hide all sections
+                    sections.forEach(section => section.classList.remove('active'));
+                    
+                    // Show selected section
+                    const sectionId = this.getAttribute('data-section') + '-section';
+                    const targetSection = document.getElementById(sectionId);
+                    if (targetSection) {
+                        targetSection.classList.add('active');
+                    }
+                    
+                    // Add command log
+                    addCommandLog(`Navigation: Switched to ${this.textContent.trim()}`);
+                    
+                    // Track navigation activity
+                    trackActivity('navigation', 'User navigated to section', { 
+                        section: this.textContent.trim(),
+                        sectionId: sectionId,
+                        timestamp: new Date()
+                    });
+                });
+            });
+        });
+
+        // Command Terminal Functions
+        function animateCommandLines() {
+            const lines = document.querySelectorAll('.command-line');
+            lines.forEach((line, index) => {
+                setTimeout(() => {
+                    line.style.animationDelay = `${index * 0.2}s`;
+                    line.classList.add('animated');
+                }, index * 300);
+            });
+        }
+
+        function toggleCommandTerminal() {
+            const terminal = document.getElementById('commandTerminal');
+            terminal.classList.toggle('active');
+            
+            if (terminal.classList.contains('active')) {
+                addRandomCommands();
+            }
+        }
+
+        function addCommandLog(message) {
+            const output = document.getElementById('commandOutput');
+            if (!output) {
+                console.log('Command Log:', message);
+                return;
+            }
+            const newLine = document.createElement('div');
+            newLine.className = 'command-line';
+            newLine.innerHTML = `<span style="color: #00ff00;">${new Date().toLocaleTimeString()}</span> ${message}`;
+            output.appendChild(newLine);
+            output.scrollTop = output.scrollHeight;
+        }
+
+        function addRandomCommands() {
+            const commands = [
+                'analyze --case-law --recent',
+                'User activity detected: Page navigation',
+                'Legal database sync: 99.9% complete',
+                'AI recommendation engine: Active',
+                'Expert network: 127 lawyers online',
+                'System performance: Optimal',
+                'Security scan: No threats detected',
+                'Course analytics: Updated'
+            ];
+            
+            const randomCommand = commands[Math.floor(Math.random() * commands.length)];
+            setTimeout(() => {
+                addCommandLog(randomCommand);
+            }, 1000);
+        }
+
+        // Enhanced interactions
+        function openLawSearch() {
+            addCommandLog('Opening law search interface...');
+            document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
+            document.querySelector('[data-section="search"]').classList.add('active');
+            document.querySelectorAll('.section-content').forEach(s => s.classList.remove('active'));
+            document.getElementById('search-section').classList.add('active');
+        }
+
+        function openChatModal() {
+            addCommandLog('Connecting to legal expert network...');
+            showCustomAlert('� LAWHUB EXPERTS', 'Connecting you with our certified legal professionals! Your consultation is being prepared.', 'success');
+        }
+
+        function openExpertModal() {
+            addCommandLog('Expert application form opened...');
+            
+            // Check if application already submitted
+            const isSubmitted = localStorage.getItem('expertApplicationSubmitted');
+            if (isSubmitted === 'true') {
+                const submittedAt = localStorage.getItem('expertApplicationSubmittedAt');
+                const submissionDate = submittedAt ? new Date(submittedAt).toLocaleDateString() : 'recently';
+                
+                showCustomAlert(
+                    '⚠️ Application Already Submitted',
+                    `You have already submitted an expert application on ${submissionDate}. Please wait for admin review. You cannot submit multiple applications.`,
+                    'error'
+                );
+                addCommandLog('Expert application blocked - already submitted');
+                return;
+            }
+            
+            showExpertApplicationModal();
+        }
+
+        // Expert Application Modal Functions
+        function showExpertApplicationModal() {
+            const modal = document.getElementById('expertApplicationModal');
+            if (modal) {
+                modal.style.display = 'flex';
+                addCommandLog('Expert application modal displayed');
+                
+                // Check if form should be locked after modal opens
+                const isSubmitted = localStorage.getItem('expertApplicationSubmitted');
+                const expertForm = document.getElementById('expertApplicationForm');
+                
+                if (isSubmitted === 'true' && expertForm) {
+                    setTimeout(() => {
+                        lockExpertForm(expertForm);
+                    }, 100); // Small delay to ensure form is rendered
+                }
+            }
+        }
+
+        function closeExpertApplicationModal() {
+            const modal = document.getElementById('expertApplicationModal');
+            if (modal) {
+                modal.style.display = 'none';
+                addCommandLog('Expert application modal closed');
+            }
+        }
+
+        // Handle expert application form submission
+        document.addEventListener('DOMContentLoaded', function() {
+            const expertForm = document.getElementById('expertApplicationForm');
+            if (expertForm) {
+                expertForm.addEventListener('submit', async function(e) {
+                    e.preventDefault();
+                    
+                    try {
+                        const formData = new FormData(expertForm);
+                        const expertData = {};
+                        
+                        // Convert FormData to regular object
+                        for (let [key, value] of formData.entries()) {
+                            expertData[key] = value;
+                        }
+                        
+                        // Handle file uploads
+                        const documentsInput = document.getElementById('expertDocuments');
+                        if (documentsInput.files.length > 0) {
+                            const documents = [];
+                            for (let file of documentsInput.files) {
+                                if (file.size > 5 * 1024 * 1024) { // 5MB limit
+                                    showCustomAlert('File Too Large', `${file.name} is larger than 5MB. Please upload a smaller file.`, 'error');
+                                    return;
+                                }
+                                
+                                const base64 = await convertFileToBase64(file);
+                                documents.push({
+                                    name: file.name,
+                                    type: file.type,
+                                    size: file.size,
+                                    data: base64
+                                });
+                            }
+                            expertData.documents = documents;
+                        }
+                        
+                        // Add logged-in user information
+                        const userToken = localStorage.getItem('token');
+                        if (userToken) {
+                            try {
+                                // Decode token to get user info
+                                const payload = JSON.parse(atob(userToken.split('.')[1]));
+                                expertData.userEmail = payload.email || 'unknown@email.com';
+                                expertData.userName = payload.name || 'Unknown User';
+                                expertData.userId = payload.userId;
+                                console.log('Added user info:', { email: expertData.userEmail, name: expertData.userName });
+                            } catch (error) {
+                                console.warn('Could not decode token:', error);
+                                expertData.userEmail = 'unknown@email.com';
+                                expertData.userName = 'Unknown User';
+                            }
+                        } else {
+                            expertData.userEmail = 'unknown@email.com';
+                            expertData.userName = 'Unknown User';
+                        }
+                        
+                        addCommandLog('Submitting expert application...');
+                        
+                        // Check if user is logged in (temporary bypass for testing)
+                        const token = localStorage.getItem('token');
+                        console.log('Token check:', token ? 'Token exists' : 'No token');
+                        
+                        // Continue even without token for testing
+                        const headers = {
+                            'Content-Type': 'application/json'
+                        };
+                        
+                        if (token) {
+                            headers['Authorization'] = 'Bearer ' + token;
+                        }
+                        
+                        console.log('Sending request to /api/expert-application');
+                        console.log('Request data:', expertData);
+                        
+                        const response = await fetch('/api/expert-application', {
+                            method: 'POST',
+                            headers: headers,
+                            body: JSON.stringify(expertData)
+                        });
+                        
+                        // Check if response is actually JSON
+                        const contentType = response.headers.get('content-type');
+                        if (!contentType || !contentType.includes('application/json')) {
+                            throw new Error(`Server returned non-JSON response (${response.status}): ${response.statusText}`);
+                        }
+                        
+                        const result = await response.json();
+                        
+                        if (response.ok) {
+                            // Lock the form to prevent duplicate submissions
+                            lockExpertForm(expertForm);
+                            
+                            showCustomAlert('Application Submitted!', 'Your expert application has been submitted successfully. Our admin team will review it within 2-3 business days.', 'success');
+                            closeExpertApplicationModal();
+                            expertForm.reset();
+                            addCommandLog('Expert application submitted successfully');
+                        } else {
+                            // Handle duplicate submission specifically
+                            if (response.status === 409 && result.alreadySubmitted) {
+                                lockExpertForm(expertForm);
+                                showCustomAlert('Already Submitted', result.message || 'You have already submitted an expert application.', 'error');
+                                addCommandLog('Expert application blocked - already submitted');
+                            } else {
+                                throw new Error(result.message || `Server error (${response.status}): ${response.statusText}`);
+                            }
+                        }
+                        
+                    } catch (error) {
+                        console.error('Expert application error:', error);
+                        let errorMessage = error.message || 'Failed to submit expert application. Please try again.';
+                        
+                        // Handle specific error types
+                        if (error.message.includes('Failed to fetch') || error.message.includes('Unable to connect')) {
+                            errorMessage = 'Network error: Cannot connect to server. Please check if the server is running.';
+                        } else if (error.message.includes('Unexpected end of JSON input')) {
+                            errorMessage = 'Server communication error: Invalid response received. Please try again or refresh the page.';
+                        } else if (error.message.includes('401') || error.message.includes('log in first')) {
+                            errorMessage = 'Authentication error: Please log out and log in again.';
+                        }
+                        
+                        showCustomAlert('Submission Failed', errorMessage, 'error');
+                        addCommandLog('Expert application submission failed: ' + errorMessage);
+                    }
+                });
+            }
+        });
+
+        // File conversion helper function
+        function convertFileToBase64(file) {
+            return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.readAsDataURL(file);
+                reader.onload = () => resolve(reader.result);
+                reader.onerror = error => reject(error);
+            });
+        }
+
+        // Form locking function to prevent duplicate submissions
+        function lockExpertForm(form) {
+            console.log('🔒 Locking expert application form');
+            
+            // Get all form elements
+            const inputs = form.querySelectorAll('input, select, textarea, button');
+            
+            // Disable all form elements
+            inputs.forEach(element => {
+                element.disabled = true;
+                element.style.opacity = '0.6';
+                element.style.cursor = 'not-allowed';
+            });
+            
+            // Find and update the submit button
+            const submitBtn = form.querySelector('button[type="submit"]');
+            if (submitBtn) {
+                submitBtn.textContent = '✅ Application Submitted';
+                submitBtn.style.background = '#6c757d';
+                submitBtn.style.border = 'none';
+            }
+            
+            // Add a success message to the form
+            const successMessage = document.createElement('div');
+            successMessage.style.cssText = `
+                background: #d4edda;
+                color: #155724;
+                padding: 15px;
+                border-radius: 8px;
+                margin-top: 15px;
+                text-align: center;
+                border: 1px solid #c3e6cb;
+                font-weight: 600;
+                animation: slideIn 0.3s ease;
+            `;
+            successMessage.innerHTML = `
+                <i class="fas fa-check-circle" style="margin-right: 8px;"></i>
+                <strong>Application Submitted Successfully!</strong><br>
+                <small>Your application is under review. You cannot submit another application.</small>
+            `;
+            
+            // Insert the message at the end of the form
+            form.appendChild(successMessage);
+            
+            // Store the submission status in localStorage
+            localStorage.setItem('expertApplicationSubmitted', 'true');
+            localStorage.setItem('expertApplicationSubmittedAt', new Date().toISOString());
+            
+            addCommandLog('Expert application form locked to prevent duplicate submissions');
+        }
+
+        // Custom Alert System
+        function showCustomAlert(title, message, type) {
+            const alertDiv = document.createElement('div');
+            const bgColor = type === 'success' ? '#10b981' : type === 'info' ? '#556b2f' : '#f59e0b';
+            alertDiv.style.cssText = 
+                'position: fixed;' +
+                'top: 20px;' +
+                'right: 20px;' +
+                'background: ' + bgColor + ';' +
+                'color: white;' +
+                'padding: 20px;' +
+                'border-radius: 12px;' +
+                'box-shadow: 0 10px 30px rgba(0,0,0,0.3);' +
+                'z-index: 10000;' +
+                'max-width: 350px;' +
+                'animation: slideIn 0.3s ease;';
+            
+            alertDiv.innerHTML = 
+                '<h4 style="margin: 0 0 10px 0; font-size: 16px;">' + title + '</h4>' +
+                '<p style="margin: 0; font-size: 14px; line-height: 1.4;">' + message + '</p>';
+            
+            document.body.appendChild(alertDiv);
+            
+            setTimeout(function() {
+                alertDiv.remove();
+            }, 4000);
+        }
+
+        // Course enrollment with effects
+        document.addEventListener('click', function(e) {
+            if (e.target.classList.contains('enroll-btn')) {
+                const courseTitle = e.target.closest('.course-card').querySelector('.course-title').textContent;
+                addCommandLog('Course enrollment initiated: ' + courseTitle);
+                showCustomAlert('🎯 MISSION ACCEPTED', 'Enrollment confirmed for "' + courseTitle + '"! Your legal mastery journey begins now, warrior!', 'success');
+                
+                // Track course enrollment activity
+                trackActivity('course_enroll', 'User enrolled in course', { 
+                    courseTitle: courseTitle, 
+                    timestamp: new Date() 
+                });
+            }
+        });
+
+        // Enhanced search functionality
+        function performSearch() {
+            const searchInput = document.getElementById('globalSearch');
+            const query = searchInput.value.trim();
+            if (query) {
+                addCommandLog('Search query executed: "' + query + '"');
+                showCustomAlert('🔍 SEARCH PROTOCOL', 'Quantum search initiated for: "' + query + '". Scanning 10,000+ legal documents...', 'info');
+                
+                // Track search activity
+                trackActivity('search', 'User performed search query', { query: query, timestamp: new Date() });
+            } else {
+                showCustomAlert('⚠️ SEARCH ALERT', 'Please enter a search term to proceed.', 'info');
+            }
+        }
+
+        document.getElementById('globalSearch').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                performSearch();
+            }
+        });
+
+        // Situation search
+        document.addEventListener('DOMContentLoaded', function() {
+            const situationSearch = document.getElementById('situationSearch');
+            if (situationSearch) {
+                situationSearch.addEventListener('keypress', function(e) {
+                    if (e.key === 'Enter') {
+                        const query = this.value.trim();
+                        if (query) {
+                            addCommandLog('Situation analysis: "' + query + '"');
+                            showCustomAlert('🤖 AI LEGAL ANALYST', 'Advanced AI analyzing: "' + query + '". Deploying legal expertise algorithms...', 'info');
+                        }
+                    }
+                });
+            }
+        });
+
+        // Auto-start command terminal animation
+        setTimeout(() => {
+            toggleCommandTerminal();
+        }, 2000);
+
+        // Chat Interface Functions
+        function openChatInterface() {
+            const chatInterface = document.getElementById('chatInterface');
+            chatInterface.classList.add('active');
+            addCommandLog('Chat interface opened');
+        }
+
+        function closeChatInterface() {
+            const chatInterface = document.getElementById('chatInterface');
+            chatInterface.classList.remove('active');
+            // Reset to lawyer selection view
+            document.getElementById('lawyerSelection').style.display = 'block';
+            document.getElementById('chatConversation').classList.remove('active');
+            addCommandLog('Chat interface closed');
+        }
+
+        // Simple chat functionality without authentication
+        let currentChatLawyer = null;
+
+        // Static lawyer data
+        const lawyers = [
+            { id: 'lawyer1', name: 'Dr. Priya Sharma', specialization: 'Constitutional Law', avatar: '👩‍⚖️', experience: '15 years', rating: 4.9, available: true },
+            { id: 'lawyer2', name: 'Adv. Rajesh Kumar', specialization: 'Criminal Law', avatar: '👨‍⚖️', experience: '12 years', rating: 4.8, available: true },
+            { id: 'lawyer3', name: 'Ms. Anita Desai', specialization: 'Family Law', avatar: '👩‍💼', experience: '10 years', rating: 4.7, available: false },
+            { id: 'lawyer4', name: 'Mr. Vikram Singh', specialization: 'Corporate Law', avatar: '👨‍💼', experience: '8 years', rating: 4.6, available: true },
+            { id: 'lawyer5', name: 'Dr. Meera Patel', specialization: 'Human Rights', avatar: '👩‍🏫', experience: '20 years', rating: 4.9, available: true }
+        ];
+
+        function loadAvailableLawyers() {
+            const lawyerGrid = document.querySelector('.lawyer-grid');
+            
+            if (lawyerGrid) {
+                lawyerGrid.innerHTML = lawyers.filter(lawyer => lawyer.available).map(lawyer => `
+                    <div class="lawyer-card" onclick="startChat('${lawyer.name}', '${lawyer.id}')">
+                        <div class="lawyer-avatar">${lawyer.avatar}</div>
+                        <div class="lawyer-info">
+                            <h4>${lawyer.name}</h4>
+                            <p>${lawyer.specialization}</p>
+                            <span class="experience">${lawyer.experience} experience</span>
+                            <div class="rating">
+                                ${'⭐'.repeat(Math.floor(lawyer.rating))} ${lawyer.rating}
+                            </div>
+                        </div>
+                        <div class="status-indicator online"></div>
+                    </div>
+                `).join('');
+            }
+        }
+
+        function startChat(lawyerName, lawyerId) {
+            currentChatLawyer = lawyerName;
+            
+            // Update chat header
+            document.getElementById('chatLawyerName').textContent = lawyerName;
+            const lawyer = lawyers.find(l => l.id === lawyerId);
+            document.getElementById('chatLawyerAvatar').textContent = lawyer.avatar;
+            
+            // Switch to conversation view
+            document.getElementById('lawyerSelection').style.display = 'none';
+            document.getElementById('chatConversation').classList.add('active');
+            
+            // Add welcome message
+            const messagesContainer = document.getElementById('chatMessages');
+            messagesContainer.innerHTML = `
+                <div class="message received">
+                    <div class="message-bubble">
+                        Hello! I'm ${lawyerName}. I'm here to help you with your legal queries. How can I assist you today?
+                    </div>
+                    <div class="message-time">${new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</div>
+                </div>
+            `;
+            
+            addCommandLog('Started chat with ' + lawyerName);
+        }
+
+        function backToLawyerSelection() {
+            document.getElementById('lawyerSelection').style.display = 'block';
+            document.getElementById('chatConversation').classList.remove('active');
+            currentChatLawyer = null;
+        }
+
+        function sendMessage() {
+            const chatInput = document.getElementById('chatInput');
+            const message = chatInput.value.trim();
+            
+            if (!message) return;
+            
+            const messagesContainer = document.getElementById('chatMessages');
+            const currentTime = new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+            
+            // Add user message
+            const userMessage = document.createElement('div');
+            userMessage.className = 'message sent';
+            userMessage.innerHTML = `
+                <div class="message-bubble">${message}</div>
+                <div class="message-time">${currentTime}</div>
+            `;
+            messagesContainer.appendChild(userMessage);
+            
+            // Clear input and scroll
+            chatInput.value = '';
+            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+            
+            // Simulate lawyer response
+            setTimeout(() => {
+                const responses = [
+                    "Thank you for your question. Let me provide you with some legal guidance on this matter.",
+                    "Based on the information you've provided, I would recommend consulting the relevant sections of the law.",
+                    "This is an interesting legal query. Let me explain the applicable legal principles.",
+                    "I understand your concern. Here's what the law says about this situation.",
+                    "Great question! Let me walk you through the legal framework for this issue."
+                ];
+                
+                const randomResponse = responses[Math.floor(Math.random() * responses.length)];
+                const lawyerMessage = document.createElement('div');
+                lawyerMessage.className = 'message received';
+                lawyerMessage.innerHTML = `
+                    <div class="message-bubble">${randomResponse}</div>
+                    <div class="message-time">${new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</div>
+                `;
+                messagesContainer.appendChild(lawyerMessage);
+                messagesContainer.scrollTop = messagesContainer.scrollHeight;
+            }, 2000);
+            
+            addCommandLog('Message sent to ' + currentChatLawyer);
+        }
+
+        function handleChatEnter(event) {
+            if (event.key === 'Enter' && !event.shiftKey) {
+                event.preventDefault();
+                sendMessage();
+            }
+        }
+
+        // Authentication verification
+        async function verifyAuthentication() {
+          const token = localStorage.getItem('lawhub_token');
+          const userData = localStorage.getItem('lawhub_user');
+          
+          if (!token || !userData) {
+            redirectToLogin();
+            return false;
+          }
+          
+          try {
+            const response = await fetch('http://localhost:3000/api/auth/verify', {
+              headers: {
+                'Authorization': `Bearer ${token}`
+              }
+            });
+            
+            const result = await response.json();
+            
+            if (result.success) {
+              const user = result.user;
+              document.getElementById('welcomeUser').textContent = `Hello, ${user.name}! 👋`;
+              return true;
+            } else {
+              throw new Error('Invalid token');
+            }
+          } catch (error) {
+            console.error('Authentication verification failed:', error);
+            localStorage.removeItem('lawhub_token');
+            localStorage.removeItem('lawhub_user');
+            redirectToLogin();
+            return false;
+          }
+        }
+        
+        function redirectToLogin() {
+          alert('Please log in to access the dashboard');
+          window.location.href = 'login2.html';
+        }
+        
+        function logout() {
+          // Log logout activity to database
+          logLogoutActivity();
+          
+          localStorage.removeItem('lawhub_token');
+          localStorage.removeItem('lawhub_user');
+          window.location.href = 'simple-index.html';
+        }
+
+        async function logLogoutActivity() {
+            try {
+                const token = localStorage.getItem('lawhub_token');
+                
+                if (!token) return;
+                
+                await fetch('http://localhost:3000/api/activity/logout', {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    }
+                });
+                
+                addCommandLog('Logout activity logged to database');
+            } catch (error) {
+                console.error('Logout activity logging error:', error);
+            }
+        }
+
+        // Initialize when page loads
+        document.addEventListener('DOMContentLoaded', async function() {
+            const isAuthenticated = await verifyAuthentication();
+            if (isAuthenticated) {
+              loadAvailableLawyers();
+              await checkProfileSetup();
+              await logLoginActivity();
+            }
+        });
+
+        // Profile Setup Functions - CHECK IF PROFILE EXISTS FIRST
+        async function checkProfileSetup() {
+            try {
+                const userData = JSON.parse(localStorage.getItem('lawhub_user') || '{}');
+                
+                if (!userData.id) {
+                    return;
+                }
+                
+                // Simple check if profile exists
+                const response = await fetch('http://localhost:3000/api/auth/profile-check', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ userId: userData.id })
+                });
+                
+                const result = await response.json();
+                
+                if (result.success && !result.hasProfile) {
+                    // Only show modal if no profile exists
+                    setTimeout(() => {
+                        showProfileSetupModal();
+                    }, 1000);
+                } else if (result.success && result.profile) {
+                    // Load existing profile
+                    updateProfileDisplay(result.profile);
+                }
+            } catch (error) {
+                console.log('Profile check failed, showing setup modal');
+                setTimeout(() => {
+                    showProfileSetupModal();
+                }, 1000);
+            }
+        }
+
+        async function loadProfileFromDatabase() {
+            try {
+                const token = localStorage.getItem('lawhub_token');
+                const userData = JSON.parse(localStorage.getItem('lawhub_user') || '{}');
+                
+                if (!userData.id) {
+                    clearLocalStorageProfileData();
+                    return;
+                }
+                
+                const response = await fetch(`http://localhost:3000/api/profile/${userData.id}`, {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+                
+                const result = await response.json();
+                
+                if (result.success && result.profile) {
+                    // Display database data
+                    updateProfileSection(result.profile);
+                    addCommandLog('Profile loaded from database');
+                } else {
+                    // No profile in database
+                    updateProfileSection({});
+                    addCommandLog('No profile found in database');
+                }
+            } catch (error) {
+                console.error('Profile loading error:', error);
+                showCustomAlert('⚠️ DATABASE ERROR', 'Cannot load profile from database. Please check your connection.', 'info');
+                // Show empty profile if database fails
+                updateProfileSection({});
+            }
+        }
+
+        async function logLoginActivity() {
+            try {
+                const token = localStorage.getItem('lawhub_token');
+                
+                if (!token) return;
+                
+                await fetch('http://localhost:3000/api/activity/login', {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    }
+                });
+                
+                addCommandLog('Login activity logged to database');
+            } catch (error) {
+                console.error('Login activity logging error:', error);
+            }
+        }
+
+        function showProfileSetupModal() {
+            document.getElementById('profileSetupModal').classList.add('active');
+            addCommandLog('Profile setup modal opened');
+        }
+
+        function closeProfileSetupModal() {
+            document.getElementById('profileSetupModal').classList.remove('active');
+        }
+
+        // Helper function to clear localStorage profile data
+        function clearLocalStorageProfileData() {
+            localStorage.removeItem('lawhub_profile_data');
+            localStorage.removeItem('lawhub_profile_complete');
+            addCommandLog('Local profile data cleared - using database only');
+        }
+
+        function toggleStatusFields() {
+            const status = document.getElementById('status').value;
+            const studentFields = document.getElementById('studentFields');
+            const employeeFields = document.getElementById('employeeFields');
+            
+            // Hide all conditional fields first
+            studentFields.style.display = 'none';
+            employeeFields.style.display = 'none';
+            
+            // Show relevant fields based on status
+            if (status === 'student') {
+                studentFields.style.display = 'grid';
+            } else if (status === 'employee') {
+                employeeFields.style.display = 'grid';
+            }
+        }
+
+        // Handle profile picture upload
+        document.getElementById('profilePictureInput').addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                // Check file size (limit to 2MB)
+                if (file.size > 2 * 1024 * 1024) {
+                    showCustomAlert('📸 IMAGE TOO LARGE', 'Please choose an image smaller than 2MB for faster upload.', 'error');
+                    e.target.value = ''; // Clear the input
+                    return;
+                }
+                
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const preview = document.getElementById('profilePicturePreview');
+                    preview.innerHTML = `<img src="${e.target.result}" alt="Profile Picture">`;
+                    addCommandLog('Profile picture uploaded successfully');
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+
+        // Handle profile setup form submission - SIMPLIFIED LIKE SIGNUP
+        document.getElementById('profileSetupForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const formData = new FormData(this);
+            const profileData = {};
+            
+            // Collect form data
+            for (let [key, value] of formData.entries()) {
+                if (key === 'interests') {
+                    if (!profileData.interests) profileData.interests = [];
+                    profileData.interests.push(value);
+                } else {
+                    profileData[key] = value;
+                }
+            }
+            
+            // Get profile picture if uploaded
+            const profilePictureImg = document.querySelector('#profilePicturePreview img');
+            if (profilePictureImg) {
+                profileData.profilePicture = profilePictureImg.src;
+            }
+            
+            // Get user ID from localStorage
+            const userData = JSON.parse(localStorage.getItem('lawhub_user') || '{}');
+            profileData.userId = userData.id;
+            
+            try {
+                console.log('💾 Saving profile like signup...');
+                
+                // Simple API call like signup - NO AUTHENTICATION
+                const response = await fetch('http://localhost:3000/api/auth/profile', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(profileData)
+                });
+                
+                const result = await response.json();
+                console.log('Profile save result:', result);
+                
+                if (result.success) {
+                    // Update UI with saved data
+                    updateProfileDisplay(profileData);
+                    closeProfileSetupModal();
+                    
+                    // Show success message
+                    showCustomAlert('🎉 PROFILE SAVED!', 'Your profile has been saved successfully!', 'success');
+                    addCommandLog('✅ Profile setup completed successfully');
+                } else {
+                    throw new Error(result.message || 'Failed to save profile');
+                }
+            } catch (error) {
+                console.error('Profile save error:', error);
+                showCustomAlert('❌ SAVE FAILED', 'Failed to save profile: ' + error.message, 'error');
+                addCommandLog('❌ Profile save failed: ' + error.message);
+            }
+        });
+
+        // Track user activity
+        async function trackActivity(activityType, description, metadata = {}) {
+            try {
+                const token = localStorage.getItem('lawhub_token');
+                
+                if (!token) return;
+                
+                await fetch('http://localhost:3000/api/activity/track', {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        activityType,
+                        description,
+                        metadata
+                    })
+                });
+            } catch (error) {
+                console.error('Activity tracking error:', error);
+            }
+        }
+
+        function updateProfileDisplay(profileData) {
+            // Update welcome message with user's name if available
+            const userData = JSON.parse(localStorage.getItem('lawhub_user') || '{}');
+            if (userData.name) {
+                document.getElementById('welcomeUser').textContent = `Hello, ${userData.name}! 👋`;
+            }
+            
+            // Update profile section (will be implemented in next step)
+            updateProfileSection(profileData);
+        }
+
+        function updateProfileSection(profileData) {
+            const profileDisplay = document.getElementById('profileDisplay');
+            const userData = JSON.parse(localStorage.getItem('lawhub_user') || '{}');
+            
+            if (!profileData || Object.keys(profileData).length === 0) {
+                // Show placeholder if no profile data
+                profileDisplay.innerHTML = `
+                    <div class="profile-placeholder">
+                        <i class="fas fa-user-circle" style="font-size: 60px; color: #64748b; margin-bottom: 15px;"></i>
+                        <h3>Complete Your Profile</h3>
+                        <p>Set up your profile to get a personalized learning experience.</p>
+                        <button class="action-btn" onclick="showProfileSetupModal()">
+                            <i class="fas fa-plus"></i> Setup Profile
+                        </button>
+                    </div>
+                `;
+                return;
+            }
+            
+            // Display complete profile
+            const statusText = {
+                'student': 'Student',
+                'employee': 'Employee', 
+                'professional': 'Legal Professional',
+                'other': 'Other'
+            };
+            
+            const goalText = {
+                'exam-prep': 'Competitive Exam Preparation',
+                'career-change': 'Career Change to Law',
+                'professional-dev': 'Professional Development',
+                'general-knowledge': 'General Legal Knowledge',
+                'specific-area': 'Specific Legal Area'
+            };
+            
+            profileDisplay.innerHTML = `
+                <div class="profile-content">
+                    <div class="profile-header">
+                        <div class="profile-avatar">
+                            ${profileData.profilePicture ? 
+                                `<img src="${profileData.profilePicture}" alt="Profile Picture">` : 
+                                '<i class="fas fa-user"></i>'
+                            }
+                        </div>
+                        <div class="profile-info">
+                            <h3>${userData.name || 'User'}</h3>
+                            <p>${statusText[profileData.status] || profileData.status} ${profileData.city ? `• ${profileData.city}` : ''}</p>
+                            <p>${userData.email || ''}</p>
+                        </div>
+                    </div>
+                    
+                    <div class="profile-details">
+                        <div class="detail-card">
+                            <h4><i class="fas fa-user"></i> Personal Information</h4>
+                            <div class="detail-item">
+                                <span class="detail-label">Date of Birth</span>
+                                <span class="detail-value">${profileData.dateOfBirth || 'Not provided'}</span>
+                            </div>
+                            <div class="detail-item">
+                                <span class="detail-label">Phone</span>
+                                <span class="detail-value">${profileData.phone || 'Not provided'}</span>
+                            </div>
+                            <div class="detail-item">
+                                <span class="detail-label">City</span>
+                                <span class="detail-value">${profileData.city || 'Not provided'}</span>
+                            </div>
+                        </div>
+                        
+                        <div class="detail-card">
+                            <h4><i class="fas fa-briefcase"></i> ${profileData.status === 'student' ? 'Education' : 'Work'} Details</h4>
+                            <div class="detail-item">
+                                <span class="detail-label">Status</span>
+                                <span class="detail-value">${statusText[profileData.status] || profileData.status}</span>
+                            </div>
+                            ${profileData.status === 'student' ? `
+                                <div class="detail-item">
+                                    <span class="detail-label">Institution</span>
+                                    <span class="detail-value">${profileData.collegeName || 'Not provided'}</span>
+                                </div>
+                                <div class="detail-item">
+                                    <span class="detail-label">Course</span>
+                                    <span class="detail-value">${profileData.course || 'Not provided'}</span>
+                                </div>
+                            ` : ''}
+                            ${profileData.status === 'employee' ? `
+                                <div class="detail-item">
+                                    <span class="detail-label">Company</span>
+                                    <span class="detail-value">${profileData.companyName || 'Not provided'}</span>
+                                </div>
+                                <div class="detail-item">
+                                    <span class="detail-label">Designation</span>
+                                    <span class="detail-value">${profileData.designation || 'Not provided'}</span>
+                                </div>
+                            ` : ''}
+                        </div>
+                        
+                        <div class="detail-card">
+                            <h4><i class="fas fa-target"></i> Learning Preferences</h4>
+                            <div class="detail-item">
+                                <span class="detail-label">Primary Goal</span>
+                                <span class="detail-value">${goalText[profileData.learningGoal] || profileData.learningGoal}</span>
+                            </div>
+                            ${profileData.interests && profileData.interests.length > 0 ? `
+                                <div style="margin-top: 15px;">
+                                    <span class="detail-label">Areas of Interest</span>
+                                    <div class="interests-tags">
+                                        ${profileData.interests.map(interest => {
+                                            const interestNames = {
+                                                'constitutional': 'Constitutional Law',
+                                                'criminal': 'Criminal Law',
+                                                'corporate': 'Corporate Law',
+                                                'family': 'Family Law',
+                                                'property': 'Property Law',
+                                                'labor': 'Labor Law'
+                                            };
+                                            return `<span class="interest-tag">${interestNames[interest] || interest}</span>`;
+                                        }).join('')}
+                                    </div>
+                                </div>
+                            ` : ''}
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+        
+        // Profile data is now loaded from database only via checkProfileSetup()
+        // No more localStorage profile loading on page load
+
+        // Magic Wand Inspirational Quotes
+        const inspirationalQuotes = [
+            {
+                text: "Justice delayed is justice denied.",
+                author: "William E. Gladstone"
+            },
+            {
+                text: "The law is reason, free from passion.",
+                author: "Aristotle"
+            },
+            {
+                text: "Injustice anywhere is a threat to justice everywhere.",
+                author: "Martin Luther King Jr."
+            },
+            {
+                text: "Laws are like sausages, it is better not to see them being made.",
+                author: "Otto von Bismarck"
+            },
+            {
+                text: "The good lawyer is not the man who has an eye to every side and angle of contingency, but who throws himself on your part so heartily, that he can get you out of a scrape.",
+                author: "Ralph Waldo Emerson"
+            },
+            {
+                text: "Where law ends, tyranny begins.",
+                author: "William Pitt"
+            },
+            {
+                text: "The law is not an end in itself, nor does it provide ends. It is preeminently a means to serve what we think is right.",
+                author: "William J. Brennan Jr."
+            },
+            {
+                text: "Equal justice under law.",
+                author: "Motto of the Supreme Court"
+            },
+            {
+                text: "The first duty of society is justice.",
+                author: "Alexander Hamilton"
+            },
+            {
+                text: "Justice is truth in action.",
+                author: "Benjamin Disraeli"
+            }
+        ];
+
+        function showInspirationalQuote() {
+            const randomQuote = inspirationalQuotes[Math.floor(Math.random() * inspirationalQuotes.length)];
+            document.getElementById('quoteText').textContent = `"${randomQuote.text}"`;
+            document.getElementById('quoteAuthor').textContent = `- ${randomQuote.author}`;
+            document.getElementById('quotePopup').classList.add('active');
+            addCommandLog('Inspirational quote displayed');
+        }
+
+        function closeQuotePopup() {
+            document.getElementById('quotePopup').classList.remove('active');
+        }
+
+        // Enhanced openChatModal for backward compatibility
+        function openChatModal() {
+            openChatInterface();
+        }
+
+        // Expert Directory Functions
+        let allExperts = [];
+        
+        async function loadExperts() {
+            try {
+                console.log('👥 Loading experts from database...');
+                
+                const token = localStorage.getItem('token');
+                const response = await fetch('/api/experts', {
+                    headers: {
+                        'Authorization': 'Bearer ' + token
+                    }
+                });
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    allExperts = data.experts || [];
+                    console.log(`✅ Loaded ${allExperts.length} experts`);
+                    displayExperts(allExperts);
+                    loadSpecializations();
+                } else {
+                    throw new Error('Failed to load experts');
+                }
+                
+            } catch (error) {
+                console.error('❌ Error loading experts:', error);
+                document.getElementById('expertsGrid').innerHTML = `
+                    <div style="text-align: center; color: #ff6b6b; padding: 40px;">
+                        <i class="fas fa-exclamation-triangle" style="font-size: 24px; margin-bottom: 15px;"></i>
+                        <p>Unable to load experts. Please try again later.</p>
+                    </div>
+                `;
+            }
+        }
+        
+        function displayExperts(experts) {
+            const grid = document.getElementById('expertsGrid');
+            
+            if (experts.length === 0) {
+                grid.innerHTML = `
+                    <div style="text-align: center; color: #666; padding: 40px;">
+                        <i class="fas fa-user-slash" style="font-size: 24px; margin-bottom: 15px;"></i>
+                        <p>No experts found matching your criteria.</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            grid.innerHTML = experts.map(expert => `
+                <div class="expert-card" style="background: rgba(255,255,255,0.95); border-radius: 12px; padding: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); transition: transform 0.3s ease;">
+                    <div style="display: flex; align-items: center; margin-bottom: 15px;">
+                        <div style="font-size: 40px; margin-right: 15px;">${expert.avatar}</div>
+                        <div style="flex: 1;">
+                            <h4 style="margin: 0; color: #333;">${expert.name}</h4>
+                            <p style="margin: 5px 0; color: #666; font-size: 14px;">${expert.specialization}</p>
+                            <div style="display: flex; align-items: center; gap: 10px;">
+                                <span style="background: ${expert.isOnline ? '#10b981' : '#6b7280'}; color: white; padding: 2px 8px; border-radius: 12px; font-size: 12px;">
+                                    ${expert.isOnline ? 'Online' : 'Offline'}
+                                </span>
+                                <span style="color: #666; font-size: 12px;">${expert.experience}</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div style="margin-bottom: 15px;">
+                        <p style="margin: 0; color: #555; font-size: 14px; line-height: 1.4;">${expert.bio ? expert.bio.substring(0, 100) + '...' : 'Experienced legal professional ready to help.'}</p>
+                    </div>
+                    
+                    <div style="margin-bottom: 15px; font-size: 12px; color: #666;">
+                        <p style="margin: 2px 0;"><i class="fas fa-map-marker-alt"></i> ${expert.location}</p>
+                        <p style="margin: 2px 0;"><i class="fas fa-language"></i> ${expert.languages}</p>
+                        <p style="margin: 2px 0;"><i class="fas fa-clock"></i> Available: ${expert.availability}</p>
+                    </div>
+                    
+                    <div style="display: flex; gap: 10px;">
+                        <button onclick="viewExpertProfile('${expert.id}')" style="flex: 1; padding: 8px; background: #e5e7eb; border: none; border-radius: 6px; cursor: pointer; font-size: 12px;">
+                            <i class="fas fa-eye"></i> View Profile
+                        </button>
+                        <button onclick="requestChat('${expert.id}')" style="flex: 1; padding: 8px; background: linear-gradient(135deg, #667eea, #764ba2); color: white; border: none; border-radius: 6px; cursor: pointer; font-size: 12px;" ${!expert.isOnline ? 'disabled style="opacity: 0.5;"' : ''}>
+                            <i class="fas fa-comments"></i> Request Chat
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+        }
+        
+        async function loadSpecializations() {
+            try {
+                const response = await fetch('/api/specializations');
+                if (response.ok) {
+                    const data = await response.json();
+                    const select = document.getElementById('specializationFilter');
+                    select.innerHTML = '<option value="">All Specializations</option>' + 
+                        data.specializations.map(spec => `<option value="${spec.value}">${spec.label}</option>`).join('');
+                }
+            } catch (error) {
+                console.error('Error loading specializations:', error);
+            }
+        }
+        
+        function searchExperts() {
+            const searchTerm = document.getElementById('expertSearch').value.toLowerCase();
+            const specialization = document.getElementById('specializationFilter').value;
+            const experience = document.getElementById('experienceFilter').value;
+            
+            let filteredExperts = allExperts;
+            
+            if (searchTerm) {
+                filteredExperts = filteredExperts.filter(expert => 
+                    expert.name.toLowerCase().includes(searchTerm) ||
+                    expert.specialization.toLowerCase().includes(searchTerm)
+                );
+            }
+            
+            if (specialization) {
+                filteredExperts = filteredExperts.filter(expert => expert.specialization === specialization);
+            }
+            
+            if (experience) {
+                filteredExperts = filteredExperts.filter(expert => expert.experience === experience);
+            }
+            
+            displayExperts(filteredExperts);
+        }
+        
+        async function viewExpertProfile(expertId) {
+            try {
+                const token = localStorage.getItem('token');
+                const response = await fetch(`/api/experts/${expertId}`, {
+                    headers: {
+                        'Authorization': 'Bearer ' + token
+                    }
+                });
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    const expert = data.expert;
+                    showCustomAlert('Expert Profile', `
+                        <div style="text-align: left;">
+                            <div style="display: flex; align-items: center; margin-bottom: 20px;">
+                                <div style="font-size: 60px; margin-right: 20px;">${expert.avatar}</div>
+                                <div>
+                                    <h3 style="margin: 0;">${expert.name}</h3>
+                                    <p style="margin: 5px 0; color: #666;">${expert.specialization}</p>
+                                    <p style="margin: 5px 0; color: #666;">${expert.experience} experience</p>
+                                </div>
+                            </div>
+                            
+                            <h4>Professional Details</h4>
+                            <p><strong>Bar Council ID:</strong> ${expert.barCouncilId}</p>
+                            <p><strong>License Year:</strong> ${expert.licenseYear}</p>
+                            <p><strong>Firm:</strong> ${expert.firmName || 'Independent Practice'}</p>
+                            <p><strong>Education:</strong> ${expert.education}</p>
+                            <p><strong>Location:</strong> ${expert.location}</p>
+                            <p><strong>Languages:</strong> ${expert.languages}</p>
+                            <p><strong>Availability:</strong> ${expert.availability}</p>
+                            
+                            <h4>About</h4>
+                            <p>${expert.bio}</p>
+                        </div>
+                    `, 'info');
+                } else {
+                    throw new Error('Failed to load expert profile');
+                }
+            } catch (error) {
+                console.error('Error loading expert profile:', error);
+                showCustomAlert('Error', 'Failed to load expert profile', 'error');
+            }
+        }
+        
+        function requestChat(expertId) {
+            // For now, show a placeholder message
+            showCustomAlert('Chat Request', `
+                Chat request functionality will be implemented next!
+                
+                This will:
+                1. Send a chat request to the expert
+                2. Expert will receive a notification
+                3. Once accepted, you can start chatting
+                4. Real-time messaging with security features
+            `, 'info');
+        }
+        
+        // Load experts when experts section is opened
+        document.addEventListener('DOMContentLoaded', function() {
+            const navLinks = document.querySelectorAll('.nav-link');
+            navLinks.forEach(link => {
+                link.addEventListener('click', function() {
+                    const section = this.getAttribute('data-section');
+                    if (section === 'experts') {
+                        loadExperts();
+                    }
+                });
+            });
+        });
+
+    </script>
+</body>
+</html>

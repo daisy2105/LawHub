@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Admin Test</title>
+</head>
+<body>
+    <h1>Admin Authentication Test</h1>
+    <button onclick="testLogin()">Test Admin Login</button>
+    <button onclick="testVerify()">Test Admin Verify</button>
+    <button onclick="goToAdmin()">Go to Admin Dashboard</button>
+    <div id="result"></div>
+
+    <script>
+        function testLogin() {
+            // Set admin credentials like the login page does
+            localStorage.setItem('admin_token', `admin_${Date.now()}_${Math.random().toString(36).substring(2)}`);
+            localStorage.setItem('admin_login_time', new Date().toISOString());
+            document.getElementById('result').innerHTML = `
+                <p>Admin token set: ${localStorage.getItem('admin_token')}</p>
+                <p>Login time: ${localStorage.getItem('admin_login_time')}</p>
+            `;
+        }
+
+        async function testVerify() {
+            const adminToken = localStorage.getItem('admin_token');
+            if (!adminToken) {
+                document.getElementById('result').innerHTML = '<p>No admin token found. Click "Test Admin Login" first.</p>';
+                return;
+            }
+
+            try {
+                const response = await fetch('/api/admin/verify', {
+                    headers: {
+                        'AdminToken': adminToken
+                    }
+                });
+
+                const result = await response.json();
+                document.getElementById('result').innerHTML = `
+                    <p>Response status: ${response.status}</p>
+                    <p>Response: ${JSON.stringify(result, null, 2)}</p>
+                `;
+            } catch (error) {
+                document.getElementById('result').innerHTML = `<p>Error: ${error.message}</p>`;
+            }
+        }
+
+        function goToAdmin() {
+            window.location.href = 'admin-dashboard.html';
+        }
+    </script>
+</body>
+</html>

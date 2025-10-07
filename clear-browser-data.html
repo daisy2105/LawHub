@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Clear LawHub Browser Data</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 600px;
+            margin: 50px auto;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            text-align: center;
+        }
+        .container {
+            background: rgba(255,255,255,0.1);
+            padding: 30px;
+            border-radius: 15px;
+            backdrop-filter: blur(10px);
+        }
+        button {
+            background: #ff4444;
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 8px;
+            font-size: 16px;
+            cursor: pointer;
+            margin: 10px;
+            transition: all 0.3s ease;
+        }
+        button:hover {
+            background: #cc0000;
+            transform: translateY(-2px);
+        }
+        .success {
+            background: #00ff00;
+            color: #000;
+            padding: 10px;
+            border-radius: 5px;
+            margin: 20px 0;
+            display: none;
+        }
+        .info {
+            background: rgba(255,255,255,0.2);
+            padding: 15px;
+            border-radius: 8px;
+            margin: 20px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🧹 Clear LawHub Browser Data</h1>
+        <p>Use this tool to completely clear all LawHub data stored in your browser's localStorage.</p>
+        
+        <div class="info">
+            <h3>⚠️ Before You Start:</h3>
+            <p>1. Make sure your database is running<br>
+            2. This will force the app to use database-only mode<br>
+            3. Old profile data stored in browser will be removed</p>
+        </div>
+        
+        <button onclick="clearAllData()">🗑️ Clear All LawHub Data</button>
+        <button onclick="checkCurrentData()">📊 Check Current Data</button>
+        <button onclick="window.location.href='simple-index.html'">🏠 Go to LawHub</button>
+        
+        <div id="result" class="success"></div>
+        <div id="dataDisplay"></div>
+    </div>
+
+    <script>
+        function clearAllData() {
+            // Clear all LawHub related localStorage items
+            const keysToRemove = [
+                'lawhub_token',
+                'lawhub_user', 
+                'lawhub_profile_data',
+                'lawhub_profile_complete'
+            ];
+            
+            let clearedCount = 0;
+            keysToRemove.forEach(key => {
+                if (localStorage.getItem(key)) {
+                    localStorage.removeItem(key);
+                    clearedCount++;
+                }
+            });
+            
+            // Clear any other lawhub keys
+            const allKeys = Object.keys(localStorage);
+            allKeys.forEach(key => {
+                if (key.toLowerCase().includes('lawhub')) {
+                    localStorage.removeItem(key);
+                    clearedCount++;
+                }
+            });
+            
+            const result = document.getElementById('result');
+            result.style.display = 'block';
+            result.innerHTML = `✅ SUCCESS! Cleared ${clearedCount} items from browser storage.<br>
+                               Now your app will use database-only mode!`;
+            
+            // Update display
+            setTimeout(checkCurrentData, 500);
+        }
+        
+        function checkCurrentData() {
+            const dataDisplay = document.getElementById('dataDisplay');
+            const allKeys = Object.keys(localStorage);
+            const lawhubKeys = allKeys.filter(key => key.toLowerCase().includes('lawhub'));
+            
+            if (lawhubKeys.length === 0) {
+                dataDisplay.innerHTML = `
+                    <div style="background: rgba(0,255,0,0.2); padding: 15px; border-radius: 8px; margin: 20px 0;">
+                        <h3>✅ Clean State!</h3>
+                        <p>No LawHub data found in browser storage.<br>
+                        Your app is now in database-only mode.</p>
+                    </div>
+                `;
+            } else {
+                dataDisplay.innerHTML = `
+                    <div style="background: rgba(255,255,0,0.2); padding: 15px; border-radius: 8px; margin: 20px 0;">
+                        <h3>📋 Current LawHub Data in Browser:</h3>
+                        <ul style="text-align: left;">
+                            ${lawhubKeys.map(key => {
+                                const value = localStorage.getItem(key);
+                                const preview = value && value.length > 50 ? value.substring(0, 50) + '...' : value;
+                                return `<li><strong>${key}:</strong> ${preview}</li>`;
+                            }).join('')}
+                        </ul>
+                    </div>
+                `;
+            }
+        }
+        
+        // Check data on page load
+        window.onload = checkCurrentData;
+    </script>
+</body>
+</html>

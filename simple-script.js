@@ -38,9 +38,8 @@ function showPrevCard() {
 
 setInterval(showNextCard, 6000);
 
-// Dialog Box Functions
 function showDialog(icon, title, message, buttonText = 'OK', onClose = null) {
-    // Create dialog HTML if it doesn't exist
+ 
     let dialogOverlay = document.getElementById('dialog-overlay');
     if (!dialogOverlay) {
         dialogOverlay = document.createElement('div');
@@ -56,17 +55,14 @@ function showDialog(icon, title, message, buttonText = 'OK', onClose = null) {
         `;
         document.body.appendChild(dialogOverlay);
     } else {
-        // Update existing dialog
         document.getElementById('dialog-icon').textContent = icon;
         document.getElementById('dialog-title').textContent = title;
         document.getElementById('dialog-message').textContent = message;
         document.getElementById('dialog-button').textContent = buttonText;
     }
 
-    // Store the onClose callback
     dialogOverlay.onCloseCallback = onClose;
 
-    // Show dialog
     setTimeout(() => {
         dialogOverlay.classList.add('show');
     }, 10);
@@ -84,7 +80,6 @@ function closeDialog() {
     if (dialogOverlay) {
         dialogOverlay.classList.remove('show');
         
-        // Execute callback if provided
         if (dialogOverlay.onCloseCallback) {
             setTimeout(() => {
                 dialogOverlay.onCloseCallback();
@@ -94,7 +89,6 @@ function closeDialog() {
     }
 }
 
-// Success Dialog Functions
 function showSuccessDialog(message, onClose = null) {
     showDialog('🎉', 'Success!', message, 'Continue', onClose);
 }

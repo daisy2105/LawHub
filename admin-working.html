@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Simple Admin Dashboard</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; background: #f0f0f0; }
+        .card { background: white; padding: 20px; margin: 10px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        .stat { display: inline-block; margin: 20px; text-align: center; }
+        .number { font-size: 48px; font-weight: bold; color: #007bff; }
+        .label { font-size: 16px; color: #666; }
+        button { background: #007bff; color: white; padding: 10px 20px; border: none; border-radius: 4px; cursor: pointer; }
+        .error { color: red; }
+        .success { color: green; }
+    </style>
+</head>
+<body>
+    <h1>📊 Simple Admin Dashboard</h1>
+    
+    <div class="card">
+        <h2>Database Statistics</h2>
+        <button onclick="fetchData()">🔄 Refresh Data</button>
+        <div id="status">Click refresh to load data...</div>
+        
+        <div id="stats" style="display: none;">
+            <div class="stat">
+                <div class="number" id="totalUsers">0</div>
+                <div class="label">Total Users</div>
+            </div>
+            <div class="stat">
+                <div class="number" id="totalExperts">0</div>
+                <div class="label">Expert Applications</div>
+            </div>
+            <div class="stat">
+                <div class="number" id="pendingExperts">0</div>
+                <div class="label">Pending</div>
+            </div>
+            <div class="stat">
+                <div class="number" id="approvedExperts">0</div>
+                <div class="label">Approved</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card">
+        <h2>Raw Data</h2>
+        <pre id="rawData">No data loaded yet...</pre>
+    </div>
+
+    <script>
+        async function fetchData() {
+            const statusDiv = document.getElementById('status');
+            const statsDiv = document.getElementById('stats');
+            const rawDataDiv = document.getElementById('rawData');
+            
+            statusDiv.innerHTML = '<span class="success">⏳ Loading data...</span>';
+            
+            try {
+                console.log('🔄 Fetching from /api/admin/stats');
+                
+                const response = await fetch('/api/admin/stats');
+                console.log('📡 Response status:', response.status);
+                console.log('📡 Response headers:', response.headers);
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                }
+                
+                const data = await response.json();
+                console.log('📊 Data received:', data);
+                
+                // Show raw data
+                rawDataDiv.textContent = JSON.stringify(data, null, 2);
+                
+                if (data.success) {
+                    // Update stats
+                    document.getElementById('totalUsers').textContent = data.totalUsers || 0;
+                    document.getElementById('totalExperts').textContent = data.totalExperts || 0;
+                    document.getElementById('pendingExperts').textContent = data.pendingExperts || 0;
+                    document.getElementById('approvedExperts').textContent = data.approvedExperts || 0;
+                    
+                    statsDiv.style.display = 'block';
+                    statusDiv.innerHTML = '<span class="success">✅ Data loaded successfully!</span>';
+                } else {
+                    statusDiv.innerHTML = '<span class="error">❌ API returned success=false</span>';
+                }
+                
+            } catch (error) {
+                console.error('❌ Error:', error);
+                statusDiv.innerHTML = `<span class="error">❌ Error: ${error.message}</span>`;
+                rawDataDiv.textContent = `Error: ${error.message}`;
+            }
+        }
+        
+        // Auto-load data when page opens
+        window.onload = function() {
+            fetchData();
+        };
+    </script>
+</body>
+</html>

@@ -1,292 +1,849 @@
 <!DOCTYPE html>
-<html>
-  <head>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>LAW HUB - Sign Up</title>
-    <!-- Firebase SDK -->
-    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
-    <link rel="stylesheet" href="simple-style.css">
-    <script src="simple-script.js"></script>
     <style>
-      body {
-        font-family: Arial, sans-serif;
-        background: grey;
-        background-image: url("https://images.unsplash.com/photo-1521587760476-6c12a4b040da?q=80&w=2070&auto=format&fit=crop");
-        height: 100vh;
-        background-size: cover;
-        background-position: center;
-        background-attachment: fixed;
-        margin: 0;
-        padding: 0;
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-        align-items: center;
-        opacity: 0;
-        animation: fadeIn 0.8s ease-in-out forwards;
-      }
-      @keyframes fadeIn {
-        to {
-          opacity: 1;
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, 'Roboto', sans-serif;
         }
-      }
-      .container {
-        max-width: 400px;
-        width: 90%;
-        background: rgba(255, 255, 255, 0.25);
-        backdrop-filter: blur(8px);
-        -webkit-backdrop-filter: blur(8px);
-        border: 1px solid rgba(255, 255, 255, 0.4);
-        padding: 2rem;
-        border-radius: 20px;
-        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
-        color: white;
-        transform: translateY(30px);
-        animation: slideUp 0.8s ease-out 0.2s forwards;
-      }
-      @keyframes slideUp {
-        to {
-          transform: translateY(0);
+
+        body {
+            background: #000;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
         }
-      }
-      h1 {
-        text-align: center;
-        color: #fff;
-        font-size: 2rem;
-        margin-bottom: 1.5rem;
-        text-shadow: 2px 2px 6px rgba(0,0,0,0.8);
-      }
-      form {
-        margin-top: 1rem;
-      }
-      input {
-        width: 100%;
-        padding: 12px;
-        margin: 10px 0;
-        border: 1px solid rgba(255, 255, 255, 0.4);
-        border-radius: 10px;
-        font-size: 15px;
-        background: rgba(255, 255, 255, 0.3);
-        color: #333;
-        font-weight: 500;
-        box-sizing: border-box;
-      }
-      input::placeholder {
-        color: rgba(0, 0, 0, 0.7);
-        font-weight: 500;
-      }
-      input:focus {
-        outline: none;
-        border-color: rgba(255, 255, 255, 0.6);
-        background: rgba(255, 255, 255, 0.4);
-        color: #222;
-      }
-      button {
-        width: 100%;
-        padding: 12px;
-        background: linear-gradient(45deg, #ff6b6b, #feca57);
-        color: #fff;
-        border: none;
-        border-radius: 10px;
-        font-size: 16px;
-        font-weight: 600;
-        cursor: pointer;
-        margin-top: 15px;
-        transition: all 0.3s ease;
-        box-shadow: 0 4px 15px rgba(255, 107, 107, 0.4);
-      }
-      button:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 6px 20px rgba(255, 107, 107, 0.6);
-      }
-      .footer {
-        position: fixed;
-        bottom: 0;
-        left: 0;
-        right: 0;
-        text-align: center;
-        padding: 1rem;
-        background: rgba(0, 0, 0, 0.5);
-        backdrop-filter: blur(10px);
-        color: #fff;
-        border-top: 1px solid rgba(255, 255, 255, 0.1);
-      }
-      .error-message {
-        color: #ff6b6b;
-        font-size: 14px;
-        margin-bottom: 10px;
-        text-align: center;
-      }
-      .success-message {
-        color: #4ecdc4;
-        font-size: 15px;
-        margin-bottom: 10px;
-        text-align: center;
-      }
-      a {
-        color: #feca57;
-        text-decoration: none;
-        transition: all 0.3s ease;
-        padding: 5px 10px;
-        border-radius: 5px;
-        display: inline-block;
-      }
-      a:hover {
-        color: #ff6b6b;
-        background: rgba(255, 255, 255, 0.1);
-        transform: translateY(-2px);
-      }
-      .t{
-        font-size: 25px;
-        color:white;
-        font-style: italic;
-      }
-      .back-button {
-        position: fixed;
-        top: 20px;
-        left: 20px;
-        background: rgba(0, 0, 0, 0.7);
-        backdrop-filter: blur(10px);
-        border: 1px solid rgba(255, 255, 255, 0.3);
-        border-radius: 50%;
-        width: 50px;
-        height: 50px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        cursor: pointer;
-        transition: all 0.3s ease;
-        color: white;
-        font-size: 20px;
-        font-weight: bold;
-        z-index: 1000;
-      }
-      .back-button:hover {
-        background: rgba(0, 0, 0, 0.9);
-        transform: translateY(-2px);
-        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
-      }
+
+        .auth-wrapper {
+            position: relative;
+            width: 100vw;
+            height: 100vh;
+            display: flex;
+            overflow: hidden;
+        }
+
+        /* Left Panel - Law Image with Quote */
+        .visual-panel {
+            position: relative;
+            flex: 1;
+            background: linear-gradient(135deg, rgba(31, 41, 55, 0.85), rgba(17, 24, 39, 0.9)), 
+                        url('https://images.unsplash.com/photo-1589829545856-d10d557cf95f?q=80&w=2070&auto=format&fit=crop') center/cover no-repeat;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+
+        /* Decorative Elements on Left Panel */
+        .visual-panel::before {
+            content: '';
+            position: absolute;
+            top: -50px;
+            right: -50px;
+            width: 300px;
+            height: 300px;
+            background: rgba(99, 102, 241, 0.1);
+            border-radius: 50%;
+            filter: blur(60px);
+        }
+
+        .visual-panel::after {
+            content: '';
+            position: absolute;
+            bottom: -80px;
+            left: -80px;
+            width: 400px;
+            height: 400px;
+            background: rgba(147, 51, 234, 0.08);
+            border-radius: 50%;
+            filter: blur(70px);
+        }
+
+        .decorative-shapes {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            overflow: hidden;
+        }
+
+        .circle-decoration {
+            position: absolute;
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+        }
+
+        .circle-1 {
+            width: 150px;
+            height: 150px;
+            top: 10%;
+            right: 15%;
+        }
+
+        .circle-2 {
+            width: 80px;
+            height: 80px;
+            top: 25%;
+            right: 8%;
+        }
+
+        .plus-decoration {
+            position: absolute;
+            color: rgba(255, 255, 255, 0.15);
+            font-size: 2rem;
+            font-weight: 300;
+        }
+
+        .plus-1 {
+            top: 15%;
+            left: 10%;
+        }
+
+        .plus-2 {
+            bottom: 20%;
+            right: 12%;
+        }
+
+        .dots-decoration {
+            position: absolute;
+            display: flex;
+            gap: 8px;
+        }
+
+        .dots-1 {
+            top: 35%;
+            right: 10%;
+            flex-direction: column;
+        }
+
+        .dot {
+            width: 4px;
+            height: 4px;
+            background: rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+        }
+
+        .quote-container {
+            position: relative;
+            max-width: 600px;
+            padding: 60px;
+            text-align: center;
+            z-index: 2;
+        }
+
+        .brand-logo {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            margin-bottom: 40px;
+        }
+
+        .logo-icon {
+            font-size: 2.5rem;
+            filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.3));
+        }
+
+        .logo-text {
+            font-size: 2rem;
+            font-weight: 600;
+            color: #f9fafb;
+            letter-spacing: 1px;
+            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
+        }
+
+        .welcome-message {
+            font-size: 2.5rem;
+            font-weight: 600;
+            color: #f9fafb;
+            margin-bottom: 20px;
+            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
+            letter-spacing: 0.5px;
+        }
+
+        .welcome-subtitle {
+            font-size: 1.1rem;
+            font-weight: 300;
+            color: #d1d5db;
+            margin-bottom: 40px;
+            line-height: 1.6;
+            text-shadow: 0 1px 5px rgba(0, 0, 0, 0.4);
+        }
+
+        .quote-text {
+            font-size: 1.35rem;
+            font-weight: 300;
+            color: #e5e7eb;
+            line-height: 1.7;
+            margin-bottom: 25px;
+            font-style: italic;
+            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
+            letter-spacing: 0.3px;
+        }
+
+        .quote-author {
+            font-size: 1.1rem;
+            font-weight: 400;
+            color: #d1d5db;
+            letter-spacing: 1px;
+            text-shadow: 0 1px 5px rgba(0, 0, 0, 0.4);
+        }
+
+        .quote-divider {
+            width: 80px;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, #f9fafb, transparent);
+            margin: 20px auto;
+        }
+
+        /* Right Panel - Form Area */
+        .form-panel {
+            position: relative;
+            flex: 1;
+            background: linear-gradient(135deg, #e0e7ff 0%, #ddd6fe 30%, #fae8ff 60%, #fce7f3 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            padding: 40px;
+        }
+
+        /* Wavy Pattern Decorations on Right Panel */
+        .wavy-decoration {
+            position: absolute;
+            pointer-events: none;
+        }
+
+        .wavy-1 {
+            top: 10%;
+            left: 5%;
+            width: 200px;
+            height: 200px;
+            background: rgba(139, 92, 246, 0.08);
+            border-radius: 50%;
+            filter: blur(40px);
+        }
+
+        .wavy-2 {
+            bottom: 15%;
+            right: 8%;
+            width: 250px;
+            height: 250px;
+            background: rgba(236, 72, 153, 0.06);
+            border-radius: 50%;
+            filter: blur(50px);
+        }
+
+        .wave-line {
+            position: absolute;
+            width: 100%;
+            opacity: 0.1;
+        }
+
+        .wave-line-1 {
+            top: 20%;
+            left: -10%;
+        }
+
+        .wave-line-2 {
+            bottom: 25%;
+            right: -10%;
+        }
+
+        .geometric-shape {
+            position: absolute;
+            border: 2px solid rgba(139, 92, 246, 0.15);
+        }
+
+        .square-1 {
+            width: 60px;
+            height: 60px;
+            top: 12%;
+            right: 15%;
+            transform: rotate(45deg);
+        }
+
+        .circle-right-1 {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            bottom: 18%;
+            left: 10%;
+            border-color: rgba(236, 72, 153, 0.2);
+        }
+
+        .forms-container {
+            position: relative;
+            width: 700px;
+            min-height: 580px;
+            background: rgba(255, 255, 255, 0.25);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-radius: 24px;
+            border: 1px solid rgba(255, 255, 255, 0.4);
+            box-shadow: 0 8px 32px rgba(31, 38, 135, 0.15),
+                        0 0 0 1px rgba(255, 255, 255, 0.2) inset;
+            overflow: hidden;
+            padding: 50px 80px;
+            z-index: 1;
+            margin: 0 auto;
+        }
+
+        .form-slide {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 30px 0;
+            transition: transform 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+            top: 0;
+            left: 0;
+        }
+
+        .form-slide form {
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        /* Default state for signup page - login hidden, signup visible */
+        .login-form {
+            transform: translateX(-100%);
+            visibility: hidden;
+        }
+
+        .signup-form {
+            transform: translateX(0);
+            visibility: visible;
+        }
+
+        /* When switching to login mode */
+        .form-panel:not(.signup-mode) .login-form {
+            transform: translateX(0);
+            visibility: visible;
+        }
+
+        .form-panel:not(.signup-mode) .signup-form {
+            transform: translateX(100%);
+            visibility: hidden;
+        }
+
+        /* When in signup mode (default for this page) */
+        .form-panel.signup-mode .login-form {
+            transform: translateX(-100%);
+            visibility: hidden;
+        }
+
+        .form-panel.signup-mode .signup-form {
+            transform: translateX(0);
+            visibility: visible;
+        }
+
+        .form-title {
+            font-size: 2.5rem;
+            font-weight: 300;
+            color: #374151;
+            margin-bottom: 35px;
+            letter-spacing: 1px;
+            text-shadow: 0 2px 4px rgba(255, 255, 255, 0.5);
+            text-align: center;
+            width: 100%;
+        }
+
+        .input-group {
+            position: relative;
+            width: 100%;
+            max-width: 520px;
+            margin-bottom: 25px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .name-row {
+            width: 100%;
+            max-width: 520px;
+            margin: 0 auto 25px auto;
+            text-align: left;
+            font-size: 0; /* Remove whitespace between inline-block elements */
+        }
+
+        .name-row .input-group.half {
+            display: inline-block !important;
+            position: relative;
+            width: 48% !important;
+            max-width: none !important;
+            margin: 0 !important;
+            margin-left: auto !important;
+            margin-right: auto !important;
+            vertical-align: top;
+            font-size: 1rem; /* Reset font-size */
+        }
+
+        .name-row .input-group.half:first-child {
+            margin-right: 4% !important;
+        }
+
+        .input-field {
+            width: 100%;
+            padding: 14px 40px 14px 12px;
+            background: rgba(255, 255, 255, 0.4);
+            border: none;
+            border-bottom: 2px solid rgba(55, 65, 81, 0.4);
+            color: #1f2937;
+            font-size: 1.05rem;
+            font-weight: 400;
+            transition: all 0.3s ease;
+            outline: none;
+            border-radius: 8px 8px 0 0;
+        }
+
+        .input-field::placeholder {
+            color: rgba(55, 65, 81, 0.6);
+            font-weight: 300;
+        }
+
+        .input-field:focus {
+            border-bottom-color: #4f46e5;
+            background: rgba(255, 255, 255, 0.6);
+            box-shadow: 0 4px 12px rgba(79, 70, 229, 0.15);
+        }
+
+        .input-icon {
+            position: absolute;
+            right: 8px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: rgba(31, 41, 55, 0.4);
+            font-size: 1.1rem;
+        }
+
+        .auth-btn {
+            width: 200px;
+            padding: 16px 36px;
+            background: linear-gradient(135deg, #4f46e5 0%, #6366f1 100%);
+            border: none;
+            border-radius: 32px;
+            color: white;
+            font-size: 1.05rem;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 35px;
+            transition: all 0.3s ease;
+            box-shadow: 0 8px 24px rgba(79, 70, 229, 0.35),
+                        0 0 0 1px rgba(255, 255, 255, 0.1) inset;
+            letter-spacing: 0.5px;
+        }
+
+        .auth-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 32px rgba(79, 70, 229, 0.45),
+                        0 0 0 1px rgba(255, 255, 255, 0.2) inset;
+            background: linear-gradient(135deg, #4338ca 0%, #4f46e5 100%);
+        }
+
+        .auth-btn:active {
+            transform: translateY(0);
+        }
+
+        .form-links {
+            display: flex;
+            justify-content: center;
+            width: 100%;
+            margin-top: 30px;
+            font-size: 0.95rem;
+        }
+
+        .form-link {
+            color: rgba(55, 65, 81, 0.75);
+            text-decoration: none;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-weight: 500;
+            position: relative;
+        }
+
+        .form-link:hover {
+            color: #4f46e5;
+        }
+
+        .form-link::after {
+            content: '';
+            position: absolute;
+            bottom: -2px;
+            left: 0;
+            width: 0;
+            height: 1px;
+            background: #4f46e5;
+            transition: width 0.3s ease;
+        }
+
+        .form-link:hover::after {
+            width: 100%;
+        }
+
+        .message {
+            padding: 10px 16px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            text-align: center;
+            font-weight: 400;
+            font-size: 0.875rem;
+            width: 100%;
+        }
+
+        .error-message {
+            background: rgba(239, 68, 68, 0.1);
+            border: 1px solid rgba(239, 68, 68, 0.3);
+            color: #dc2626;
+        }
+
+        .success-message {
+            background: rgba(34, 197, 94, 0.1);
+            border: 1px solid rgba(34, 197, 94, 0.3);
+            color: #16a34a;
+        }
+
+        .back-button {
+            position: fixed;
+            top: 30px;
+            left: 30px;
+            width: 50px;
+            height: 50px;
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            color: white;
+            font-size: 24px;
+            font-weight: 300;
+            z-index: 1000;
+            text-decoration: none;
+        }
+
+        .back-button:hover {
+            background: rgba(255, 255, 255, 0.25);
+            transform: translateY(-2px);
+        }
+
+        /* Loading state */
+        .auth-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        /* Responsive */
+        @media (max-width: 1024px) {
+            .visual-panel {
+                display: none;
+            }
+            
+            .form-panel {
+                flex: 1;
+                width: 100%;
+            }
+        }
+
+        @media (max-width: 640px) {
+            .form-panel {
+                padding: 20px;
+            }
+            
+            .forms-container {
+                width: 100%;
+                padding: 40px 30px;
+                border-radius: 20px;
+            }
+            
+            .form-slide {
+                padding: 30px 0;
+            }
+            
+            .form-title {
+                font-size: 2rem;
+                margin-bottom: 40px;
+            }
+            
+            .input-group.half {
+                width: 100%;
+                margin-right: 0;
+                margin-bottom: 25px;
+            }
+            
+            .auth-btn {
+                width: 100%;
+            }
+        }
     </style>
+</head>
+<body>
+    <a href="simple-index.html" class="back-button" title="Back to Home">←</a>
+    
+    <div class="auth-wrapper">
+        <!-- Left Panel - Law Image with Quote -->
+        <div class="visual-panel">
+            <div class="decorative-shapes">
+                <div class="circle-decoration circle-1"></div>
+                <div class="circle-decoration circle-2"></div>
+                <div class="plus-decoration plus-1">+</div>
+                <div class="plus-decoration plus-2">+</div>
+                <div class="dots-decoration dots-1">
+                    <div class="dot"></div>
+                    <div class="dot"></div>
+                    <div class="dot"></div>
+                    <div class="dot"></div>
+                    <div class="dot"></div>
+                </div>
+            </div>
+            <div class="quote-container">
+                <div class="brand-logo">
+                    <div class="logo-icon">⚖️</div>
+                    <div class="logo-text">LawHub</div>
+                </div>
+                <h2 class="welcome-message">Join LawHub!</h2>
+                <p class="welcome-subtitle">Create your account and start your journey to mastering constitutional law and justice</p>
+                <p class="quote-text">"The law is reason, free from passion. Justice is the constant and perpetual will to render to every person their due."</p>
+                <div class="quote-divider"></div>
+                <p class="quote-author">— Aristotle</p>
+            </div>
+        </div>
+
+        <!-- Right Panel - Form Area -->
+        <div class="form-panel signup-mode" id="formPanel">
+            <div class="wavy-decoration wavy-1"></div>
+            <div class="wavy-decoration wavy-2"></div>
+            <div class="geometric-shape square-1"></div>
+            <div class="geometric-shape circle-right-1"></div>
+            <div class="forms-container">
+                <!-- Login Form -->
+                <div class="form-slide login-form">
+                    <h1 class="form-title">Login</h1>
+                    
+                    <form id="loginForm">
+                        <div id="loginError" class="message error-message" style="display: none;"></div>
+                        <div id="loginSuccess" class="message success-message" style="display: none;"></div>
+                        
+                        <div class="input-group">
+                            <input type="email" class="input-field" id="loginEmail" placeholder="Email" required>
+                            <span class="input-icon">✉</span>
+                        </div>
+                        
+                        <div class="input-group">
+                            <input type="password" class="input-field" id="loginPassword" placeholder="password" required>
+                            <span class="input-icon">🔒</span>
+                        </div>
+                        
+                        <button type="submit" class="auth-btn" id="loginBtn">Login</button>
+                    </form>
+                    
+                    <div class="form-links">
+                        <a href="javascript:void(0)" class="form-link" onclick="switchToSignup()">Create an account</a>
+                    </div>
+                </div>
+
+                <!-- Signup Form -->
+                <div class="form-slide signup-form">
+                    <h1 class="form-title">Sign Up</h1>
+                    
+                    <form id="signupForm">
+                        <div id="signupError" class="message error-message" style="display: none;"></div>
+                        <div id="signupSuccess" class="message success-message" style="display: none;"></div>
+                        
+                        <div class="name-row">
+                            <div class="input-group half">
+                                <input type="text" class="input-field" id="signupFirstName" placeholder="First Name" required>
+                            </div>
+                            <div class="input-group half">
+                                <input type="text" class="input-field" id="signupLastName" placeholder="Last Name" required>
+                            </div>
+                        </div>
+                        
+                        <div class="input-group">
+                            <input type="email" class="input-field" id="signupEmail" placeholder="Email" required>
+                            <span class="input-icon">✉</span>
+                        </div>
+                        
+                        <div class="input-group">
+                            <input type="password" class="input-field" id="signupPassword" placeholder="password" required>
+                            <span class="input-icon">🔒</span>
+                        </div>
+                        <div class="input-group">
+                            <input type="password" class="input-field" id="signupConfirmPassword" placeholder="Confirm Password" required>
+                            <span class="input-icon">🔒</span>
+                        </div>
+                        
+                        <button type="submit" class="auth-btn" id="signupBtn">Sign Up</button>
+                    </form>
+                    
+                    <div class="form-links">
+                        <a href="javascript:void(0)" class="form-link" onclick="switchToLogin()">Already have an account? Login</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <script>
-      // Firebase Configuration - Your actual config
-      const firebaseConfig = {
-        apiKey: "AIzaSyCRRUDtxro6CzgGLswaxegPGQ9LOpEjqjE",
-        authDomain: "lawhub-10c9e.firebaseapp.com",
-        projectId: "lawhub-10c9e",
-        storageBucket: "lawhub-10c9e.firebasestorage.app",
-        messagingSenderId: "581132854584",
-        appId: "1:581132854584:web:020ecec1d70f8049694dcd",
-        measurementId: "G-T5ERFNRJ37"
-      };
-
-      // Initialize Firebase
-      firebase.initializeApp(firebaseConfig);
-      const auth = firebase.auth();
-
-      // Set language preference (optional)
-      auth.languageCode = 'en'; // or use auth.useDeviceLanguage();
-
-      function validateSignup(event) {
-        event.preventDefault();
-        document.getElementById('signup-error').textContent = '';
-        document.getElementById('signup-success').textContent = '';
-
-        const name = document.getElementById('signup-name').value.trim();
-        const email = document.getElementById('signup-email').value.trim();
-        const password = document.getElementById('signup-password').value;
-        const confirmPassword = document.getElementById('signup-confirm').value;
-        const submitButton = document.getElementById('signup-button');
-
-        const emailPattern = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
-        const passPattern = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{8,}$/;
-
-        if (name === '') {
-          document.getElementById('signup-error').textContent = 'Please enter your name.';
-          return;
-        }
-        if (!emailPattern.test(email)) {
-          document.getElementById('signup-error').textContent = 'Please enter a valid email address.';
-          return;
-        }
-        if (!passPattern.test(password)) {
-          document.getElementById('signup-error').textContent = 'Password must be at least 8 characters and include uppercase, lowercase, number, and special character.';
-          return;
-        }
-        if (password !== confirmPassword) {
-          document.getElementById('signup-error').textContent = 'Passwords do not match.';
-          return;
+        // Start with signup form visible (since this is signup2.html)
+        function switchToSignup() {
+            document.getElementById('formPanel').classList.add('signup-mode');
+            clearMessages();
         }
 
-        // Start loading state
-        setButtonLoading(submitButton, true);
+        function switchToLogin() {
+            document.getElementById('formPanel').classList.remove('signup-mode');
+            clearMessages();
+        }
 
-        // Create Firebase account - simple email/password
-        auth.createUserWithEmailAndPassword(email, password)
-          .then((userCredential) => {
-            const user = userCredential.user;
-            
-            // Update user profile
-            return user.updateProfile({
-              displayName: name
+        function clearMessages() {
+            const messages = document.querySelectorAll('.message');
+            messages.forEach(msg => {
+                msg.style.display = 'none';
+                msg.textContent = '';
             });
-          })
-          .then(() => {
-            // Stop loading state
-            setButtonLoading(submitButton, false);
-            
-            showSignupSuccessDialog(() => {
-              window.location.href = 'login2.html';
-            });
-          })
-          .catch((error) => {
-            // Stop loading state on error
-            setButtonLoading(submitButton, false);
-            
-            console.error('Signup error:', error);
-            document.getElementById('signup-error').textContent = getSignupErrorMessage(error.code);
-          });
-      }
-
-      function getSignupErrorMessage(errorCode) {
-        switch(errorCode) {
-          case 'auth/email-already-in-use':
-            return '⚠️ This email is already registered. Please use the Login page or try a different email.';
-          case 'auth/weak-password':
-            return '🔒 Password is too weak. Please use a stronger password.';
-          case 'auth/invalid-email':
-            return '📧 Invalid email address format.';
-          case 'auth/operation-not-allowed':
-            return '🚫 Email/password accounts are not enabled. Please contact support.';
-          case 'auth/network-request-failed':
-            return '🌐 Network error. Please check your internet connection.';
-          default:
-            return '❌ Signup failed: ' + errorCode + '. Please try again.';
         }
-      }
+
+        function showMessage(elementId, message, isError = true) {
+            const element = document.getElementById(elementId);
+            element.textContent = message;
+            element.style.display = 'block';
+            
+            // Auto hide after 5 seconds
+            setTimeout(() => {
+                element.style.display = 'none';
+            }, 5000);
+        }
+
+        // Login Form Handler
+        document.getElementById('loginForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const email = document.getElementById('loginEmail').value.trim();
+            const password = document.getElementById('loginPassword').value;
+            const button = document.getElementById('loginBtn');
+            
+            clearMessages();
+            
+            if (!email || !password) {
+                showMessage('loginError', '❌ Please enter both email and password');
+                return;
+            }
+            
+            button.disabled = true;
+            button.textContent = 'Logging in...';
+            
+            try {
+                const response = await fetch('http://localhost:3000/api/auth/login', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ email, password })
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    localStorage.setItem('lawhub_token', result.token);
+                    localStorage.setItem('lawhub_user', JSON.stringify(result.user));
+                    
+                    showMessage('loginSuccess', '✅ Login successful! Redirecting...', false);
+                    setTimeout(() => {
+                        window.location.href = 'modern-dashboard.html';
+                    }, 1000);
+                } else {
+                    showMessage('loginError', `❌ ${result.message}`);
+                }
+            } catch (error) {
+                console.error('Login error:', error);
+                showMessage('loginError', '❌ Login failed. Please check your connection.');
+            } finally {
+                button.disabled = false;
+                button.textContent = 'Login';
+            }
+        });
+
+        // Signup Form Handler
+        document.getElementById('signupForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const firstName = document.getElementById('signupFirstName').value.trim();
+            const lastName = document.getElementById('signupLastName').value.trim();
+            const email = document.getElementById('signupEmail').value.trim();
+            const password = document.getElementById('signupPassword').value;
+            const confirmPassword = document.getElementById('signupConfirmPassword').value;
+            const button = document.getElementById('signupBtn');
+            
+            clearMessages();
+            
+            if (!firstName || !lastName || !email || !password || !confirmPassword) {
+                showMessage('signupError', '❌ Please fill in all fields');
+                return;
+            }
+            
+            if (password.length < 6) {
+                showMessage('signupError', '❌ Password must be at least 6 characters');
+                return;
+            }
+            
+            if (password !== confirmPassword) {
+                showMessage('signupError', '❌ Passwords do not match');
+                return;
+            }
+            
+            button.disabled = true;
+            button.textContent = 'Creating Account...';
+            
+            try {
+                const response = await fetch('http://localhost:3000/api/auth/register', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ 
+                        name: `${firstName} ${lastName}`, 
+                        email, 
+                        password 
+                    })
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    showMessage('signupSuccess', '✅ Account created successfully! Switching to login...', false);
+                    setTimeout(() => {
+                        switchToLogin();
+                        document.getElementById('loginEmail').value = email;
+                    }, 1500);
+                } else {
+                    showMessage('signupError', `❌ ${result.message}`);
+                }
+            } catch (error) {
+                console.error('Signup error:', error);
+                showMessage('signupError', '❌ Registration failed. Please check your connection.');
+            } finally {
+                button.disabled = false;
+                button.textContent = 'Sign Up';
+            }
+        });
     </script>
-  </head>
-  <body>
-    <div class="back-button" onclick="window.location.href='simple-index.html'" title="Back to Home">
-      ←
-    </div>
-    <div class="container">
-      <h1 class="t">Join LawHub ⚖️</h1>
-      <form id="signup-form" onsubmit="validateSignup(event)">
-        <div id="signup-error" class="error-message"></div>
-        <div id="signup-success" class="success-message"></div>
-        <input id="signup-name" type="text" placeholder="Name" required>
-        <input id="signup-email" type="text" placeholder="Email" required>
-        <input id="signup-password" type="password" placeholder="Password" required>
-        <input id="signup-confirm" type="password" placeholder="Confirm Password" required>
-        
-        <button type="submit" id="signup-button">Sign Up</button>
-      </form>
-      <div style="text-align:center; margin-top:20px; color: rgba(255, 255, 255, 0.8);">
-        Already have an account? <a href="login2.html">Login</a>
-      </div>
-    </div>
-    <div class="footer">
-      <footer>&copy; LAW HUB! All laws reserved.</footer>
-    </div>
-  </body>
+</body>
 </html>
