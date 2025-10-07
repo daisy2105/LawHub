@@ -1,0 +1,2399 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LawHub - Learning Dashboard</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: url('https://images.unsplash.com/photo-1434030216411-0b793f4b4173?q=80&w=2070&auto=format&fit=crop') center/cover;
+            background-attachment: fixed;
+            min-height: 100vh;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(44, 62, 80, 0.85);
+            z-index: -1;
+        }
+
+        body::after {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, rgba(52, 73, 94, 0.3) 0%, rgba(44, 62, 80, 0.3) 100%);
+            z-index: -2;
+        }
+
+        .app-container {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            width: 280px;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(20px);
+            border-right: 1px solid rgba(255, 255, 255, 0.2);
+            padding: 20px;
+            position: fixed;
+            height: 100vh;
+            overflow-y: auto;
+            z-index: 1000;
+            transition: transform 0.3s ease;
+        }
+
+        .sidebar.mobile-hidden {
+            transform: translateX(-100%);
+        }
+
+        .logo {
+            text-align: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .logo h2 {
+            color: white;
+            font-size: 24px;
+            margin-bottom: 5px;
+        }
+
+        .logo p {
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 12px;
+        }
+
+        .nav-menu {
+            list-style: none;
+        }
+
+        .nav-item {
+            margin-bottom: 10px;
+        }
+
+        .nav-link {
+            display: flex;
+            align-items: center;
+            padding: 12px 15px;
+            color: rgba(255, 255, 255, 0.8);
+            text-decoration: none;
+            border-radius: 10px;
+            transition: all 0.3s ease;
+            font-size: 14px;
+        }
+
+        .nav-link:hover, .nav-link.active {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            transform: translateX(5px);
+        }
+
+        .nav-link i {
+            margin-right: 12px;
+            width: 20px;
+            font-size: 16px;
+        }
+
+        .progress-section {
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .progress-item {
+            margin-bottom: 15px;
+        }
+
+        .progress-label {
+            color: rgba(255, 255, 255, 0.9);
+            font-size: 12px;
+            margin-bottom: 5px;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .progress-bar {
+            height: 6px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 3px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #4CAF50, #45a049);
+            border-radius: 3px;
+            transition: width 0.3s ease;
+        }
+
+        /* Main Content */
+        .main-content {
+            margin-left: 280px;
+            flex: 1;
+            padding: 20px;
+            position: relative;
+        }
+
+        /* Content Sections */
+        .content-section {
+            display: none;
+        }
+
+        .content-section.active {
+            display: block;
+        }
+
+        .top-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(20px);
+            padding: 15px 25px;
+            border-radius: 15px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        /* Search Bar Styles */
+        .search-container {
+            flex: 1;
+            max-width: 400px;
+            min-width: 250px;
+        }
+
+        .search-box {
+            display: flex;
+            align-items: center;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 25px;
+            padding: 8px 15px;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            transition: all 0.3s ease;
+        }
+
+        .search-box:focus-within {
+            background: rgba(255, 255, 255, 0.3);
+            box-shadow: 0 0 20px rgba(255, 255, 255, 0.2);
+        }
+
+        .search-box i {
+            color: rgba(255, 255, 255, 0.7);
+            margin-right: 10px;
+        }
+
+        .search-box input {
+            flex: 1;
+            background: none;
+            border: none;
+            color: white;
+            font-size: 14px;
+            outline: none;
+        }
+
+        .search-box input::placeholder {
+            color: rgba(255, 255, 255, 0.6);
+        }
+
+        .search-btn {
+            background: linear-gradient(135deg, #4CAF50, #45a049);
+            border: none;
+            color: white;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-left: 8px;
+            transition: all 0.3s ease;
+        }
+
+        .search-btn:hover {
+            transform: scale(1.1);
+            box-shadow: 0 4px 15px rgba(76, 175, 80, 0.4);
+        }
+
+        /* WhatsApp Style Chat Button */
+        .whatsapp-chat-btn {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, #25D366, #128C7E);
+            border-radius: 50%;
+            border: none;
+            cursor: pointer;
+            box-shadow: 0 8px 25px rgba(37, 211, 102, 0.3);
+            z-index: 1500;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 24px;
+            transition: all 0.3s ease;
+            animation: pulse 2s infinite;
+        }
+
+        .whatsapp-chat-btn:hover {
+            transform: scale(1.1);
+            box-shadow: 0 12px 35px rgba(37, 211, 102, 0.5);
+        }
+
+        @keyframes pulse {
+            0% { box-shadow: 0 8px 25px rgba(37, 211, 102, 0.3); }
+            50% { box-shadow: 0 8px 25px rgba(37, 211, 102, 0.6); }
+            100% { box-shadow: 0 8px 25px rgba(37, 211, 102, 0.3); }
+        }
+
+        /* WhatsApp Style Chat Box */
+        .chat-container {
+            position: fixed;
+            bottom: 100px;
+            right: 30px;
+            width: 350px;
+            height: 500px;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 15px 50px rgba(0, 0, 0, 0.2);
+            z-index: 1600;
+            display: none;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .chat-container.active {
+            display: flex;
+        }
+
+        .chat-header {
+            background: linear-gradient(135deg, #25D366, #128C7E);
+            color: white;
+            padding: 15px 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .chat-header-info {
+            display: flex;
+            align-items: center;
+        }
+
+        .lawyer-avatar {
+            width: 40px;
+            height: 40px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 12px;
+            font-size: 18px;
+        }
+
+        .lawyer-details h4 {
+            margin: 0;
+            font-size: 16px;
+        }
+
+        .lawyer-details p {
+            margin: 0;
+            font-size: 12px;
+            opacity: 0.8;
+        }
+
+        .chat-close {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 20px;
+            cursor: pointer;
+            padding: 5px;
+        }
+
+        .chat-messages {
+            flex: 1;
+            padding: 15px;
+            overflow-y: auto;
+            background: #f0f0f0;
+        }
+
+        .message {
+            margin-bottom: 15px;
+            display: flex;
+            align-items: flex-end;
+        }
+
+        .message.sent {
+            justify-content: flex-end;
+        }
+
+        .message-bubble {
+            max-width: 80%;
+            padding: 10px 15px;
+            border-radius: 20px;
+            font-size: 14px;
+            line-height: 1.4;
+        }
+
+        .message.received .message-bubble {
+            background: white;
+            color: #333;
+            border-bottom-left-radius: 5px;
+        }
+
+        .message.sent .message-bubble {
+            background: #DCF8C6;
+            color: #333;
+            border-bottom-right-radius: 5px;
+        }
+
+        .message-time {
+            font-size: 11px;
+            opacity: 0.6;
+            margin-top: 5px;
+        }
+
+        .chat-input-container {
+            padding: 15px;
+            background: white;
+            border-top: 1px solid #eee;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .chat-input {
+            flex: 1;
+            padding: 10px 15px;
+            border: 1px solid #ddd;
+            border-radius: 25px;
+            outline: none;
+            font-size: 14px;
+        }
+
+        .send-message-btn {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, #25D366, #128C7E);
+            border: none;
+            border-radius: 50%;
+            color: white;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+        }
+
+        .send-message-btn:hover {
+            transform: scale(1.1);
+        }
+
+        /* Connect Modal */
+        .connect-modal {
+            position: fixed;
+            bottom: 100px;
+            right: 30px;
+            width: 300px;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 15px 50px rgba(0, 0, 0, 0.2);
+            z-index: 1700;
+            display: none;
+            padding: 20px;
+        }
+
+        .connect-modal.active {
+            display: block;
+        }
+
+        .connect-modal h3 {
+            margin: 0 0 15px 0;
+            color: #333;
+            text-align: center;
+        }
+
+        .lawyer-list {
+            margin-bottom: 15px;
+        }
+
+        .lawyer-item {
+            display: flex;
+            align-items: center;
+            padding: 12px;
+            border: 1px solid #eee;
+            border-radius: 10px;
+            margin-bottom: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .lawyer-item:hover {
+            background: #f8f9fa;
+            border-color: #25D366;
+        }
+
+        .lawyer-item-avatar {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, #25D366, #128C7E);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 12px;
+            color: white;
+            font-size: 16px;
+        }
+
+        .lawyer-item-info h4 {
+            margin: 0;
+            font-size: 14px;
+            color: #333;
+        }
+
+        .lawyer-item-info p {
+            margin: 0;
+            font-size: 12px;
+            color: #666;
+        }
+
+        .connect-modal-close {
+            width: 100%;
+            padding: 10px;
+            background: #f8f9fa;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            cursor: pointer;
+            color: #666;
+        }
+
+        .welcome-text h1 {
+            color: white;
+            font-size: 28px;
+            margin-bottom: 5px;
+        }
+
+        .welcome-text p {
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 14px;
+        }
+
+        .top-actions {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .action-btn {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .action-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: translateY(-2px);
+        }
+
+        .chat-btn {
+            background: linear-gradient(135deg, #ff6b6b, #ee5a24);
+        }
+
+        .expert-btn {
+            background: linear-gradient(135deg, #4ecdc4, #44a08d);
+        }
+
+        /* Dashboard Grid */
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 25px;
+            margin-bottom: 30px;
+        }
+
+        .dashboard-card {
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(20px);
+            border-radius: 25px;
+            padding: 30px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            transition: all 0.4s ease;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .dashboard-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #ff6b6b, #4ecdc4, #45b7d1, #96ceb4);
+            border-radius: 25px 25px 0 0;
+        }
+
+        .dashboard-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.2);
+            border-color: rgba(255, 255, 255, 0.4);
+        }
+
+        .card-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 25px;
+        }
+
+        .card-icon {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, #ff6b6b, #ee5a24);
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 20px;
+            color: white;
+            font-size: 24px;
+            box-shadow: 0 8px 25px rgba(238, 90, 36, 0.3);
+        }
+
+        .card-title {
+            color: white;
+            font-size: 22px;
+            font-weight: 700;
+            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+        }
+
+        .card-subtitle {
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 14px;
+            margin-top: 5px;
+        }
+
+        /* Course Cards */
+        .course-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 25px;
+        }
+
+        .course-card {
+            background: rgba(255, 255, 255, 0.12);
+            backdrop-filter: blur(20px);
+            border-radius: 20px;
+            padding: 0;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            transition: all 0.4s ease;
+            cursor: pointer;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+
+        .course-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.2);
+            border-color: rgba(255, 255, 255, 0.4);
+        }
+
+        .course-image {
+            width: 100%;
+            height: 180px;
+            background-size: cover;
+            background-position: center;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 32px;
+            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
+        }
+
+        .course-image::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(101, 67, 33, 0.4);
+        }
+
+        .course-image i {
+            position: relative;
+            z-index: 2;
+        }
+
+        .course-content {
+            padding: 25px;
+        }
+
+        .course-title {
+            color: white;
+            font-size: 18px;
+            font-weight: 700;
+            margin-bottom: 12px;
+            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+        }
+
+        .course-description {
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 14px;
+            margin-bottom: 20px;
+            line-height: 1.5;
+        }
+
+        .course-meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .course-level {
+            background: linear-gradient(135deg, #ff6b6b, #ee5a24);
+            color: white;
+            padding: 6px 15px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            box-shadow: 0 4px 15px rgba(238, 90, 36, 0.3);
+        }
+
+        .course-duration {
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 13px;
+            font-weight: 500;
+        }
+
+        .start-learning-btn {
+            width: 100%;
+            background: linear-gradient(135deg, #4ecdc4, #44a08d);
+            color: white;
+            border: none;
+            padding: 15px;
+            border-radius: 15px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 700;
+            transition: all 0.3s ease;
+            box-shadow: 0 8px 25px rgba(68, 160, 141, 0.3);
+        }
+
+        .start-learning-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 35px rgba(68, 160, 141, 0.4);
+        }
+
+        /* Stats Cards */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 25px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(20px);
+            border-radius: 20px;
+            padding: 30px 25px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            text-align: center;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            transition: all 0.4s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(135deg, rgba(255, 107, 107, 0.1), rgba(78, 205, 196, 0.1));
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .stat-card:hover::before {
+            opacity: 1;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+        }
+
+        .stat-icon {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, #4ecdc4, #44a08d);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 20px;
+            color: white;
+            font-size: 24px;
+            box-shadow: 0 8px 25px rgba(68, 160, 141, 0.3);
+            position: relative;
+            z-index: 2;
+        }
+
+        .stat-number {
+            color: white;
+            font-size: 36px;
+            font-weight: 800;
+            margin-bottom: 8px;
+            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+            position: relative;
+            z-index: 2;
+        }
+
+        .stat-label {
+            color: rgba(255, 255, 255, 0.9);
+            font-size: 14px;
+            font-weight: 600;
+            position: relative;
+            z-index: 2;
+        }
+
+        /* Chat Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(101, 67, 33, 0.7);
+            z-index: 2000;
+            backdrop-filter: blur(5px);
+        }
+
+        .modal.active {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-content {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border-radius: 20px;
+            padding: 30px;
+            width: 90%;
+            max-width: 800px;
+            max-height: 80vh;
+            overflow-y: auto;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+        }
+
+        .modal-title {
+            font-size: 24px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .close-btn {
+            background: none;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            color: #666;
+            padding: 5px;
+        }
+
+        .close-btn:hover {
+            color: #333;
+        }
+
+        .chat-area {
+            height: 400px;
+            border: 1px solid rgba(0, 0, 0, 0.1);
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 20px;
+            overflow-y: auto;
+            background: rgba(255, 255, 255, 0.5);
+        }
+
+        .expert-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .expert-card {
+            background: rgba(255, 255, 255, 0.8);
+            border-radius: 15px;
+            padding: 20px;
+            border: 1px solid rgba(0, 0, 0, 0.1);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .expert-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+        }
+
+        .expert-avatar {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 24px;
+            margin: 0 auto 15px;
+        }
+
+        .expert-name {
+            font-size: 16px;
+            font-weight: 600;
+            color: #333;
+            text-align: center;
+            margin-bottom: 5px;
+        }
+
+        .expert-specialization {
+            font-size: 12px;
+            color: #666;
+            text-align: center;
+            margin-bottom: 10px;
+        }
+
+        .expert-rating {
+            text-align: center;
+            color: #ffa500;
+            margin-bottom: 15px;
+        }
+
+        .connect-btn {
+            width: 100%;
+            background: linear-gradient(135deg, #4ecdc4, #44a08d);
+            color: white;
+            border: none;
+            padding: 10px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .connect-btn:hover {
+            transform: translateY(-2px);
+        }
+
+        .message-input {
+            display: flex;
+            gap: 10px;
+        }
+
+        .message-input input {
+            flex: 1;
+            padding: 12px;
+            border: 1px solid rgba(0, 0, 0, 0.2);
+            border-radius: 10px;
+            font-size: 14px;
+        }
+
+        .send-btn {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        /* Expert Registration Form */
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #333;
+            font-size: 14px;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid rgba(0, 0, 0, 0.2);
+            border-radius: 10px;
+            font-size: 14px;
+            transition: all 0.3s ease;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .form-textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        .submit-btn {
+            background: linear-gradient(135deg, #4CAF50, #45a049);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            width: 100%;
+        }
+
+        .submit-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(76, 175, 80, 0.3);
+        }
+
+        /* Mobile Responsive */
+        @media (max-width: 768px) {
+            .sidebar {
+                transform: translateX(-100%);
+            }
+
+            .sidebar.mobile-visible {
+                transform: translateX(0);
+            }
+
+            .main-content {
+                margin-left: 0;
+            }
+
+            .top-bar {
+                flex-direction: column;
+                gap: 15px;
+                text-align: center;
+            }
+
+            .search-container {
+                max-width: 100%;
+                min-width: auto;
+            }
+
+            .dashboard-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .course-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .expert-list {
+                grid-template-columns: 1fr;
+            }
+
+            .chat-container {
+                right: 10px;
+                bottom: 80px;
+                width: calc(100vw - 20px);
+                max-width: 350px;
+            }
+
+            .connect-modal {
+                right: 10px;
+                bottom: 80px;
+                width: calc(100vw - 20px);
+                max-width: 300px;
+            }
+
+            .whatsapp-chat-btn {
+                right: 20px;
+                bottom: 20px;
+            }
+        }
+
+        .message {
+            margin-bottom: 15px;
+            padding: 12px;
+            border-radius: 10px;
+            max-width: 80%;
+        }
+
+        .message.user {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            margin-left: auto;
+        }
+
+        .message.expert {
+            background: rgba(0, 0, 0, 0.05);
+            color: #333;
+        }
+
+        .message-sender {
+            font-weight: 600;
+            font-size: 12px;
+            margin-bottom: 5px;
+        }
+
+        .message-text {
+            font-size: 14px;
+            line-height: 1.4;
+        }
+
+        .message-time {
+            font-size: 11px;
+            opacity: 0.7;
+            margin-top: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <!-- Sidebar -->
+        <nav class="sidebar" id="sidebar">
+            <div class="logo">
+                <h2><i class="fas fa-balance-scale"></i> LawHub</h2>
+                <p>Your Legal Learning Companion</p>
+            </div>
+            
+            <ul class="nav-menu">
+                <li class="nav-item">
+                    <a href="#" class="nav-link active" data-section="dashboard">
+                        <i class="fas fa-home"></i>
+                        Dashboard
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#" class="nav-link" data-section="courses">
+                        <i class="fas fa-book"></i>
+                        My Courses
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#" class="nav-link" data-section="community">
+                        <i class="fas fa-users"></i>
+                        Community
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#" class="nav-link" data-section="resources">
+                        <i class="fas fa-file-alt"></i>
+                        Resources
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#" class="nav-link" data-section="certificates">
+                        <i class="fas fa-certificate"></i>
+                        Certificates
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#" class="nav-link" data-section="profile">
+                        <i class="fas fa-user"></i>
+                        Profile
+                    </a>
+                </li>
+            </ul>
+
+            <div class="progress-section">
+                <h4 style="color: white; margin-bottom: 15px; font-size: 14px;">Learning Progress</h4>
+                <div class="progress-item">
+                    <div class="progress-label">
+                        <span>Constitutional Law</span>
+                        <span>0%</span>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: 0%"></div>
+                    </div>
+                </div>
+                <div class="progress-item">
+                    <div class="progress-label">
+                        <span>Criminal Law</span>
+                        <span>0%</span>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: 0%"></div>
+                    </div>
+                </div>
+                <div class="progress-item">
+                    <div class="progress-label">
+                        <span>Civil Procedure</span>
+                        <span>0%</span>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: 0%"></div>
+                    </div>
+                </div>
+            </div>
+        </nav>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Dashboard Section -->
+            <div id="dashboard-section" class="content-section active">
+            <!-- Top Bar -->
+            <div class="top-bar">
+                <div class="welcome-text">
+                    <h1>Welcome back, Ashika!</h1>
+                    <p>Ready to continue your legal learning journey?</p>
+                </div>
+                
+                <!-- Search Bar -->
+                <div class="search-container">
+                    <div class="search-box">
+                        <i class="fas fa-search"></i>
+                        <input type="text" placeholder="Search laws, cases, articles..." id="searchInput">
+                        <button class="search-btn" onclick="searchLaw()">
+                            <i class="fas fa-arrow-right"></i>
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="top-actions">
+                    <button class="action-btn expert-btn" onclick="openExpertModal()">
+                        <i class="fas fa-user-tie"></i>
+                        Become Expert
+                    </button>
+                    <button class="action-btn" onclick="toggleSidebar()">
+                        <i class="fas fa-bars"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Hero Section -->
+            <div class="hero-section" style="background: rgba(255, 255, 255, 0.1); backdrop-filter: blur(20px); border-radius: 25px; padding: 40px; margin-bottom: 30px; border: 1px solid rgba(255, 255, 255, 0.2); background-image: url('https://static.vecteezy.com/system/resources/thumbnails/024/664/322/small_2x/judge-gavel-or-hammer-on-wooden-background-law-concept-of-justice-judicial-jurisprudence-created-by-generative-ai-technology-photo.jpg'); background-size: cover; background-position: center; position: relative;">
+                <div style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: rgba(101, 67, 33, 0.5); border-radius: 25px;"></div>
+                <div style="position: relative; z-index: 2; text-align: center;">
+                    <h1 id="welcome-message" style="color: white; font-size: 42px; font-weight: 800; margin-bottom: 15px; text-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);">Welcome to Your Legal Journey! ⚖️</h1>
+                    <p style="color: rgba(255, 255, 255, 0.9); font-size: 18px; margin-bottom: 30px; max-width: 600px; margin-left: auto; margin-right: auto; line-height: 1.6;">Master the complexities of law with expert guidance, interactive courses, and real-world applications.</p>
+                    <div style="display: flex; justify-content: center; gap: 20px; flex-wrap: wrap;">
+                        <button style="background: linear-gradient(135deg, #ff6b6b, #ee5a24); color: white; border: none; padding: 15px 30px; border-radius: 25px; font-weight: 700; font-size: 16px; cursor: pointer; box-shadow: 0 8px 25px rgba(238, 90, 36, 0.4); transition: all 0.3s ease;" onmouseover="this.style.transform='translateY(-3px)'" onmouseout="this.style.transform='translateY(0)'">
+                            <i class="fas fa-play" style="margin-right: 8px;"></i>Start Learning
+                        </button>
+                        <button style="background: rgba(255, 255, 255, 0.2); color: white; border: 2px solid rgba(255, 255, 255, 0.3); padding: 15px 30px; border-radius: 25px; font-weight: 700; font-size: 16px; cursor: pointer; backdrop-filter: blur(10px); transition: all 0.3s ease;" onmouseover="this.style.background='rgba(255, 255, 255, 0.3)'" onmouseout="this.style.background='rgba(255, 255, 255, 0.2)'">
+                            <i class="fas fa-users" style="margin-right: 8px;"></i>Join Community
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Stats Grid -->
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-icon">
+                        <i class="fas fa-graduation-cap"></i>
+                    </div>
+                    <div class="stat-number">0</div>
+                    <div class="stat-label">Courses Completed</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">
+                        <i class="fas fa-clock"></i>
+                    </div>
+                    <div class="stat-number">0</div>
+                    <div class="stat-label">Hours Learned</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">
+                        <i class="fas fa-clipboard-check"></i>
+                    </div>
+                    <div class="stat-number">0</div>
+                    <div class="stat-label">Practice Tests</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">
+                        <i class="fas fa-medal"></i>
+                    </div>
+                    <div class="stat-number">0</div>
+                    <div class="stat-label">Certificates Earned</div>
+                </div>
+            </div>
+
+            <!-- Dashboard Content -->
+            <div id="dashboard-section" class="section-content">
+                <div class="dashboard-grid">
+                    <div class="dashboard-card">
+                        <div class="card-header">
+                            <div class="card-icon">
+                                <i class="fas fa-chart-line"></i>
+                            </div>
+                            <div>
+                                <div class="card-title">Learning Progress</div>
+                                <div class="card-subtitle">Track your journey</div>
+                            </div>
+                        </div>
+                        <div class="chart-container" style="position: relative; height: 200px;">
+                            <canvas id="progressChart" width="400" height="200"></canvas>
+                            <div id="chartFallback" style="display: none; text-align: center; padding: 40px; color: #D0D0D0;">
+                                <i class="fas fa-chart-pie" style="font-size: 48px; margin-bottom: 15px; opacity: 0.7; color: #FFD700;"></i>
+                                <p style="color: #FFD700; font-weight: 600;">Progress Chart</p>
+                                <p style="font-size: 12px; margin-top: 5px; color: #B0B0B0;">0% Complete</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="dashboard-card">
+                        <div class="card-header">
+                            <div class="card-icon">
+                                <i class="fas fa-clock"></i>
+                            </div>
+                            <div>
+                                <div class="card-title">Recent Activity</div>
+                                <div class="card-subtitle">Your latest actions</div>
+                            </div>
+                        </div>
+                        <div style="color: #D0D0D0; font-size: 14px; text-align: center; padding: 20px;">
+                            <i class="fas fa-rocket" style="font-size: 24px; margin-bottom: 10px; opacity: 0.7; color: #FFD700;"></i>
+                            <p style="color: #FFD700; font-weight: 600;">Start your learning journey!</p>
+                            <p style="font-size: 12px; margin-top: 5px; color: #B0B0B0;">Enroll in your first course to see activity here.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="dashboard-card" style="margin-bottom: 30px;">
+                    <div class="card-header">
+                        <div class="card-icon">
+                            <i class="fas fa-book-open"></i>
+                        </div>
+                        <div>
+                            <div class="card-title">Recommended Courses</div>
+                            <div class="card-subtitle">Start your legal education</div>
+                        </div>
+                    </div>
+                    
+                    <div class="course-grid">
+                        <div class="course-card">
+                            <div class="course-image" style="background-image: url('https://images.unsplash.com/photo-1589829545856-d10d557cf95f?q=80&w=2070&auto=format&fit=crop');">
+                                <i class="fas fa-landmark"></i>
+                            </div>
+                            <div class="course-content">
+                                <div class="course-title">Introduction to Constitutional Law</div>
+                                <div class="course-description">Learn the fundamentals of constitutional principles, rights, and government structure in India.</div>
+                                <div class="course-meta">
+                                    <span class="course-level">Beginner</span>
+                                    <span class="course-duration">8 weeks</span>
+                                </div>
+                                <button class="start-learning-btn">Start Learning</button>
+                            </div>
+                        </div>
+
+                        <div class="course-card">
+                            <div class="course-image" style="background-image: url('https://images.unsplash.com/photo-1521587760476-6c12a4b040da?q=80&w=2070&auto=format&fit=crop');">
+                                <i class="fas fa-gavel"></i>
+                            </div>
+                            <div class="course-content">
+                                <div class="course-title">Criminal Law Basics</div>
+                                <div class="course-description">Understand criminal law principles, procedures, and major criminal offenses in the Indian legal system.</div>
+                                <div class="course-meta">
+                                    <span class="course-level">Beginner</span>
+                                    <span class="course-duration">10 weeks</span>
+                                </div>
+                                <button class="start-learning-btn">Start Learning</button>
+                            </div>
+                        </div>
+
+                        <div class="course-card">
+                            <div class="course-image" style="background-image: url('https://images.unsplash.com/photo-1450101499163-c8848c66ca85?q=80&w=2070&auto=format&fit=crop');">
+                                <i class="fas fa-handshake"></i>
+                            </div>
+                            <div class="course-content">
+                                <div class="course-title">Contract Law Fundamentals</div>
+                                <div class="course-description">Master the essentials of contract formation, interpretation, and enforcement in Indian law.</div>
+                                <div class="course-meta">
+                                    <span class="course-level">Intermediate</span>
+                                    <span class="course-duration">6 weeks</span>
+                                </div>
+                                <button class="start-learning-btn">Start Learning</button>
+                            </div>
+                        </div>
+
+                        <div class="course-card">
+                            <div class="course-image" style="background-image: url('https://images.unsplash.com/photo-1481627834876-b7833e8f5570?q=80&w=2070&auto=format&fit=crop');">
+                                <i class="fas fa-balance-scale"></i>
+                            </div>
+                            <div class="course-content">
+                                <div class="course-title">Legal Research & Writing</div>
+                                <div class="course-description">Develop essential skills for legal research, case analysis, and professional legal writing.</div>
+                                <div class="course-meta">
+                                    <span class="course-level">Beginner</span>
+                                    <span class="course-duration">4 weeks</span>
+                                </div>
+                                <button class="start-learning-btn">Start Learning</button>
+                            </div>
+                        </div>
+
+                        <div class="course-card">
+                            <div class="course-image" style="background-image: url('https://images.unsplash.com/photo-1560472354-b33ff0c44a43?q=80&w=2126&auto=format&fit=crop');">
+                                <i class="fas fa-home"></i>
+                            </div>
+                            <div class="course-content">
+                                <div class="course-title">Property Law Essentials</div>
+                                <div class="course-description">Learn about property rights, ownership, and real estate law in the Indian context.</div>
+                                <div class="course-meta">
+                                    <span class="course-level">Intermediate</span>
+                                    <span class="course-duration">7 weeks</span>
+                                </div>
+                                <button class="start-learning-btn">Start Learning</button>
+                            </div>
+                        </div>
+
+                        <div class="course-card">
+                            <div class="course-image" style="background-image: url('https://images.unsplash.com/photo-1505664194779-8beaceb93744?q=80&w=2070&auto=format&fit=crop');">
+                                <i class="fas fa-university"></i>
+                            </div>
+                            <div class="course-content">
+                                <div class="course-title">Civil Procedure Code</div>
+                                <div class="course-description">Understand the procedural aspects of civil litigation and court processes in India.</div>
+                                <div class="course-meta">
+                                    <span class="course-level">Advanced</span>
+                                    <span class="course-duration">12 weeks</span>
+                                </div>
+                                <button class="start-learning-btn">Start Learning</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- My Courses Section -->
+            <div id="courses-section" class="section-content" style="display: none;">
+                <div class="dashboard-card">
+                    <div class="card-header">
+                        <div class="card-icon">
+                            <i class="fas fa-book"></i>
+                        </div>
+                        <div>
+                            <div class="card-title">My Courses</div>
+                            <div class="card-subtitle">Currently enrolled courses</div>
+                        </div>
+                    </div>
+                    <div style="color: #D0D0D0; font-size: 14px; text-align: center; padding: 40px;">
+                        <i class="fas fa-book-open" style="font-size: 48px; margin-bottom: 15px; opacity: 0.7; color: #FFD700;"></i>
+                        <p style="color: #FFD700; font-weight: 600;">No courses enrolled yet</p>
+                        <p style="font-size: 12px; margin-top: 5px; color: #B0B0B0;">Start learning by enrolling in a course from the dashboard.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Community Section -->
+            <div id="community-section" class="section-content" style="display: none;">
+                <div class="dashboard-card">
+                    <div class="card-header">
+                        <div class="card-icon">
+                            <i class="fas fa-users"></i>
+                        </div>
+                        <div>
+                            <div class="card-title">Legal Community</div>
+                            <div class="card-subtitle">Connect with fellow learners</div>
+                        </div>
+                    </div>
+                    <div style="color: rgba(255, 255, 255, 0.9); font-size: 14px; padding: 20px;">
+                        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 25px;">
+                            <div style="background: rgba(255, 255, 255, 0.1); padding: 25px; border-radius: 20px; border: 1px solid rgba(255, 255, 255, 0.2); backdrop-filter: blur(20px); background-image: url('https://images.unsplash.com/photo-1521791136064-7986c2920216?q=80&w=2069&auto=format&fit=crop'); background-size: cover; position: relative;">
+                                <div style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: rgba(101, 67, 33, 0.4); border-radius: 20px;"></div>
+                                <div style="position: relative; z-index: 2;">
+                                    <h4 style="color: white; margin-bottom: 15px; font-size: 18px;"><i class="fas fa-comments"></i> Discussion Forums</h4>
+                                    <p style="color: rgba(255, 255, 255, 0.9);">Join discussions on constitutional law, criminal law, and more.</p>
+                                </div>
+                            </div>
+                            <div style="background: rgba(255, 255, 255, 0.1); padding: 25px; border-radius: 20px; border: 1px solid rgba(255, 255, 255, 0.2); backdrop-filter: blur(20px); background-image: url('https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?q=80&w=2070&auto=format&fit=crop'); background-size: cover; position: relative;">
+                                <div style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: rgba(101, 67, 33, 0.4); border-radius: 20px;"></div>
+                                <div style="position: relative; z-index: 2;">
+                                    <h4 style="color: white; margin-bottom: 15px; font-size: 18px;"><i class="fas fa-question-circle"></i> Q&A Section</h4>
+                                    <p style="color: rgba(255, 255, 255, 0.9);">Ask questions and get answers from legal experts.</p>
+                                </div>
+                            </div>
+                            <div style="background: rgba(255, 255, 255, 0.1); padding: 25px; border-radius: 20px; border: 1px solid rgba(255, 255, 255, 0.2); backdrop-filter: blur(20px); background-image: url('https://images.unsplash.com/photo-1600880292203-757bb62b4baf?q=80&w=2070&auto=format&fit=crop'); background-size: cover; position: relative;">
+                                <div style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: rgba(101, 67, 33, 0.4); border-radius: 20px;"></div>
+                                <div style="position: relative; z-index: 2;">
+                                    <h4 style="color: white; margin-bottom: 15px; font-size: 18px;"><i class="fas fa-users"></i> Study Groups</h4>
+                                    <p style="color: rgba(255, 255, 255, 0.9);">Form study groups with other learners in your area.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Resources Section -->
+            <div id="resources-section" class="section-content" style="display: none;">
+                <div class="dashboard-card">
+                    <div class="card-header">
+                        <div class="card-icon">
+                            <i class="fas fa-file-alt"></i>
+                        </div>
+                        <div>
+                            <div class="card-title">Legal Resources</div>
+                            <div class="card-subtitle">Documents, articles, and references</div>
+                        </div>
+                    </div>
+                    <div style="color: #D0D0D0; font-size: 14px; padding: 20px;">
+                        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 15px;">
+                            <div style="background: rgba(35, 35, 40, 0.8); padding: 15px; border-radius: 10px; border: 1px solid rgba(255, 215, 0, 0.2);">
+                                <h4 style="color: #FFD700; margin-bottom: 10px;"><i class="fas fa-file-pdf"></i> Constitution of India</h4>
+                                <p style="font-size: 12px; color: #B0B0B0;">Complete text with amendments</p>
+                            </div>
+                            <div style="background: rgba(35, 35, 40, 0.8); padding: 15px; border-radius: 10px; border: 1px solid rgba(255, 215, 0, 0.2);">
+                                <h4 style="color: #FFD700; margin-bottom: 10px;"><i class="fas fa-gavel"></i> Landmark Cases</h4>
+                                <p style="font-size: 12px; color: #B0B0B0;">Important Supreme Court judgments</p>
+                            </div>
+                            <div style="background: rgba(35, 35, 40, 0.8); padding: 15px; border-radius: 10px; border: 1px solid rgba(255, 215, 0, 0.2);">
+                                <h4 style="color: #FFD700; margin-bottom: 10px;"><i class="fas fa-book"></i> Legal Articles</h4>
+                                <p style="font-size: 12px; color: #B0B0B0;">Scholarly articles and commentary</p>
+                            </div>
+                            <div style="background: rgba(35, 35, 40, 0.8); padding: 15px; border-radius: 10px; border: 1px solid rgba(255, 215, 0, 0.2);">
+                                <h4 style="color: #FFD700; margin-bottom: 10px;"><i class="fas fa-calendar"></i> Legal Calendar</h4>
+                                <p style="font-size: 12px; color: #B0B0B0;">Important dates and deadlines</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Certificates Section -->
+            <div id="certificates-section" class="section-content" style="display: none;">
+                <div class="dashboard-card">
+                    <div class="card-header">
+                        <div class="card-icon">
+                            <i class="fas fa-certificate"></i>
+                        </div>
+                        <div>
+                            <div class="card-title">My Certificates</div>
+                            <div class="card-subtitle">Your earned certificates</div>
+                        </div>
+                    </div>
+                    <div style="color: #D0D0D0; font-size: 14px; text-align: center; padding: 40px;">
+                        <i class="fas fa-medal" style="font-size: 48px; margin-bottom: 15px; opacity: 0.7; color: #FFD700;"></i>
+                        <p style="color: #FFD700; font-weight: 600;">No certificates earned yet</p>
+                        <p style="font-size: 12px; margin-top: 5px; color: #B0B0B0;">Complete courses to earn certificates and showcase your achievements.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Profile Section -->
+            <div id="profile-section" class="section-content" style="display: none;">
+                <div class="dashboard-card">
+                    <div class="card-header">
+                        <div class="card-icon">
+                            <i class="fas fa-user"></i>
+                        </div>
+                        <div>
+                            <div class="card-title">Profile Settings</div>
+                            <div class="card-subtitle">Manage your account</div>
+                        </div>
+                    </div>
+                    <div style="color: #D0D0D0; font-size: 14px; padding: 20px;">
+                        <form style="max-width: 400px;">
+                            <div style="margin-bottom: 20px;">
+                                <label style="display: block; margin-bottom: 5px; color: #FFD700;">Full Name</label>
+                                <input type="text" value="Ashika" style="width: 100%; padding: 10px; border: 1px solid rgba(255, 215, 0, 0.3); border-radius: 8px; background: rgba(35, 35, 40, 0.8); color: #FFD700;">
+                            </div>
+                            <div style="margin-bottom: 20px;">
+                                <label style="display: block; margin-bottom: 5px; color: #FFD700;">Email</label>
+                                <input type="email" value="ashika@example.com" style="width: 100%; padding: 10px; border: 1px solid rgba(255, 215, 0, 0.3); border-radius: 8px; background: rgba(35, 35, 40, 0.8); color: #FFD700;">
+                            </div>
+                            <div style="margin-bottom: 20px;">
+                                <label style="display: block; margin-bottom: 5px; color: #FFD700;">Learning Goal</label>
+                                <select style="width: 100%; padding: 10px; border: 1px solid rgba(255, 215, 0, 0.3); border-radius: 8px; background: rgba(35, 35, 40, 0.8); color: #FFD700;">
+                                    <option>Constitutional Law Basics</option>
+                                    <option>Criminal Law Understanding</option>
+                                    <option>Legal Career Preparation</option>
+                                    <option>General Legal Knowledge</option>
+                                </select>
+                            </div>
+                            <button type="submit" style="background: linear-gradient(135deg, #FFD700, #FFA500); color: #000; border: none; padding: 12px 24px; border-radius: 8px; cursor: pointer; font-weight: 600;">Update Profile</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            </div> <!-- End Dashboard Section -->
+
+            <!-- My Courses Section -->
+            <div id="courses-section" class="content-section">
+                <div style="background: rgba(255, 255, 255, 0.1); backdrop-filter: blur(20px); border-radius: 25px; padding: 40px; margin-bottom: 30px; border: 1px solid rgba(255, 255, 255, 0.2);">
+                    <h1 style="color: white; font-size: 36px; margin-bottom: 20px;"><i class="fas fa-book"></i> My Courses</h1>
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 25px; margin-top: 30px;">
+                        <div style="background: rgba(255, 255, 255, 0.1); padding: 25px; border-radius: 20px; border: 1px solid rgba(255, 255, 255, 0.2);">
+                            <h3 style="color: white; margin-bottom: 15px;">Constitutional Law</h3>
+                            <div style="background: rgba(255, 255, 255, 0.1); border-radius: 10px; padding: 10px; margin-bottom: 15px;">
+                                <div style="display: flex; justify-content: space-between; color: white; margin-bottom: 5px;">
+                                    <span>Progress</span>
+                                    <span>75%</span>
+                                </div>
+                                <div style="background: rgba(255, 255, 255, 0.2); height: 8px; border-radius: 4px;">
+                                    <div style="background: linear-gradient(135deg, #4CAF50, #45a049); height: 100%; width: 75%; border-radius: 4px;"></div>
+                                </div>
+                            </div>
+                            <p style="color: rgba(255, 255, 255, 0.8); margin-bottom: 15px;">Learn about fundamental rights and constitutional principles.</p>
+                            <button style="background: linear-gradient(135deg, #ff6b6b, #ee5a24); color: white; border: none; padding: 10px 20px; border-radius: 15px; cursor: pointer;">Continue Learning</button>
+                        </div>
+                        <div style="background: rgba(255, 255, 255, 0.1); padding: 25px; border-radius: 20px; border: 1px solid rgba(255, 255, 255, 0.2);">
+                            <h3 style="color: white; margin-bottom: 15px;">Criminal Law</h3>
+                            <div style="background: rgba(255, 255, 255, 0.1); border-radius: 10px; padding: 10px; margin-bottom: 15px;">
+                                <div style="display: flex; justify-content: space-between; color: white; margin-bottom: 5px;">
+                                    <span>Progress</span>
+                                    <span>45%</span>
+                                </div>
+                                <div style="background: rgba(255, 255, 255, 0.2); height: 8px; border-radius: 4px;">
+                                    <div style="background: linear-gradient(135deg, #2196F3, #1976D2); height: 100%; width: 45%; border-radius: 4px;"></div>
+                                </div>
+                            </div>
+                            <p style="color: rgba(255, 255, 255, 0.8); margin-bottom: 15px;">Understanding criminal procedures and legal frameworks.</p>
+                            <button style="background: linear-gradient(135deg, #ff6b6b, #ee5a24); color: white; border: none; padding: 10px 20px; border-radius: 15px; cursor: pointer;">Continue Learning</button>
+                        </div>
+                        <div style="background: rgba(255, 255, 255, 0.1); padding: 25px; border-radius: 20px; border: 1px solid rgba(255, 255, 255, 0.2);">
+                            <h3 style="color: white; margin-bottom: 15px;">Civil Law</h3>
+                            <div style="background: rgba(255, 255, 255, 0.1); border-radius: 10px; padding: 10px; margin-bottom: 15px;">
+                                <div style="display: flex; justify-content: space-between; color: white; margin-bottom: 5px;">
+                                    <span>Progress</span>
+                                    <span>20%</span>
+                                </div>
+                                <div style="background: rgba(255, 255, 255, 0.2); height: 8px; border-radius: 4px;">
+                                    <div style="background: linear-gradient(135deg, #FF9800, #F57C00); height: 100%; width: 20%; border-radius: 4px;"></div>
+                                </div>
+                            </div>
+                            <p style="color: rgba(255, 255, 255, 0.8); margin-bottom: 15px;">Civil procedures, contracts, and property law fundamentals.</p>
+                            <button style="background: linear-gradient(135deg, #ff6b6b, #ee5a24); color: white; border: none; padding: 10px 20px; border-radius: 15px; cursor: pointer;">Continue Learning</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Community Section -->
+            <div id="community-section" class="content-section">
+                <div style="background: rgba(255, 255, 255, 0.1); backdrop-filter: blur(20px); border-radius: 25px; padding: 40px; margin-bottom: 30px; border: 1px solid rgba(255, 255, 255, 0.2);">
+                    <h1 style="color: white; font-size: 36px; margin-bottom: 20px;"><i class="fas fa-users"></i> Community Hub</h1>
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); gap: 25px; margin-top: 30px;">
+                        <div style="background: rgba(255, 255, 255, 0.1); padding: 25px; border-radius: 20px; border: 1px solid rgba(255, 255, 255, 0.2);">
+                            <h3 style="color: white; margin-bottom: 15px;"><i class="fas fa-comments"></i> Discussion Forums</h3>
+                            <p style="color: rgba(255, 255, 255, 0.8); margin-bottom: 15px;">Join ongoing discussions about various legal topics with fellow students and experts.</p>
+                            <div style="background: rgba(255, 255, 255, 0.1); padding: 15px; border-radius: 10px; margin-bottom: 15px;">
+                                <div style="color: white; font-weight: bold; margin-bottom: 5px;">Latest Discussion:</div>
+                                <div style="color: rgba(255, 255, 255, 0.9);">"Understanding Property Rights in Modern Context"</div>
+                                <div style="color: rgba(255, 255, 255, 0.6); font-size: 14px; margin-top: 5px;">45 replies • 2 hours ago</div>
+                            </div>
+                            <button style="background: linear-gradient(135deg, #ff6b6b, #ee5a24); color: white; border: none; padding: 10px 20px; border-radius: 15px; cursor: pointer;">Join Discussion</button>
+                        </div>
+                        <div style="background: rgba(255, 255, 255, 0.1); padding: 25px; border-radius: 20px; border: 1px solid rgba(255, 255, 255, 0.2);">
+                            <h3 style="color: white; margin-bottom: 15px;"><i class="fas fa-question-circle"></i> Q&A Section</h3>
+                            <p style="color: rgba(255, 255, 255, 0.8); margin-bottom: 15px;">Ask questions and get answers from legal experts and experienced practitioners.</p>
+                            <div style="background: rgba(255, 255, 255, 0.1); padding: 15px; border-radius: 10px; margin-bottom: 15px;">
+                                <div style="color: white; font-weight: bold; margin-bottom: 5px;">Recent Question:</div>
+                                <div style="color: rgba(255, 255, 255, 0.9);">"What are the procedures for filing a civil suit?"</div>
+                                <div style="color: rgba(255, 255, 255, 0.6); font-size: 14px; margin-top: 5px;">12 answers • Expert verified</div>
+                            </div>
+                            <button style="background: linear-gradient(135deg, #ff6b6b, #ee5a24); color: white; border: none; padding: 10px 20px; border-radius: 15px; cursor: pointer;">Ask Question</button>
+                        </div>
+                        <div style="background: rgba(255, 255, 255, 0.1); padding: 25px; border-radius: 20px; border: 1px solid rgba(255, 255, 255, 0.2);">
+                            <h3 style="color: white; margin-bottom: 15px;"><i class="fas fa-users"></i> Study Groups</h3>
+                            <p style="color: rgba(255, 255, 255, 0.8); margin-bottom: 15px;">Form or join study groups with other learners in your area or specialization.</p>
+                            <div style="background: rgba(255, 255, 255, 0.1); padding: 15px; border-radius: 10px; margin-bottom: 15px;">
+                                <div style="color: white; font-weight: bold; margin-bottom: 5px;">Active Groups:</div>
+                                <div style="color: rgba(255, 255, 255, 0.9);">• Constitutional Law Study Circle (24 members)</div>
+                                <div style="color: rgba(255, 255, 255, 0.9);">• Criminal Procedure Workshop (18 members)</div>
+                            </div>
+                            <button style="background: linear-gradient(135deg, #ff6b6b, #ee5a24); color: white; border: none; padding: 10px 20px; border-radius: 15px; cursor: pointer;">Join Group</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Resources Section -->
+            <div id="resources-section" class="content-section">
+                <div style="background: rgba(255, 255, 255, 0.1); backdrop-filter: blur(20px); border-radius: 25px; padding: 40px; margin-bottom: 30px; border: 1px solid rgba(255, 255, 255, 0.2);">
+                    <h1 style="color: white; font-size: 36px; margin-bottom: 20px;"><i class="fas fa-file-alt"></i> Legal Resources</h1>
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 25px; margin-top: 30px;">
+                        <div style="background: rgba(255, 255, 255, 0.1); padding: 25px; border-radius: 20px; border: 1px solid rgba(255, 255, 255, 0.2);">
+                            <h3 style="color: white; margin-bottom: 15px;"><i class="fas fa-gavel"></i> Case Studies</h3>
+                            <p style="color: rgba(255, 255, 255, 0.8); margin-bottom: 15px;">Access landmark case studies and legal precedents.</p>
+                            <ul style="color: rgba(255, 255, 255, 0.9); margin-bottom: 15px;">
+                                <li style="margin-bottom: 5px;">• Landmark Constitutional Cases</li>
+                                <li style="margin-bottom: 5px;">• Criminal Law Precedents</li>
+                                <li style="margin-bottom: 5px;">• Civil Rights Decisions</li>
+                            </ul>
+                            <button style="background: linear-gradient(135deg, #ff6b6b, #ee5a24); color: white; border: none; padding: 10px 20px; border-radius: 15px; cursor: pointer;">Browse Cases</button>
+                        </div>
+                        <div style="background: rgba(255, 255, 255, 0.1); padding: 25px; border-radius: 20px; border: 1px solid rgba(255, 255, 255, 0.2);">
+                            <h3 style="color: white; margin-bottom: 15px;"><i class="fas fa-book-open"></i> Legal Documents</h3>
+                            <p style="color: rgba(255, 255, 255, 0.8); margin-bottom: 15px;">Templates and sample legal documents for reference.</p>
+                            <ul style="color: rgba(255, 255, 255, 0.9); margin-bottom: 15px;">
+                                <li style="margin-bottom: 5px;">• Contract Templates</li>
+                                <li style="margin-bottom: 5px;">• Legal Notice Formats</li>
+                                <li style="margin-bottom: 5px;">• Court Filing Documents</li>
+                            </ul>
+                            <button style="background: linear-gradient(135deg, #ff6b6b, #ee5a24); color: white; border: none; padding: 10px 20px; border-radius: 15px; cursor: pointer;">Download Templates</button>
+                        </div>
+                        <div style="background: rgba(255, 255, 255, 0.1); padding: 25px; border-radius: 20px; border: 1px solid rgba(255, 255, 255, 0.2);">
+                            <h3 style="color: white; margin-bottom: 15px;"><i class="fas fa-balance-scale"></i> Legal Acts & Codes</h3>
+                            <p style="color: rgba(255, 255, 255, 0.8); margin-bottom: 15px;">Complete collection of legal acts and procedural codes.</p>
+                            <ul style="color: rgba(255, 255, 255, 0.9); margin-bottom: 15px;">
+                                <li style="margin-bottom: 5px;">• Indian Penal Code</li>
+                                <li style="margin-bottom: 5px;">• Civil Procedure Code</li>
+                                <li style="margin-bottom: 5px;">• Criminal Procedure Code</li>
+                            </ul>
+                            <button style="background: linear-gradient(135deg, #ff6b6b, #ee5a24); color: white; border: none; padding: 10px 20px; border-radius: 15px; cursor: pointer;">View Acts</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Certificates Section -->
+            <div id="certificates-section" class="content-section">
+                <div style="background: rgba(255, 255, 255, 0.1); backdrop-filter: blur(20px); border-radius: 25px; padding: 40px; margin-bottom: 30px; border: 1px solid rgba(255, 255, 255, 0.2);">
+                    <h1 style="color: white; font-size: 36px; margin-bottom: 20px;"><i class="fas fa-certificate"></i> My Certificates</h1>
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); gap: 25px; margin-top: 30px;">
+                        <div style="background: linear-gradient(135deg, rgba(255, 215, 0, 0.2), rgba(255, 193, 7, 0.2)); padding: 30px; border-radius: 20px; border: 2px solid rgba(255, 215, 0, 0.3); text-align: center;">
+                            <i class="fas fa-certificate" style="color: #FFD700; font-size: 48px; margin-bottom: 15px;"></i>
+                            <h3 style="color: white; margin-bottom: 10px;">Constitutional Law Fundamentals</h3>
+                            <p style="color: rgba(255, 255, 255, 0.8); margin-bottom: 15px;">Completed: January 15, 2025</p>
+                            <p style="color: rgba(255, 255, 255, 0.9); margin-bottom: 20px;">Grade: A+ (95%)</p>
+                            <button style="background: linear-gradient(135deg, #FFD700, #FFA500); color: #000; border: none; padding: 10px 20px; border-radius: 15px; cursor: pointer; font-weight: bold;">Download Certificate</button>
+                        </div>
+                        <div style="background: linear-gradient(135deg, rgba(76, 175, 80, 0.2), rgba(139, 195, 74, 0.2)); padding: 30px; border-radius: 20px; border: 2px solid rgba(76, 175, 80, 0.3); text-align: center;">
+                            <i class="fas fa-award" style="color: #4CAF50; font-size: 48px; margin-bottom: 15px;"></i>
+                            <h3 style="color: white; margin-bottom: 10px;">Legal Research Methods</h3>
+                            <p style="color: rgba(255, 255, 255, 0.8); margin-bottom: 15px;">Completed: December 20, 2024</p>
+                            <p style="color: rgba(255, 255, 255, 0.9); margin-bottom: 20px;">Grade: A (88%)</p>
+                            <button style="background: linear-gradient(135deg, #4CAF50, #45a049); color: white; border: none; padding: 10px 20px; border-radius: 15px; cursor: pointer; font-weight: bold;">Download Certificate</button>
+                        </div>
+                        <div style="background: rgba(255, 255, 255, 0.1); padding: 30px; border-radius: 20px; border: 2px dashed rgba(255, 255, 255, 0.3); text-align: center;">
+                            <i class="fas fa-clock" style="color: rgba(255, 255, 255, 0.6); font-size: 48px; margin-bottom: 15px;"></i>
+                            <h3 style="color: rgba(255, 255, 255, 0.8); margin-bottom: 10px;">Criminal Law Procedures</h3>
+                            <p style="color: rgba(255, 255, 255, 0.6); margin-bottom: 15px;">In Progress: 65% Complete</p>
+                            <p style="color: rgba(255, 255, 255, 0.7); margin-bottom: 20px;">Expected completion: March 2025</p>
+                            <button style="background: rgba(255, 255, 255, 0.2); color: white; border: none; padding: 10px 20px; border-radius: 15px; cursor: pointer;">Continue Course</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Profile Section -->
+            <div id="profile-section" class="content-section">
+                <div style="background: rgba(255, 255, 255, 0.1); backdrop-filter: blur(20px); border-radius: 25px; padding: 40px; margin-bottom: 30px; border: 1px solid rgba(255, 255, 255, 0.2);">
+                    <h1 style="color: white; font-size: 36px; margin-bottom: 20px;"><i class="fas fa-user"></i> My Profile</h1>
+                    <div style="display: grid; grid-template-columns: 1fr 2fr; gap: 30px; margin-top: 30px;">
+                        <div style="background: rgba(255, 255, 255, 0.1); padding: 30px; border-radius: 20px; border: 1px solid rgba(255, 255, 255, 0.2); text-align: center;">
+                            <div style="width: 120px; height: 120px; border-radius: 50%; background: linear-gradient(135deg, #ff6b6b, #ee5a24); margin: 0 auto 20px; display: flex; align-items: center; justify-content: center;">
+                                <i class="fas fa-user" style="color: white; font-size: 48px;"></i>
+                            </div>
+                            <h3 id="profile-name" style="color: white; margin-bottom: 10px;">Loading...</h3>
+                            <p style="color: rgba(255, 255, 255, 0.8); margin-bottom: 15px;">Law Student</p>
+                            <div style="background: rgba(255, 255, 255, 0.1); padding: 15px; border-radius: 10px; margin-bottom: 15px;">
+                                <div style="color: white; font-size: 14px; margin-bottom: 5px;">Learning Streak</div>
+                                <div style="color: #FFD700; font-size: 24px; font-weight: bold;">15 Days</div>
+                            </div>
+                            <button style="background: linear-gradient(135deg, #ff6b6b, #ee5a24); color: white; border: none; padding: 10px 20px; border-radius: 15px; cursor: pointer;">Edit Profile</button>
+                        </div>
+                        <div style="background: rgba(255, 255, 255, 0.1); padding: 30px; border-radius: 20px; border: 1px solid rgba(255, 255, 255, 0.2);">
+                            <h3 style="color: white; margin-bottom: 20px;">Profile Information</h3>
+                            <div style="display: grid; gap: 15px;">
+                                <div>
+                                    <label style="color: rgba(255, 255, 255, 0.8); display: block; margin-bottom: 5px;">Email</label>
+                                    <input id="profile-email" type="email" style="width: 100%; padding: 12px; border-radius: 8px; border: 1px solid rgba(255, 255, 255, 0.2); background: rgba(255, 255, 255, 0.1); color: white;" readonly>
+                                </div>
+                                <div>
+                                    <label style="color: rgba(255, 255, 255, 0.8); display: block; margin-bottom: 5px;">Specialization</label>
+                                    <select style="width: 100%; padding: 12px; border-radius: 8px; border: 1px solid rgba(255, 255, 255, 0.2); background: rgba(255, 255, 255, 0.1); color: white;">
+                                        <option>Constitutional Law</option>
+                                        <option>Criminal Law</option>
+                                        <option>Civil Law</option>
+                                        <option>Corporate Law</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label style="color: rgba(255, 255, 255, 0.8); display: block; margin-bottom: 5px;">Experience Level</label>
+                                    <select style="width: 100%; padding: 12px; border-radius: 8px; border: 1px solid rgba(255, 255, 255, 0.2); background: rgba(255, 255, 255, 0.1); color: white;">
+                                        <option>Beginner</option>
+                                        <option>Intermediate</option>
+                                        <option>Advanced</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label style="color: rgba(255, 255, 255, 0.8); display: block; margin-bottom: 5px;">Learning Goals</label>
+                                    <textarea style="width: 100%; padding: 12px; border-radius: 8px; border: 1px solid rgba(255, 255, 255, 0.2); background: rgba(255, 255, 255, 0.1); color: white; min-height: 80px;" placeholder="Describe your learning goals..."></textarea>
+                                </div>
+                            </div>
+                            <button style="background: linear-gradient(135deg, #FFD700, #FFA500); color: #000; border: none; padding: 12px 24px; border-radius: 8px; cursor: pointer; font-weight: 600; margin-top: 20px;">Update Profile</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Chat Modal -->
+    <div id="chatModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title">Connect with Legal Experts</h2>
+                <button class="close-btn" onclick="closeChatModal()">&times;</button>
+            </div>
+            
+            <div class="expert-list">
+                <div class="expert-card" onclick="startChat('Dr. Priya Sharma')">
+                    <div class="expert-avatar">
+                        <i class="fas fa-user-graduate"></i>
+                    </div>
+                    <div class="expert-name">Dr. Priya Sharma</div>
+                    <div class="expert-specialization">Constitutional Law Expert</div>
+                    <div class="expert-rating">
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        4.9
+                    </div>
+                    <button class="connect-btn">Connect Now</button>
+                </div>
+
+                <div class="expert-card" onclick="startChat('Adv. Rajesh Kumar')">
+                    <div class="expert-avatar">
+                        <i class="fas fa-briefcase"></i>
+                    </div>
+                    <div class="expert-name">Adv. Rajesh Kumar</div>
+                    <div class="expert-specialization">Criminal Law Specialist</div>
+                    <div class="expert-rating">
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        4.8
+                    </div>
+                    <button class="connect-btn">Connect Now</button>
+                </div>
+
+                <div class="expert-card" onclick="startChat('Dr. Meera Patel')">
+                    <div class="expert-avatar">
+                        <i class="fas fa-female"></i>
+                    </div>
+                    <div class="expert-name">Dr. Meera Patel</div>
+                    <div class="expert-specialization">Family Law Expert</div>
+                    <div class="expert-rating">
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        4.7
+                    </div>
+                    <button class="connect-btn">Connect Now</button>
+                </div>
+
+                <div class="expert-card" onclick="startChat('Prof. Arjun Singh')">
+                    <div class="expert-avatar">
+                        <i class="fas fa-graduation-cap"></i>
+                    </div>
+                    <div class="expert-name">Prof. Arjun Singh</div>
+                    <div class="expert-specialization">Corporate Law Professor</div>
+                    <div class="expert-rating">
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        4.9
+                    </div>
+                    <button class="connect-btn">Connect Now</button>
+                </div>
+            </div>
+
+            <div id="chatArea" class="chat-area" style="display: none;">
+                <div id="chatMessages"></div>
+            </div>
+
+            <div id="messageInput" class="message-input" style="display: none;">
+                <input type="text" placeholder="Type your message..." id="messageText">
+                <button class="send-btn" onclick="sendMessage()">
+                    <i class="fas fa-paper-plane"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Expert Registration Modal -->
+    <div id="expertModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title">Become a Legal Expert</h2>
+                <button class="close-btn" onclick="closeExpertModal()">&times;</button>
+            </div>
+            
+            <form id="expertForm" onsubmit="submitExpertForm(event)">
+                <div class="form-group">
+                    <label class="form-label">Full Name</label>
+                    <input type="text" class="form-input" required placeholder="Enter your full name">
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Email Address</label>
+                    <input type="email" class="form-input" required placeholder="Enter your email">
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Bar Council Registration Number</label>
+                    <input type="text" class="form-input" required placeholder="Enter your Bar Council ID">
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Years of Experience</label>
+                    <input type="number" class="form-input" required placeholder="Years of legal practice" min="0">
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Specialization</label>
+                    <select class="form-input" required>
+                        <option value="">Select your specialization</option>
+                        <option value="constitutional">Constitutional Law</option>
+                        <option value="criminal">Criminal Law</option>
+                        <option value="civil">Civil Law</option>
+                        <option value="corporate">Corporate Law</option>
+                        <option value="family">Family Law</option>
+                        <option value="property">Property Law</option>
+                        <option value="taxation">Taxation Law</option>
+                        <option value="intellectual">Intellectual Property</option>
+                        <option value="environmental">Environmental Law</option>
+                        <option value="other">Other</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Professional Summary</label>
+                    <textarea class="form-input form-textarea" required placeholder="Brief description of your legal expertise and experience"></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Education Qualifications</label>
+                    <textarea class="form-input form-textarea" required placeholder="List your educational qualifications"></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Languages Spoken</label>
+                    <input type="text" class="form-input" required placeholder="e.g., English, Hindi, Tamil">
+                </div>
+
+                <button type="submit" class="submit-btn">Submit Application</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- WhatsApp Style Chat Button -->
+    <button class="whatsapp-chat-btn" id="chatBtn" onclick="toggleChat()">
+        <i class="fas fa-comments"></i>
+    </button>
+
+    <!-- Connect Modal -->
+    <div class="connect-modal" id="connectModal">
+        <h3>Connect with Lawyers</h3>
+        <div class="lawyer-list">
+            <div class="lawyer-item" onclick="connectToLawyer('Rohini', 'Constitutional Law Expert')">
+                <div class="lawyer-item-avatar">
+                    <i class="fas fa-user-graduate"></i>
+                </div>
+                <div class="lawyer-item-info">
+                    <h4>Adv. Rohini Sharma</h4>
+                    <p>Constitutional Law Expert</p>
+                </div>
+            </div>
+            <div class="lawyer-item" onclick="connectToLawyer('Rajesh', 'Criminal Law Specialist')">
+                <div class="lawyer-item-avatar">
+                    <i class="fas fa-briefcase"></i>
+                </div>
+                <div class="lawyer-item-info">
+                    <h4>Adv. Rajesh Kumar</h4>
+                    <p>Criminal Law Specialist</p>
+                </div>
+            </div>
+        </div>
+        <button class="connect-modal-close" onclick="closeConnectModal()">Close</button>
+    </div>
+
+    <!-- WhatsApp Style Chat Container -->
+    <div class="chat-container" id="chatContainer">
+        <div class="chat-header">
+            <div class="chat-header-info">
+                <div class="lawyer-avatar">
+                    <i class="fas fa-user-graduate"></i>
+                </div>
+                <div class="lawyer-details">
+                    <h4 id="currentLawyerName">Select a Lawyer</h4>
+                    <p id="currentLawyerStatus">Click Connect to choose</p>
+                </div>
+            </div>
+            <div>
+                <button class="chat-close" onclick="showConnectModal()" title="Connect">
+                    <i class="fas fa-link"></i>
+                </button>
+                <button class="chat-close" onclick="closeChat()" title="Close">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+        </div>
+        
+        <div class="chat-messages" id="chatMessages">
+            <div class="message received">
+                <div class="message-bubble">
+                    Welcome to LawHub! Click "Connect" above to choose a lawyer to chat with.
+                    <div class="message-time">Just now</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="chat-input-container">
+            <input type="text" class="chat-input" id="chatInput" placeholder="Type your message..." onkeypress="handleChatKeyPress(event)">
+            <button class="send-message-btn" onclick="sendChatMessage()">
+                <i class="fas fa-paper-plane"></i>
+            </button>
+        </div>
+    </div>
+
+    <script>
+        // Initialize Chart
+        document.addEventListener('DOMContentLoaded', function() {
+            try {
+                const ctx = document.getElementById('progressChart');
+                if (ctx && typeof Chart !== 'undefined') {
+                    new Chart(ctx, {
+                        type: 'doughnut',
+                        data: {
+                            labels: ['Completed', 'In Progress', 'Not Started'],
+                            datasets: [{
+                                data: [0, 0, 100],
+                                backgroundColor: [
+                                    '#4CAF50',
+                                    '#FF9800',
+                                    'rgba(255, 255, 255, 0.2)'
+                                ],
+                                borderWidth: 0
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            plugins: {
+                                legend: {
+                                    position: 'bottom',
+                                    labels: {
+                                        color: 'white',
+                                        usePointStyle: true,
+                                        padding: 20
+                                    }
+                                }
+                            }
+                        }
+                    });
+                } else {
+                    console.log('Chart.js not loaded, showing fallback');
+                    document.getElementById('progressChart').style.display = 'none';
+                    document.getElementById('chartFallback').style.display = 'block';
+                }
+            } catch (error) {
+                console.error('Chart initialization error:', error);
+                document.getElementById('progressChart').style.display = 'none';
+                document.getElementById('chartFallback').style.display = 'block';
+            }
+        });
+
+        // Navigation
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            sidebar.classList.toggle('mobile-hidden');
+        }
+
+        // Chat Modal Functions
+        function openChatModal() {
+            document.getElementById('chatModal').classList.add('active');
+        }
+
+        function closeChatModal() {
+            document.getElementById('chatModal').classList.remove('active');
+            // Reset chat view
+            document.querySelector('.expert-list').style.display = 'grid';
+            document.getElementById('chatArea').style.display = 'none';
+            document.getElementById('messageInput').style.display = 'none';
+        }
+
+        let currentExpert = '';
+
+        function startChat(expertName) {
+            currentExpert = expertName;
+            document.querySelector('.expert-list').style.display = 'none';
+            document.getElementById('chatArea').style.display = 'block';
+            document.getElementById('messageInput').style.display = 'flex';
+            
+            // Add welcome message
+            const chatMessages = document.getElementById('chatMessages');
+            chatMessages.innerHTML = `
+                <div class="message expert">
+                    <div class="message-sender">${expertName}</div>
+                    <div class="message-text">Hello! I'm ${expertName}. How can I help you with your legal questions today?</div>
+                    <div class="message-time">Just now</div>
+                </div>
+            `;
+        }
+
+        function sendMessage() {
+            const messageText = document.getElementById('messageText');
+            const message = messageText.value.trim();
+            
+            if (message) {
+                const chatMessages = document.getElementById('chatMessages');
+                
+                // Add user message
+                const userMessage = document.createElement('div');
+                userMessage.className = 'message user';
+                userMessage.innerHTML = `
+                    <div class="message-sender">You</div>
+                    <div class="message-text">${message}</div>
+                    <div class="message-time">Just now</div>
+                `;
+                chatMessages.appendChild(userMessage);
+                
+                // Simulate expert response
+                setTimeout(() => {
+                    const expertMessage = document.createElement('div');
+                    expertMessage.className = 'message expert';
+                    expertMessage.innerHTML = `
+                        <div class="message-sender">${currentExpert}</div>
+                        <div class="message-text">Thank you for your question. I'll provide you with detailed guidance on this legal matter. Let me analyze your query and get back to you with comprehensive information.</div>
+                        <div class="message-time">Just now</div>
+                    `;
+                    chatMessages.appendChild(expertMessage);
+                    chatMessages.scrollTop = chatMessages.scrollHeight;
+                }, 1000);
+                
+                messageText.value = '';
+                chatMessages.scrollTop = chatMessages.scrollHeight;
+            }
+        }
+
+        // Expert Modal Functions
+        function openExpertModal() {
+            document.getElementById('expertModal').classList.add('active');
+        }
+
+        function closeExpertModal() {
+            document.getElementById('expertModal').classList.remove('active');
+        }
+
+        function submitExpertForm(event) {
+            event.preventDefault();
+            alert('Thank you for your application! We will review your credentials and get back to you within 2-3 business days.');
+            closeExpertModal();
+        }
+
+        // Enter key support for chat
+        document.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter' && e.target.id === 'messageText') {
+                sendMessage();
+            }
+        });
+
+        // Navigation handling
+        document.addEventListener('DOMContentLoaded', function() {
+            const navLinks = document.querySelectorAll('.nav-link');
+            
+            navLinks.forEach(link => {
+                link.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    
+                    // Remove active class from all links
+                    navLinks.forEach(l => l.classList.remove('active'));
+                    
+                    // Add active class to clicked link
+                    this.classList.add('active');
+                    
+                    // Hide all sections
+                    const sections = document.querySelectorAll('.section-content');
+                    sections.forEach(section => section.style.display = 'none');
+                    
+                    // Show selected section
+                    const sectionId = this.getAttribute('data-section') + '-section';
+                    const targetSection = document.getElementById(sectionId);
+                    if (targetSection) {
+                        targetSection.style.display = 'block';
+                    }
+                    
+                    console.log('Switched to:', this.getAttribute('data-section'));
+                });
+            });
+        });
+
+        // Course enrollment
+        document.addEventListener('click', function(e) {
+            if (e.target.classList.contains('start-learning-btn')) {
+                const courseTitle = e.target.closest('.course-card').querySelector('.course-title').textContent;
+                alert(`Welcome to "${courseTitle}"! Your learning journey begins now. Navigate to "My Courses" to access your enrolled courses.`);
+            }
+        });
+
+        // Search Law Function
+        function searchLaw() {
+            const searchInput = document.getElementById('searchInput');
+            const query = searchInput.value.trim();
+            
+            if (query) {
+                alert(`🔍 Searching for: "${query}"\n\nFound relevant legal documents:\n• Indian Constitution Article 21 - Right to Life\n• Criminal Procedure Code Section 154\n• Contract Act 1872 Section 10\n\nFull search functionality coming soon!`);
+                searchInput.value = '';
+            } else {
+                alert('Please enter a search term');
+            }
+        }
+
+        // Enter key for search
+        document.getElementById('searchInput').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                searchLaw();
+            }
+        });
+
+        // WhatsApp Style Chat Functions
+        let currentLawyer = null;
+        let chatOpen = false;
+
+        function toggleChat() {
+            const chatContainer = document.getElementById('chatContainer');
+            const connectModal = document.getElementById('connectModal');
+            
+            if (!chatOpen) {
+                chatContainer.classList.add('active');
+                chatOpen = true;
+            } else {
+                chatContainer.classList.remove('active');
+                connectModal.classList.remove('active');
+                chatOpen = false;
+            }
+        }
+
+        function closeChat() {
+            document.getElementById('chatContainer').classList.remove('active');
+            document.getElementById('connectModal').classList.remove('active');
+            chatOpen = false;
+        }
+
+        function showConnectModal() {
+            document.getElementById('connectModal').classList.add('active');
+        }
+
+        function closeConnectModal() {
+            document.getElementById('connectModal').classList.remove('active');
+        }
+
+        function connectToLawyer(name, specialization) {
+            const confirmConnect = confirm(`Do you want to connect with Adv. ${name}?\n\nSpecialization: ${specialization}\n\nClick OK to start chatting.`);
+            
+            if (confirmConnect) {
+                currentLawyer = name;
+                document.getElementById('currentLawyerName').textContent = `Adv. ${name}`;
+                document.getElementById('currentLawyerStatus').textContent = `${specialization} • Online`;
+                
+                // Close connect modal
+                closeConnectModal();
+                
+                // Clear previous messages and add welcome message
+                const chatMessages = document.getElementById('chatMessages');
+                chatMessages.innerHTML = `
+                    <div class="message received">
+                        <div class="message-bubble">
+                            Hello! I'm Adv. ${name}. I specialize in ${specialization}. How can I help you with your legal questions today?
+                            <div class="message-time">${getCurrentTime()}</div>
+                        </div>
+                    </div>
+                `;
+                
+                // Enable chat input
+                document.getElementById('chatInput').disabled = false;
+                document.getElementById('chatInput').placeholder = `Type your message to Adv. ${name}...`;
+            }
+        }
+
+        function sendChatMessage() {
+            const chatInput = document.getElementById('chatInput');
+            const message = chatInput.value.trim();
+            
+            if (message && currentLawyer) {
+                const chatMessages = document.getElementById('chatMessages');
+                
+                // Add user message
+                const userMessage = document.createElement('div');
+                userMessage.className = 'message sent';
+                userMessage.innerHTML = `
+                    <div class="message-bubble">
+                        ${message}
+                        <div class="message-time">${getCurrentTime()}</div>
+                    </div>
+                `;
+                chatMessages.appendChild(userMessage);
+                
+                // Clear input
+                chatInput.value = '';
+                
+                // Scroll to bottom
+                chatMessages.scrollTop = chatMessages.scrollHeight;
+                
+                // Simulate lawyer response
+                setTimeout(() => {
+                    const lawyerMessage = document.createElement('div');
+                    lawyerMessage.className = 'message received';
+                    lawyerMessage.innerHTML = `
+                        <div class="message-bubble">
+                            Thank you for your question about "${message}". Based on my expertise, I can provide you with detailed legal guidance. Let me analyze this matter and provide you with comprehensive information.
+                            <div class="message-time">${getCurrentTime()}</div>
+                        </div>
+                    `;
+                    chatMessages.appendChild(lawyerMessage);
+                    chatMessages.scrollTop = chatMessages.scrollHeight;
+                }, 1500);
+                
+            } else if (!currentLawyer) {
+                alert('Please connect with a lawyer first by clicking the Connect button.');
+            }
+        }
+
+        function handleChatKeyPress(event) {
+            if (event.key === 'Enter') {
+                sendChatMessage();
+            }
+        }
+
+        function getCurrentTime() {
+            const now = new Date();
+            return now.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+        }
+
+        // Navigation functionality
+        function initNavigation() {
+            const navLinks = document.querySelectorAll('.nav-link');
+            const contentSections = document.querySelectorAll('.content-section');
+
+            navLinks.forEach(link => {
+                link.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    
+                    // Remove active class from all nav links
+                    navLinks.forEach(navLink => navLink.classList.remove('active'));
+                    
+                    // Add active class to clicked nav link
+                    this.classList.add('active');
+                    
+                    // Hide all content sections
+                    contentSections.forEach(section => section.classList.remove('active'));
+                    
+                    // Show selected content section
+                    const targetSection = this.getAttribute('data-section');
+                    const targetElement = document.getElementById(targetSection + '-section');
+                    if (targetElement) {
+                        targetElement.classList.add('active');
+                    }
+                });
+            });
+        }
+
+        // Load user name on page load
+        document.addEventListener('DOMContentLoaded', async function() {
+            // Initialize navigation
+            initNavigation();
+            const supabase = window.supabase.createClient(
+                'https://wnejyltcmihxiwvqgspx.supabase.co',
+                'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InduZWp5bHRjbWloeGl3dnFnc3B4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTQ5Mjk1ODcsImV4cCI6MjA3MDUwNTU4N30.pIYpLXs0YLmXiPi8Bkio-goGpBKSFdaiDcJtBePz8wQ'
+            );
+
+            try {
+                const { data: { user }, error } = await supabase.auth.getUser();
+                
+                if (error) {
+                    console.error('Error getting user:', error);
+                    // Redirect to login if no valid session
+                    window.location.href = 'login2.html';
+                    return;
+                }
+
+                if (user && user.user_metadata && user.user_metadata.name) {
+                    const welcomeMessage = document.getElementById('welcome-message');
+                    welcomeMessage.textContent = `Welcome to Your Legal Journey, ${user.user_metadata.name}! ⚖️`;
+                    
+                    // Update profile section
+                    const profileName = document.getElementById('profile-name');
+                    const profileEmail = document.getElementById('profile-email');
+                    if (profileName) profileName.textContent = user.user_metadata.name;
+                    if (profileEmail) profileEmail.value = user.email;
+                } else {
+                    // If no name found, redirect to login
+                    window.location.href = 'login2.html';
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                window.location.href = 'login2.html';
+            }
+        });
+    </script>
+</body>
+</html>
