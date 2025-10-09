@@ -141,13 +141,22 @@ router.post('/expert-application', verifyToken, async (req, res) => {
         }
         
         // Create expert application with user details
+        // Accept both yearsOfExperience (number) and experience (string)
+        let experienceValue = req.body.experience;
+        if (!experienceValue && req.body.yearsOfExperience) {
+            experienceValue = String(req.body.yearsOfExperience);
+        }
+        // If yearsOfExperience is a range (e.g., "6-10"), keep as string
+        if (!experienceValue && req.body.yearsOfExperienceRange) {
+            experienceValue = req.body.yearsOfExperienceRange;
+        }
         const expertApplication = new ExpertApplication({
             userId: req.user.userId,
             userEmail: user.email,
             userName: user.name,
             barCouncilId: req.body.barCouncilId,
             licenseYear: req.body.licenseYear,
-            experience: req.body.experience,
+            experience: experienceValue,
             specialization: req.body.specialization,
             firmName: req.body.firmName || '',
             location: req.body.location,

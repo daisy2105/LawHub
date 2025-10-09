@@ -3066,25 +3066,58 @@
             showCustomAlert('� LAWHUB EXPERTS', 'Connecting you with our certified legal professionals! Your consultation is being prepared.', 'success');
         }
 
-        function openExpertModal() {
+        async function openExpertModal() {
             addCommandLog('Expert application form opened...');
             
-            // Check if application already submitted
-            const isSubmitted = localStorage.getItem('expertApplicationSubmitted');
-            if (isSubmitted === 'true') {
-                const submittedAt = localStorage.getItem('expertApplicationSubmittedAt');
-                const submissionDate = submittedAt ? new Date(submittedAt).toLocaleDateString() : 'recently';
+            // Check if application already submitted in database
+            try {
+                const userData = JSON.parse(localStorage.getItem('lawhub_user') || '{}');
+                const userEmail = userData.email;
                 
-                showCustomAlert(
-                    '⚠️ Application Already Submitted',
-                    `You have already submitted an expert application on ${submissionDate}. Please wait for admin review. You cannot submit multiple applications.`,
-                    'error'
-                );
-                addCommandLog('Expert application blocked - already submitted');
-                return;
+                if (!userEmail) {
+                    showCustomAlert('⚠️ Error', 'Please log in to submit expert application.', 'error');
+                    return;
+                }
+                
+                const response = await fetch(`http://localhost:3000/api/expert-application/status/${userEmail}`);
+                const result = await response.json();
+                
+                if (result.success && result.hasApplication) {
+                    const submissionDate = result.submittedAt ? new Date(result.submittedAt).toLocaleDateString() : 'recently';
+                    const status = result.status;
+                    let statusMessage = '';
+                    
+                    switch(status) {
+                        case 'pending':
+                            statusMessage = 'Your application is under review.';
+                            break;
+                        case 'approved':
+                            statusMessage = 'Your application has been approved!';
+                            break;
+                        case 'rejected':
+                            statusMessage = 'Your application was not approved. You may submit a new application.';
+                            break;
+                        default:
+                            statusMessage = 'Your application is being processed.';
+                    }
+                    
+                    if (status !== 'rejected') {
+                        showCustomAlert(
+                            '⚠️ Application Already Submitted',
+                            `You submitted an expert application on ${submissionDate}. ${statusMessage} You cannot submit multiple applications.`,
+                            'error'
+                        );
+                        addCommandLog(`Expert application blocked - status: ${status}`);
+                        return;
+                    }
+                }
+                
+                showExpertApplicationModal();
+            } catch (error) {
+                console.error('Error checking application status:', error);
+                addCommandLog('Error checking application status, proceeding...');
+                showExpertApplicationModal();
             }
-            
-            showExpertApplicationModal();
         }
 
         // Expert Application Modal Functions
@@ -3093,16 +3126,6 @@
             if (modal) {
                 modal.style.display = 'flex';
                 addCommandLog('Expert application modal displayed');
-                
-                // Check if form should be locked after modal opens
-                const isSubmitted = localStorage.getItem('expertApplicationSubmitted');
-                const expertForm = document.getElementById('expertApplicationForm');
-                
-                if (isSubmitted === 'true' && expertForm) {
-                    setTimeout(() => {
-                        lockExpertForm(expertForm);
-                    }, 100); // Small delay to ensure form is rendered
-                }
             }
         }
 
@@ -3273,10 +3296,7 @@
             // Insert the message at the end of the form
             form.appendChild(successMessage);
             
-            // Store the submission status in localStorage
-            localStorage.setItem('expertApplicationSubmitted', 'true');
-            localStorage.setItem('expertApplicationSubmittedAt', new Date().toISOString());
-            
+            // Application submitted - status now tracked in database
             addCommandLog('Expert application form locked to prevent duplicate submissions');
         }
 
@@ -4337,48 +4357,33 @@
                 
                 if (data.success && data.hasApplication) {
                     const serverStatus = data.status;
-                    const localStatus = getUserSpecificItem('expertApplicationStatus');
-                    
-                    console.log('📊 Server status:', serverStatus, '| Local status:', localStatus);
-                    
-                    // Update local status if server status has changed
-                    if (serverStatus !== localStatus) {
-                        setUserSpecificItem('expertApplicationStatus', serverStatus);
-                        
-                        // Add notification based on status change
-                        if (serverStatus === 'approved' && localStatus === 'pending') {
-                            permanentlyLockExpertForm();
-                            addNotification(
-                                'Application Approved!', 
-                                'Congratulations! Your expert application has been approved. You are now a verified legal expert on LawHub.',
-                                'success'
-                            );
-                        } else if (serverStatus === 'rejected' && localStatus === 'pending') {
-                            unlockExpertForm();
-                            addNotification(
-                                'Application Update', 
-                                'Your expert application has been reviewed. You can submit a new application with updated information.',
-                                'info'
-                            );
-                        } else if (serverStatus === 'pending' && !localStatus) {
-                            // New application detected
-                            setUserSpecificItem('expertApplicationStatus', 'pending');
-                            setUserSpecificItem('expertFormLocked', 'true');
-                            lockExpertForm();
-                        }
-                        
-                        updateNotificationDot();
-                        console.log('✅ Status updated from server:', serverStatus);
-                    } else {
-                        // Status hasn't changed, but ensure UI is in correct state
-                        if (serverStatus === 'approved') {
-                            permanentlyLockExpertForm();
-                            console.log('✅ Form permanently locked for approved application');
-                        } else if (serverStatus === 'pending') {
-                            lockExpertForm();
-                            console.log('✅ Form locked for pending application');
-                        }
+                    // Only use serverStatus from Atlas DB to control UI
+                    if (serverStatus === 'approved') {
+                        permanentlyLockExpertForm();
+                        addNotification(
+                            'Application Approved!', 
+                            'Congratulations! Your expert application has been approved. You are now a verified legal expert on LawHub.',
+                            'success'
+                        );
+                        console.log('✅ Form permanently locked for approved application');
+                    } else if (serverStatus === 'pending') {
+                        lockExpertForm();
+                        addNotification(
+                            'Application Submitted',
+                            'Your expert application is under review.',
+                            'pending'
+                        );
+                        console.log('✅ Form locked for pending application');
+                    } else if (serverStatus === 'rejected') {
+                        unlockExpertForm();
+                        addNotification(
+                            'Application Update', 
+                            'Your expert application has been reviewed. You can submit a new application with updated information.',
+                            'info'
+                        );
+                        console.log('✅ Form unlocked for rejected application');
                     }
+                    updateNotificationDot();
                 }
             } catch (error) {
                 console.error('❌ Error checking application status:', error);

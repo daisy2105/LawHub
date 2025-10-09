@@ -23,8 +23,8 @@ const expertApplicationSchema = new mongoose.Schema({
         required: true 
     },
     experience: { 
-        type: String, 
-        required: true 
+    type: String, // Accepts both number and range as string (e.g., "6", "6-10")
+    required: true 
     },
     specialization: { 
         type: String, 

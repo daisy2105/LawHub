@@ -8,7 +8,7 @@ const jwt = require('jsonwebtoken');
 require('dotenv').config();
 
 const JWT_SECRET = process.env.JWT_SECRET || 'lawhub-secret-key-2025';
-const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://localhost:27017/lawhub';
+const MONGODB_URI = process.env.MONGODB_URI;
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -125,7 +125,7 @@ app.get('/api/cleanup-expert-applications', async (req, res) => {
     console.log('🧹 Starting expert applications cleanup...');
     
     const { MongoClient } = require('mongodb');
-    const client = new MongoClient('mongodb://localhost:27017/lawhub');
+  const client = new MongoClient(MONGODB_URI);
     await client.connect();
     const db = client.db('lawhub');
     
@@ -567,7 +567,7 @@ app.get('/api/simple-stats', async (req, res) => {
     
     // Use MongoDB direct connection for users count (since users might not have Mongoose model in server.js)
     const MongoClient = require('mongodb').MongoClient;
-    const client = await MongoClient.connect('mongodb://localhost:27017/lawhub');
+  const client = await MongoClient.connect(MONGODB_URI);
     const db = client.db('lawhub');
     
     // Simple counts

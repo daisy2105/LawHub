@@ -11,7 +11,6 @@ const expertApplicationSchema = new mongoose.Schema({
   email: String,
   phoneNumber: String,
   expertise: String,
-  yearsOfExperience: Number,
   education: String,
   certifications: String,
   languagesSpoken: String,
@@ -25,8 +24,6 @@ const expertApplicationSchema = new mongoose.Schema({
   submittedAt: { type: Date, default: Date.now },
   updatedAt: { type: Date, default: Date.now }
 });
-
-let ExpertApplication;
 try {
   ExpertApplication = mongoose.model('ExpertApplication');
 } catch {
