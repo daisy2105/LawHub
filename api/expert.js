@@ -114,28 +114,79 @@ expertApplicationSchema.index({ status: 1 });
 
 const ExpertApplication = mongoose.model('ExpertApplication', expertApplicationSchema);
 
-// Submit Expert Application (simplified for testing)
-router.post('/expert-application', async (req, res) => {
+// Submit Expert Application (proper implementation)
+router.post('/expert-application', verifyToken, async (req, res) => {
     try {
         console.log('🔥 Expert application POST request received');
-        console.log('🔍 Headers:', req.headers);
-        console.log('📝 Body received:', req.body);
+        console.log('User ID from token:', req.user.userId);
+        console.log('Form data received:', req.body);
         
-        // For testing - just return success for now
-        console.log('✅ Expert application test successful');
+        // Check if user already has an application
+        const existingApplication = await ExpertApplication.findOne({ userId: req.user.userId });
+        if (existingApplication) {
+            return res.status(400).json({
+                success: false,
+                message: 'You have already submitted an expert application'
+            });
+        }
+        
+        // Get user details from User collection
+        const User = require('../models/User');
+        const user = await User.findById(req.user.userId);
+        if (!user) {
+            return res.status(404).json({
+                success: false,
+                message: 'User not found'
+            });
+        }
+        
+        // Create expert application with user details
+        const expertApplication = new ExpertApplication({
+            userId: req.user.userId,
+            userEmail: user.email,
+            userName: user.name,
+            barCouncilId: req.body.barCouncilId,
+            licenseYear: req.body.licenseYear,
+            experience: req.body.experience,
+            specialization: req.body.specialization,
+            firmName: req.body.firmName || '',
+            location: req.body.location,
+            education: req.body.education,
+            courts: req.body.courts || '',
+            bio: req.body.bio,
+            certifications: req.body.certifications || '',
+            languages: req.body.languages,
+            availability: req.body.availability || '9am-5pm',
+            termsAccepted: req.body.termsAccepted || true,
+            dataConsent: req.body.dataConsent || true,
+            status: 'pending',
+            submittedAt: new Date()
+        });
+        
+        // Save to database
+        await expertApplication.save();
+        
+        console.log('✅ Expert application saved successfully');
         
         res.status(201).json({
             success: true,
-            message: 'Expert application submitted successfully (test mode)',
-            applicationId: 'test-id-123'
+            message: 'Expert application submitted successfully',
+            applicationId: expertApplication._id
         });
         
     } catch (error) {
         console.error('Expert application error:', error);
+        
+        if (error.code === 11000) {
+            return res.status(400).json({
+                success: false,
+                message: 'Bar Council ID already registered'
+            });
+        }
+        
         res.status(500).json({
             success: false,
-            message: 'Failed to submit expert application',
-            error: error.message
+            message: 'Failed to submit expert application: ' + error.message
         });
     }
 });

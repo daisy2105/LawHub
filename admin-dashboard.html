@@ -393,55 +393,86 @@
             background: rgba(255, 255, 255, 0.1);
             backdrop-filter: blur(30px);
             border-radius: 20px;
-            padding: 30px;
-            max-width: 600px;
-            max-height: 90vh;
+            padding: 40px;
+            max-width: 800px;
+            width: 90%;
+            max-height: 85vh;
             overflow-y: auto;
             border: 1px solid rgba(255, 255, 255, 0.2);
             color: #fff;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
         }
 
         .modal-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 20px;
-            padding-bottom: 15px;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid rgba(255, 255, 255, 0.1);
         }
 
         .modal-header h3 {
             color: #fff;
-            font-size: 1.5rem;
+            font-size: 1.8rem;
             font-weight: 600;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
         }
 
         .close-btn {
-            background: none;
-            border: none;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
             font-size: 1.5rem;
             color: #888;
             cursor: pointer;
-            transition: color 0.3s ease;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
 
         .close-btn:hover {
             color: #fff;
+            background: rgba(255, 255, 255, 0.2);
+            border-color: rgba(255, 255, 255, 0.4);
         }
 
         .modal-body {
-            line-height: 1.6;
+            line-height: 1.8;
         }
 
         .modal-body h4 {
             color: #fff;
-            margin-bottom: 10px;
-            margin-top: 20px;
+            margin-bottom: 15px;
+            margin-top: 25px;
+            font-size: 1.2rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .modal-body h4:first-child {
+            margin-top: 0;
         }
 
         .modal-body p {
-            color: #ccc;
-            margin-bottom: 8px;
+            color: #e0e0e0;
+            margin-bottom: 12px;
+            padding: 5px 0;
+            font-size: 0.95rem;
+        }
+
+        .modal-body p strong {
+            color: #fff;
+            font-weight: 600;
+            display: inline-block;
+            min-width: 140px;
         }
 
         /* Loading */
@@ -802,13 +833,16 @@
             }
         }
 
+        // Backend API configuration
+        const API_BASE_URL = 'http://localhost:3000';
+        
         // Load overview data - WORKING VERSION WITH REAL DATA
         async function loadOverviewData() {
             try {
                 console.log('📊 Fetching REAL data from database...');
                 
                 // Fetch stats from API
-                const statsResponse = await fetch('/api/admin/stats');
+                const statsResponse = await fetch(`${API_BASE_URL}/api/admin/stats`);
                 
                 if (statsResponse.ok) {
                     const stats = await statsResponse.json();
@@ -826,7 +860,7 @@
                 }
                 
                 // Fetch recent activities from API
-                const activityResponse = await fetch('/api/admin/recent-activity');
+                const activityResponse = await fetch(`${API_BASE_URL}/api/admin/recent-activity`);
                 
                 if (activityResponse.ok) {
                     const activityData = await activityResponse.json();
@@ -905,7 +939,7 @@
             try {
                 console.log('👥 Loading users from database...');
                 const adminToken = localStorage.getItem('admin_token');
-                const response = await fetch('/api/admin/users', {
+                const response = await fetch(`${API_BASE_URL}/api/admin/users`, {
                     headers: { 'AdminToken': adminToken }
                 });
 
@@ -971,13 +1005,13 @@
             try {
                 console.log('🎓 Loading expert applications from database...');
                 const adminToken = localStorage.getItem('admin_token');
-                const response = await fetch('/api/admin/expert-applications', {
+                const response = await fetch(`${API_BASE_URL}/api/admin/expert-applications`, {
                     headers: { 'AdminToken': adminToken }
                 });
 
                 if (response.ok) {
                     const data = await response.json();
-                    const experts = data.expertApplications || data;
+                    const experts = data.applications || data.expertApplications || data;
                     console.log('✅ Loaded', experts.length, 'expert applications from database');
                     displayExperts(experts);
                 } else {
@@ -1015,8 +1049,8 @@
                 <div class="list-item">
                     <div class="item-header">
                         <div class="item-info">
-                            <h3>${expert.userName || expert.fullName || 'Unknown Applicant'}</h3>
-                            <p>${expert.userEmail || expert.email} • ${expert.specialization} • Bar Council: ${expert.barCouncilId}</p>
+                            <h3>${expert.fullName || expert.userName || 'Unknown Applicant'}</h3>
+                            <p>${expert.email || expert.userEmail} • ${expert.expertise || expert.specialization} • Bar Council: ${expert.barCouncilId}</p>
                         </div>
                         <div class="item-actions">
                             <span class="status-badge status-${expert.status || 'pending'}">${expert.status || 'pending'}</span>
@@ -1043,7 +1077,7 @@
             try {
                 console.log('📊 Loading activities from database...');
                 const adminToken = localStorage.getItem('admin_token');
-                const response = await fetch('/api/admin/activities', {
+                const response = await fetch(`${API_BASE_URL}/api/admin/activities`, {
                     headers: { 'AdminToken': adminToken }
                 });
 
@@ -1106,7 +1140,7 @@
             try {
                 console.log('🔄 Updating navigation badges from database...');
                 const adminToken = localStorage.getItem('admin_token');
-                const statsResponse = await fetch('/api/admin/stats', {
+                const statsResponse = await fetch(`${API_BASE_URL}/api/admin/stats`, {
                     headers: { 'AdminToken': adminToken }
                 });
                 
@@ -1130,58 +1164,84 @@
         async function viewUserDetails(userId) {
             try {
                 const adminToken = localStorage.getItem('admin_token');
-                const response = await fetch(`/api/admin/users/${userId}`, {
+                const response = await fetch(`${API_BASE_URL}/api/admin/users/${userId}`, {
                     headers: { 'AdminToken': adminToken }
                 });
 
                 if (response.ok) {
                     const data = await response.json();
                     const user = data.user || data;
-                    const profile = user.profile || {};
+                    const profile = user.profileDetails || {}; // Changed from user.profile to user.profileDetails
                     
                     let profileHTML = `
-                        <div style="max-height: 500px; overflow-y: auto;">
-                            <h4>👤 Personal Information</h4>
-                            <p><strong>Name:</strong> ${user.name || 'N/A'}</p>
-                            <p><strong>Email:</strong> ${user.email}</p>
-                            <p><strong>Phone:</strong> ${profile.phone || 'Not provided'}</p>
-                            <p><strong>City:</strong> ${profile.city || 'Not provided'}</p>
-                            <p><strong>Date of Birth:</strong> ${profile.dateOfBirth ? formatDate(profile.dateOfBirth) : 'Not provided'}</p>
-                            
-                            <h4>📚 Status & Background</h4>
-                            <p><strong>Current Status:</strong> ${profile.status || 'Not specified'}</p>`;
+                        <div style="max-height: 500px; overflow-y: auto; padding: 10px;">
+                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 30px; margin-bottom: 20px;">
+                                <div>
+                                    <h4>👤 Personal Information</h4>
+                                    <div style="background: rgba(255,255,255,0.05); padding: 20px; border-radius: 12px; margin-bottom: 20px;">
+                                        <p><strong>Name:</strong> ${user.name || 'N/A'}</p>
+                                        <p><strong>Email:</strong> ${user.email}</p>
+                                        <p><strong>Phone:</strong> ${profile.phone || 'Not provided'}</p>
+                                        <p><strong>City:</strong> ${profile.city || 'Not provided'}</p>
+                                        <p><strong>Date of Birth:</strong> ${profile.dateOfBirth ? formatDate(profile.dateOfBirth) : 'Not provided'}</p>
+                                    </div>
+                                </div>
+                                
+                                <div>
+                                    <h4>📚 Status & Background</h4>
+                                    <div style="background: rgba(255,255,255,0.05); padding: 20px; border-radius: 12px; margin-bottom: 20px;">
+                                        <p><strong>Current Status:</strong> ${profile.status || 'Not specified'}</p>`;
                     
                     // Show education or work details based on status
                     if (profile.status === 'student') {
                         profileHTML += `
-                            <p><strong>College:</strong> ${profile.collegeName || 'Not provided'}</p>
-                            <p><strong>Course:</strong> ${profile.course || 'Not provided'}</p>`;
-                    } else if (profile.status === 'working') {
+                                        <p><strong>College:</strong> ${profile.collegeName || 'Not provided'}</p>
+                                        <p><strong>Course:</strong> ${profile.course || 'Not provided'}</p>`;
+                    } else if (profile.status === 'working' || profile.status === 'employee') {
                         profileHTML += `
-                            <p><strong>Company:</strong> ${profile.companyName || 'Not provided'}</p>
-                            <p><strong>Designation:</strong> ${profile.designation || 'Not provided'}</p>`;
+                                        <p><strong>Company:</strong> ${profile.companyName || 'Not provided'}</p>
+                                        <p><strong>Designation:</strong> ${profile.designation || 'Not provided'}</p>`;
                     }
                     
                     profileHTML += `
-                            <p><strong>Learning Goal:</strong> ${profile.learningGoal || 'Not specified'}</p>
+                                        <p><strong>Learning Goal:</strong> ${profile.learningGoal || 'Not specified'}</p>
+                                    </div>
+                                </div>
+                            </div>
                             
-                            <h4>🎯 Interests</h4>
-                            <p>${profile.interests && profile.interests.length > 0 ? profile.interests.join(', ') : 'No interests specified'}</p>
+                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 30px;">
+                                <div>
+                                    <h4>🎯 Interests</h4>
+                                    <div style="background: rgba(255,255,255,0.05); padding: 20px; border-radius: 12px; margin-bottom: 20px;">
+                                        <p>${profile.interests && profile.interests.length > 0 ? profile.interests.join(', ') : 'No interests specified'}</p>
+                                    </div>
+                                </div>
+                                
+                                <div>
+                                    <h4>💫 Account Information</h4>
+                                    <div style="background: rgba(255,255,255,0.05); padding: 20px; border-radius: 12px; margin-bottom: 20px;">
+                                        <p><strong>Role:</strong> ${user.role || 'User'}</p>
+                                        <p><strong>Account Status:</strong> <span style="color: ${user.isActive ? '#51cf66' : '#ff6b6b'}">${user.isActive ? '✅ Active' : '❌ Inactive'}</span></p>
+                                        <p><strong>Profile Completed:</strong> <span style="color: ${profile.isComplete ? '#51cf66' : '#ffd43b'}">${profile.isComplete ? '✅ Yes' : '⚠️ No'}</span></p>
+                                    </div>
+                                </div>
+                            </div>
                             
-                            <h4>💫 Account Information</h4>
-                            <p><strong>Role:</strong> ${user.role || 'User'}</p>
-                            <p><strong>Account Status:</strong> ${user.isActive ? 'Active' : 'Inactive'}</p>
-                            <p><strong>Joined:</strong> ${formatDate(user.createdAt)}</p>
-                            <p><strong>Last Login:</strong> ${user.lastLogin ? formatDate(user.lastLogin) : 'Never'}</p>
-                            
-                            <h4>📊 Activity Summary</h4>
-                            <p><strong>Login Count:</strong> ${user.loginCount || 0}</p>
-                            <p><strong>Activity Count:</strong> ${user.activityCount || 0}</p>
-                            <p><strong>Profile Completed:</strong> ${profile.isComplete ? '✅ Yes' : '❌ No'}</p>
+                            <div style="margin-top: 20px;">
+                                <h4>📊 Activity Summary</h4>
+                                <div style="background: rgba(255,255,255,0.05); padding: 20px; border-radius: 12px; display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px;">
+                                    <p><strong>Joined:</strong> ${formatDate(user.createdAt)}</p>
+                                    <p><strong>Last Login:</strong> ${user.lastLogin ? formatDate(user.lastLogin) : 'Never'}</p>
+                                </div>
+                            </div>
                             
                             ${user.profile && user.profile.bio ? `
-                                <h4>📝 Bio</h4>
-                                <p style="font-style: italic; background: rgba(255,255,255,0.1); padding: 10px; border-radius: 8px;">${user.profile.bio}</p>
+                                <div style="margin-top: 20px;">
+                                    <h4>📝 Bio</h4>
+                                    <div style="background: rgba(255,255,255,0.05); padding: 20px; border-radius: 12px;">
+                                        <p style="font-style: italic; color: #e0e0e0; line-height: 1.6;">${user.profile.bio}</p>
+                                    </div>
+                                </div>
                             ` : ''}
                         </div>
                     `;
@@ -1200,30 +1260,73 @@
         async function viewExpertDetails(expertId) {
             try {
                 const adminToken = localStorage.getItem('admin_token');
-                const response = await fetch(`/api/admin/expert-applications/${expertId}`, {
+                const response = await fetch(`${API_BASE_URL}/api/admin/expert-applications/${expertId}`, {
                     headers: { 'AdminToken': adminToken }
                 });
 
                 if (response.ok) {
                     const data = await response.json();
-                    const expert = data.expertApplication || data;
+                    const expert = data.application || data;
                     showModal('Expert Application Details', `
-                        <h4>Personal Information</h4>
-                        <p><strong>Name:</strong> ${expert.userName || expert.fullName}</p>
-                        <p><strong>Email:</strong> ${expert.userEmail || expert.email}</p>
-                        <p><strong>Phone:</strong> ${expert.phone || 'N/A'}</p>
-                        
-                        <h4>Professional Information</h4>
-                        <p><strong>Bar Council ID:</strong> ${expert.barCouncilId}</p>
-                        <p><strong>Specialization:</strong> ${expert.specialization}</p>
-                        <p><strong>Years of Experience:</strong> ${expert.experience}</p>
-                        <p><strong>Practice Areas:</strong> ${expert.practiceAreas || 'N/A'}</p>
-                        
-                        <h4>Application Status</h4>
-                        <p><strong>Status:</strong> <span class="status-badge status-${expert.status}">${expert.status}</span></p>
-                        <p><strong>Applied:</strong> ${formatDate(expert.submittedAt || expert.createdAt)}</p>
-                        ${expert.reviewedAt ? `<p><strong>Reviewed:</strong> ${formatDate(expert.reviewedAt)}</p>` : ''}
-                        ${expert.reviewNotes ? `<p><strong>Review Note:</strong> ${expert.reviewNotes}</p>` : ''}
+                        <div style="max-height: 500px; overflow-y: auto; padding: 10px;">
+                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 30px; margin-bottom: 20px;">
+                                <div>
+                                    <h4>👤 Personal Information</h4>
+                                    <div style="background: rgba(255,255,255,0.05); padding: 20px; border-radius: 12px; margin-bottom: 20px;">
+                                        <p><strong>Name:</strong> ${expert.fullName || expert.userName || 'N/A'}</p>
+                                        <p><strong>Email:</strong> ${expert.email || expert.userEmail || 'N/A'}</p>
+                                        <p><strong>Bar Council ID:</strong> ${expert.barCouncilId || 'N/A'}</p>
+                                        <p><strong>License Year:</strong> ${expert.licenseYear || 'N/A'}</p>
+                                    </div>
+                                </div>
+                                
+                                <div>
+                                    <h4>⚖️ Professional Details</h4>
+                                    <div style="background: rgba(255,255,255,0.05); padding: 20px; border-radius: 12px; margin-bottom: 20px;">
+                                        <p><strong>Specialization:</strong> ${expert.expertise || expert.specialization || 'N/A'}</p>
+                                        <p><strong>Experience:</strong> ${expert.yearsOfExperience || expert.experience || 'N/A'}</p>
+                                        <p><strong>Location:</strong> ${expert.location || 'N/A'}</p>
+                                        <p><strong>Firm Name:</strong> ${expert.firmName || 'Not specified'}</p>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div style="margin-bottom: 20px;">
+                                <h4>🎓 Education & Background</h4>
+                                <div style="background: rgba(255,255,255,0.05); padding: 20px; border-radius: 12px;">
+                                    <p><strong>Education:</strong> ${expert.education || 'N/A'}</p>
+                                    <p><strong>Courts:</strong> ${expert.courts || 'Not specified'}</p>
+                                    <p><strong>Languages:</strong> ${expert.languagesSpoken || expert.languages || 'N/A'}</p>
+                                    <p><strong>Availability:</strong> ${expert.preferredConsultationHours || expert.availability || 'Not specified'}</p>
+                                </div>
+                            </div>
+                            
+                            <div style="margin-bottom: 20px;">
+                                <h4>📝 Professional Bio</h4>
+                                <div style="background: rgba(255,255,255,0.05); padding: 20px; border-radius: 12px;">
+                                    <p style="line-height: 1.6; color: #e0e0e0;">${expert.bio || 'No bio provided'}</p>
+                                </div>
+                            </div>
+                            
+                            ${expert.certifications ? `
+                                <div style="margin-bottom: 20px;">
+                                    <h4>🏆 Certifications</h4>
+                                    <div style="background: rgba(255,255,255,0.05); padding: 20px; border-radius: 12px;">
+                                        <p style="line-height: 1.6; color: #e0e0e0;">${expert.certifications}</p>
+                                    </div>
+                                </div>
+                            ` : ''}
+                            
+                            <div>
+                                <h4>📊 Application Status</h4>
+                                <div style="background: rgba(255,255,255,0.05); padding: 20px; border-radius: 12px; display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px;">
+                                    <p><strong>Status:</strong> <span class="status-badge status-${expert.status}" style="color: ${expert.status === 'approved' ? '#51cf66' : expert.status === 'rejected' ? '#ff6b6b' : '#ffd43b'}">${expert.status}</span></p>
+                                    <p><strong>Applied:</strong> ${formatDate(expert.submittedAt || expert.createdAt)}</p>
+                                    ${expert.reviewedAt ? `<p><strong>Reviewed:</strong> ${formatDate(expert.reviewedAt)}</p>` : ''}
+                                    ${expert.reviewNotes ? `<p><strong>Review Note:</strong> ${expert.reviewNotes}</p>` : ''}
+                                </div>
+                            </div>
+                        </div>
                     `);
                 } else {
                     throw new Error('Failed to fetch expert details');
@@ -1238,7 +1341,7 @@
         async function viewActivityDetails(activityId) {
             try {
                 const adminToken = localStorage.getItem('admin_token');
-                const response = await fetch(`/api/admin/activities/${activityId}`, {
+                const response = await fetch(`${API_BASE_URL}/api/admin/activities/${activityId}`, {
                     headers: { 'AdminToken': adminToken }
                 });
 
@@ -1279,13 +1382,13 @@
 
             try {
                 const adminToken = localStorage.getItem('admin_token');
-                const response = await fetch(`/api/admin/expert-applications/${expertId}/status`, {
+                const response = await fetch(`${API_BASE_URL}/api/admin/expert-applications/${expertId}`, {
                     method: 'PUT',
                     headers: {
                         'Content-Type': 'application/json',
                         'AdminToken': adminToken
                     },
-                    body: JSON.stringify({ status })
+                    body: JSON.stringify({ action: status })
                 });
 
                 if (response.ok) {
@@ -1309,7 +1412,7 @@
 
             try {
                 const adminToken = localStorage.getItem('admin_token');
-                const response = await fetch(`/api/admin/users/${userId}`, {
+                const response = await fetch(`${API_BASE_URL}/api/admin/users/${userId}`, {
                     method: 'DELETE',
                     headers: { 'AdminToken': adminToken }
                 });

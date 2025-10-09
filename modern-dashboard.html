@@ -537,6 +537,152 @@
             box-shadow: 0 6px 20px rgba(85, 107, 47, 0.4);
         }
 
+        /* Notification Styles */
+        .notification-btn {
+            position: relative;
+        }
+
+        .notification-dot {
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            width: 12px;
+            height: 12px;
+            background: #ef4444;
+            border-radius: 50%;
+            border: 2px solid white;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7); }
+            70% { box-shadow: 0 0 0 10px rgba(239, 68, 68, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); }
+        }
+
+        .notification-panel {
+            position: fixed;
+            top: 70px;
+            right: 20px;
+            width: 320px;
+            max-height: 400px;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+            border: 1px solid #e2e8f0;
+            overflow: hidden;
+            z-index: 9999;
+            display: none;
+            animation: slideDown 0.2s ease-out;
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .notification-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 12px 16px;
+            border-bottom: none;
+            font-weight: 600;
+            font-size: 14px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .notification-header button {
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            color: white;
+            font-size: 11px;
+            padding: 4px 8px;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: background 0.2s ease;
+        }
+
+        .notification-header button:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        .notification-list {
+            max-height: 280px;
+            overflow-y: auto;
+        }
+
+        .notification-item {
+            padding: 12px 16px;
+            border-bottom: 1px solid #f1f5f9;
+            transition: background 0.2s ease;
+            cursor: pointer;
+        }
+
+        .notification-item:last-child {
+            border-bottom: none;
+        }
+
+        .notification-item:hover {
+            background: #f8fafc;
+        }
+
+        .notification-item.unread {
+            background: linear-gradient(90deg, #fef7ff 0%, #ffffff 100%);
+            border-left: 3px solid #8b5cf6;
+            position: relative;
+        }
+
+        .notification-item.unread::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            right: 12px;
+            transform: translateY(-50%);
+            width: 8px;
+            height: 8px;
+            background: #8b5cf6;
+            border-radius: 50%;
+        }
+
+        .notification-title {
+            font-weight: 600;
+            color: #374151;
+            margin-bottom: 4px;
+            font-size: 13px;
+        }
+
+        .notification-message {
+            color: #6b7280;
+            font-size: 12px;
+            margin-bottom: 4px;
+            line-height: 1.4;
+        }
+
+        .notification-time {
+            color: #9ca3af;
+            font-size: 11px;
+        }
+
+        .notification-empty {
+            text-align: center;
+            padding: 32px 16px;
+            color: #9ca3af;
+        }
+
+        .notification-empty i {
+            font-size: 24px;
+            margin-bottom: 8px;
+            display: block;
+        }
+
         /* Stats Cards */
         .stats-grid {
             display: grid;
@@ -1977,6 +2123,11 @@
                     </div>
                 </div>
                 <div class="header-actions">
+                    <button class="action-btn notification-btn" onclick="toggleNotifications()" style="position: relative;">
+                        <i class="fas fa-bell"></i>
+                        <span id="notificationDot" class="notification-dot" style="display: none;"></span>
+                        Notifications
+                    </button>
                     <button class="action-btn" onclick="openExpertModal()">
                         <i class="fas fa-user-tie"></i>
                         Become Expert
@@ -2767,31 +2918,6 @@
                     </div>
                 </div>
 
-                <!-- Document Upload -->
-                <div class="form-row">
-                    <div class="form-group full-width">
-                        <label for="expertDocuments">Upload Supporting Documents</label>
-                        <input type="file" id="expertDocuments" name="documents" multiple accept=".pdf,.jpg,.jpeg,.png">
-                        <small style="color: #666; font-size: 12px;">Upload Bar Council certificate, degree certificates, etc. (Max 5MB each)</small>
-                    </div>
-                </div>
-
-                <!-- Terms and Conditions -->
-                <div class="form-row">
-                    <div class="form-group full-width">
-                        <label class="interest-item">
-                            <input type="checkbox" name="termsAccepted" required>
-                            <span class="checkmark"></span>
-                            I agree to the <strong>Terms of Service</strong> and <strong>Expert Code of Conduct</strong> *
-                        </label>
-                        <label class="interest-item">
-                            <input type="checkbox" name="dataConsent" required>
-                            <span class="checkmark"></span>
-                            I consent to verification of my credentials and background check *
-                        </label>
-                    </div>
-                </div>
-
                 <!-- Form Actions -->
                 <div class="form-actions">
                     <button type="submit" class="save-profile-btn">
@@ -2803,6 +2929,24 @@
                     <p class="required-note">* Required fields | Application will be reviewed by our admin team</p>
                 </div>
             </form>
+        </div>
+    </div>
+
+        <!-- End of main content -->
+        </div> <!-- /main-content -->
+    </div> <!-- /dashboard-container -->
+
+    <!-- Notification Panel - Outside all containers for proper positioning -->
+    <div id="notificationPanel" class="notification-panel">
+        <div class="notification-header">
+            <span><i class="fas fa-bell"></i> Notifications</span>
+            <button onclick="markAllAsRead()">Mark all read</button>
+        </div>
+        <div class="notification-list" id="notificationList">
+            <div class="notification-empty">
+                <i class="far fa-bell"></i>
+                <div>No notifications yet</div>
+            </div>
         </div>
     </div>
 
@@ -2866,6 +3010,10 @@
 
         function toggleCommandTerminal() {
             const terminal = document.getElementById('commandTerminal');
+            if (!terminal) {
+                console.log('Command terminal element not found');
+                return;
+            }
             terminal.classList.toggle('active');
             
             if (terminal.classList.contains('active')) {
@@ -2974,104 +3122,83 @@
                     e.preventDefault();
                     
                     try {
+                        // Get authentication token
+                        const token = localStorage.getItem('lawhub_token');
+                        if (!token) {
+                            throw new Error('Please login first to submit expert application');
+                        }
+                        
+                        // Get user details from localStorage
+                        const userData = JSON.parse(localStorage.getItem('lawhub_user') || '{}');
+                        const userEmail = userData.email || 'demo@example.com';
+                        const userName = userData.name || 'Demo User';
+                        
                         const formData = new FormData(expertForm);
-                        const expertData = {};
-                        
-                        // Convert FormData to regular object
-                        for (let [key, value] of formData.entries()) {
-                            expertData[key] = value;
-                        }
-                        
-                        // Handle file uploads
-                        const documentsInput = document.getElementById('expertDocuments');
-                        if (documentsInput.files.length > 0) {
-                            const documents = [];
-                            for (let file of documentsInput.files) {
-                                if (file.size > 5 * 1024 * 1024) { // 5MB limit
-                                    showCustomAlert('File Too Large', `${file.name} is larger than 5MB. Please upload a smaller file.`, 'error');
-                                    return;
-                                }
-                                
-                                const base64 = await convertFileToBase64(file);
-                                documents.push({
-                                    name: file.name,
-                                    type: file.type,
-                                    size: file.size,
-                                    data: base64
-                                });
-                            }
-                            expertData.documents = documents;
-                        }
-                        
-                        // Add logged-in user information
-                        const userToken = localStorage.getItem('token');
-                        if (userToken) {
-                            try {
-                                // Decode token to get user info
-                                const payload = JSON.parse(atob(userToken.split('.')[1]));
-                                expertData.userEmail = payload.email || 'unknown@email.com';
-                                expertData.userName = payload.name || 'Unknown User';
-                                expertData.userId = payload.userId;
-                                console.log('Added user info:', { email: expertData.userEmail, name: expertData.userName });
-                            } catch (error) {
-                                console.warn('Could not decode token:', error);
-                                expertData.userEmail = 'unknown@email.com';
-                                expertData.userName = 'Unknown User';
-                            }
-                        } else {
-                            expertData.userEmail = 'unknown@email.com';
-                            expertData.userName = 'Unknown User';
-                        }
+                        const expertData = {
+                            // Map frontend fields to server/database field names
+                            fullName: userName,
+                            email: userEmail,
+                            phoneNumber: formData.get('phoneNumber') || '',
+                            expertise: formData.get('specialization'), // Map specialization to expertise
+                            yearsOfExperience: formData.get('experience'), // Map experience to yearsOfExperience
+                            education: formData.get('education'),
+                            certifications: formData.get('certifications') || '',
+                            languagesSpoken: formData.get('languages'), // Map languages to languagesSpoken
+                            preferredConsultationHours: formData.get('availability') || '9am-5pm', // Map availability
+                            // Additional fields that might be needed
+                            barCouncilId: formData.get('barCouncilId'),
+                            licenseYear: parseInt(formData.get('licenseYear')),
+                            firmName: formData.get('firmName') || '',
+                            location: formData.get('location'),
+                            courts: formData.get('courts') || '',
+                            bio: formData.get('bio'),
+                            termsAccepted: true,
+                            dataConsent: true
+                        };
                         
                         addCommandLog('Submitting expert application...');
                         
-                        // Check if user is logged in (temporary bypass for testing)
-                        const token = localStorage.getItem('token');
-                        console.log('Token check:', token ? 'Token exists' : 'No token');
-                        
-                        // Continue even without token for testing
                         const headers = {
-                            'Content-Type': 'application/json'
+                            'Content-Type': 'application/json',
+                            'Authorization': 'Bearer ' + token
                         };
                         
-                        if (token) {
-                            headers['Authorization'] = 'Bearer ' + token;
-                        }
-                        
-                        console.log('Sending request to /api/expert-application');
+                        console.log('Sending request to http://localhost:3000/api/expert-application');
                         console.log('Request data:', expertData);
                         
-                        const response = await fetch('/api/expert-application', {
+                        const response = await fetch('http://localhost:3000/api/expert-application', {
                             method: 'POST',
                             headers: headers,
                             body: JSON.stringify(expertData)
                         });
                         
-                        // Check if response is actually JSON
-                        const contentType = response.headers.get('content-type');
-                        if (!contentType || !contentType.includes('application/json')) {
-                            throw new Error(`Server returned non-JSON response (${response.status}): ${response.statusText}`);
+                        let result;
+                        try {
+                            result = await response.json();
+                        } catch (jsonError) {
+                            console.error('Failed to parse JSON response:', jsonError);
+                            const responseText = await response.text();
+                            console.error('Response was:', responseText);
+                            throw new Error(`Server returned invalid JSON. Status: ${response.status}, Response: ${responseText}`);
                         }
-                        
-                        const result = await response.json();
                         
                         if (response.ok) {
                             // Lock the form to prevent duplicate submissions
-                            lockExpertForm(expertForm);
+                            lockExpertForm();
                             
-                            showCustomAlert('Application Submitted!', 'Your expert application has been submitted successfully. Our admin team will review it within 2-3 business days.', 'success');
+                            // Store submission status
+                            setUserSpecificItem('expertApplicationStatus', 'pending');
+                            setUserSpecificItem('expertApplicationSubmittedAt', new Date().toISOString());
+                            
+                            // Add notification
+                            addNotification('Application Submitted', 'Your expert application has been submitted and is under review.', 'pending');
+                            
+                            showCustomAlert('Application Submitted!', 'Your expert application has been submitted successfully. Our admin team will review it within 2-3 business days. You will be notified when there is an update.', 'success');
                             closeExpertApplicationModal();
                             expertForm.reset();
                             addCommandLog('Expert application submitted successfully');
                         } else {
-                            // Handle duplicate submission specifically
-                            if (response.status === 409 && result.alreadySubmitted) {
-                                lockExpertForm(expertForm);
-                                showCustomAlert('Already Submitted', result.message || 'You have already submitted an expert application.', 'error');
-                                addCommandLog('Expert application blocked - already submitted');
-                            } else {
-                                throw new Error(result.message || `Server error (${response.status}): ${response.statusText}`);
-                            }
+                            throw new Error(result.message || `Server error (${response.status}): ${response.statusText}`);
                         }
                         
                     } catch (error) {
@@ -3081,10 +3208,8 @@
                         // Handle specific error types
                         if (error.message.includes('Failed to fetch') || error.message.includes('Unable to connect')) {
                             errorMessage = 'Network error: Cannot connect to server. Please check if the server is running.';
-                        } else if (error.message.includes('Unexpected end of JSON input')) {
-                            errorMessage = 'Server communication error: Invalid response received. Please try again or refresh the page.';
-                        } else if (error.message.includes('401') || error.message.includes('log in first')) {
-                            errorMessage = 'Authentication error: Please log out and log in again.';
+                        } else if (error.message.includes('login first')) {
+                            errorMessage = 'Authentication error: Please log in to submit an expert application.';
                         }
                         
                         showCustomAlert('Submission Failed', errorMessage, 'error');
@@ -3891,7 +4016,7 @@
             try {
                 console.log('👥 Loading experts from database...');
                 
-                const token = localStorage.getItem('token');
+                const token = localStorage.getItem('lawhub_token');
                 const response = await fetch('/api/experts', {
                     headers: {
                         'Authorization': 'Bearer ' + token
@@ -4011,7 +4136,7 @@
         
         async function viewExpertProfile(expertId) {
             try {
-                const token = localStorage.getItem('token');
+                const token = localStorage.getItem('lawhub_token');
                 const response = await fetch(`/api/experts/${expertId}`, {
                     headers: {
                         'Authorization': 'Bearer ' + token
@@ -4079,6 +4204,308 @@
                 });
             });
         });
+
+        // Expert Application Status Management
+        function lockExpertForm() {
+            setUserSpecificItem('expertFormLocked', 'true');
+            const expertBtn = document.querySelector('button[onclick="openExpertModal()"]');
+            if (expertBtn) {
+                expertBtn.disabled = true;
+                expertBtn.innerHTML = '<i class="fas fa-clock"></i> Application Under Review';
+                expertBtn.style.opacity = '0.6';
+                expertBtn.style.cursor = 'not-allowed';
+            }
+            
+            const becomeExpertBtn = document.querySelector('.action-btn[onclick="openExpertModal()"]');
+            if (becomeExpertBtn) {
+                becomeExpertBtn.disabled = true;
+                becomeExpertBtn.innerHTML = '<i class="fas fa-clock"></i> Under Review';
+                becomeExpertBtn.style.opacity = '0.6';
+                becomeExpertBtn.style.cursor = 'not-allowed';
+            }
+        }
+
+        function unlockExpertForm() {
+            removeUserSpecificItem('expertFormLocked');
+            removeUserSpecificItem('expertApplicationStatus');
+            const expertBtn = document.querySelector('button[onclick="openExpertModal()"]');
+            if (expertBtn) {
+                expertBtn.disabled = false;
+                expertBtn.innerHTML = '<i class="fas fa-user-tie"></i> Become Expert';
+                expertBtn.style.opacity = '1';
+                expertBtn.style.cursor = 'pointer';
+            }
+            
+            const becomeExpertBtn = document.querySelector('.action-btn[onclick="openExpertModal()"]');
+            if (becomeExpertBtn) {
+                becomeExpertBtn.disabled = false;
+                becomeExpertBtn.innerHTML = '<i class="fas fa-user-tie"></i> Become Expert';
+                becomeExpertBtn.style.opacity = '1';
+                becomeExpertBtn.style.cursor = 'pointer';
+            }
+        }
+
+        function permanentlyLockExpertForm() {
+            setUserSpecificItem('expertFormLocked', 'permanent');
+            setUserSpecificItem('expertApplicationStatus', 'approved');
+            const expertBtn = document.querySelector('button[onclick="openExpertModal()"]');
+            if (expertBtn) {
+                expertBtn.disabled = true;
+                expertBtn.innerHTML = '<i class="fas fa-check-circle"></i> Expert Approved';
+                expertBtn.style.opacity = '0.6';
+                expertBtn.style.cursor = 'not-allowed';
+                expertBtn.style.background = 'linear-gradient(135deg, #22c55e, #16a34a)';
+            }
+            
+            const becomeExpertBtn = document.querySelector('.action-btn[onclick="openExpertModal()"]');
+            if (becomeExpertBtn) {
+                becomeExpertBtn.disabled = true;
+                becomeExpertBtn.innerHTML = '<i class="fas fa-check-circle"></i> Expert';
+                becomeExpertBtn.style.opacity = '0.8';
+                becomeExpertBtn.style.cursor = 'not-allowed';
+                becomeExpertBtn.style.background = 'linear-gradient(135deg, #22c55e, #16a34a)';
+            }
+        }
+
+        // Notification System
+        async function toggleNotifications() {
+            const panel = document.getElementById('notificationPanel');
+            if (panel.style.display === 'none' || !panel.style.display) {
+                panel.style.display = 'block';
+                // Check for status updates from server before loading notifications
+                await checkApplicationStatus();
+                loadNotifications();
+            } else {
+                panel.style.display = 'none';
+            }
+        }
+
+        function addNotification(title, message, type = 'info') {
+            let notifications = JSON.parse(getUserSpecificItem('notifications') || '[]');
+            const notification = {
+                id: Date.now(),
+                title: title,
+                message: message,
+                type: type,
+                timestamp: new Date().toISOString(),
+                read: false
+            };
+            
+            notifications.unshift(notification);
+            setUserSpecificItem('notifications', JSON.stringify(notifications));
+            
+            updateNotificationDot();
+            if (document.getElementById('notificationPanel').style.display === 'block') {
+                loadNotifications();
+            }
+        }
+
+        // Helper functions for user-specific localStorage
+        function getUserEmail() {
+            const userData = JSON.parse(localStorage.getItem('lawhub_user') || '{}');
+            return userData.email || 'demo@lawhub.com';
+        }
+
+        function getUserSpecificKey(key) {
+            const userEmail = getUserEmail();
+            return `${key}_${userEmail}`;
+        }
+
+        function setUserSpecificItem(key, value) {
+            const userSpecificKey = getUserSpecificKey(key);
+            localStorage.setItem(userSpecificKey, value);
+        }
+
+        function getUserSpecificItem(key) {
+            const userSpecificKey = getUserSpecificKey(key);
+            return localStorage.getItem(userSpecificKey);
+        }
+
+        function removeUserSpecificItem(key) {
+            const userSpecificKey = getUserSpecificKey(key);
+            localStorage.removeItem(userSpecificKey);
+        }
+
+        // Check application status from server
+        async function checkApplicationStatus() {
+            const userEmail = getUserEmail();
+            
+            try {
+                console.log('🔍 Checking application status for:', userEmail);
+                const response = await fetch(`http://localhost:3000/api/expert-application/status/${encodeURIComponent(userEmail)}`);
+                const data = await response.json();
+                
+                if (data.success && data.hasApplication) {
+                    const serverStatus = data.status;
+                    const localStatus = getUserSpecificItem('expertApplicationStatus');
+                    
+                    console.log('📊 Server status:', serverStatus, '| Local status:', localStatus);
+                    
+                    // Update local status if server status has changed
+                    if (serverStatus !== localStatus) {
+                        setUserSpecificItem('expertApplicationStatus', serverStatus);
+                        
+                        // Add notification based on status change
+                        if (serverStatus === 'approved' && localStatus === 'pending') {
+                            permanentlyLockExpertForm();
+                            addNotification(
+                                'Application Approved!', 
+                                'Congratulations! Your expert application has been approved. You are now a verified legal expert on LawHub.',
+                                'success'
+                            );
+                        } else if (serverStatus === 'rejected' && localStatus === 'pending') {
+                            unlockExpertForm();
+                            addNotification(
+                                'Application Update', 
+                                'Your expert application has been reviewed. You can submit a new application with updated information.',
+                                'info'
+                            );
+                        } else if (serverStatus === 'pending' && !localStatus) {
+                            // New application detected
+                            setUserSpecificItem('expertApplicationStatus', 'pending');
+                            setUserSpecificItem('expertFormLocked', 'true');
+                            lockExpertForm();
+                        }
+                        
+                        updateNotificationDot();
+                        console.log('✅ Status updated from server:', serverStatus);
+                    } else {
+                        // Status hasn't changed, but ensure UI is in correct state
+                        if (serverStatus === 'approved') {
+                            permanentlyLockExpertForm();
+                            console.log('✅ Form permanently locked for approved application');
+                        } else if (serverStatus === 'pending') {
+                            lockExpertForm();
+                            console.log('✅ Form locked for pending application');
+                        }
+                    }
+                }
+            } catch (error) {
+                console.error('❌ Error checking application status:', error);
+            }
+        }
+
+        function loadNotifications() {
+            const notifications = JSON.parse(getUserSpecificItem('notifications') || '[]');
+            const notificationList = document.getElementById('notificationList');
+            
+            if (notifications.length === 0) {
+                notificationList.innerHTML = `
+                    <div class="notification-empty">
+                        <i class="far fa-bell"></i>
+                        <div style="font-weight: 500; margin-bottom: 4px;">No notifications</div>
+                        <div style="font-size: 11px;">You're all caught up!</div>
+                    </div>
+                `;
+                return;
+            }
+            
+            notificationList.innerHTML = notifications.map(notification => `
+                <div class="notification-item ${!notification.read ? 'unread' : ''}" onclick="markAsRead(${notification.id})">
+                    <div class="notification-title">${notification.title}</div>
+                    <div class="notification-message">${notification.message}</div>
+                    <div class="notification-time">${formatNotificationTime(notification.timestamp)}</div>
+                </div>
+            `).join('');
+        }
+
+        function markAsRead(notificationId) {
+            let notifications = JSON.parse(getUserSpecificItem('notifications') || '[]');
+            notifications = notifications.map(notification => {
+                if (notification.id === notificationId) {
+                    notification.read = true;
+                }
+                return notification;
+            });
+            setUserSpecificItem('notifications', JSON.stringify(notifications));
+            loadNotifications();
+            updateNotificationDot();
+        }
+
+        function markAllAsRead() {
+            let notifications = JSON.parse(getUserSpecificItem('notifications') || '[]');
+            notifications = notifications.map(notification => {
+                notification.read = true;
+                return notification;
+            });
+            setUserSpecificItem('notifications', JSON.stringify(notifications));
+            loadNotifications();
+            updateNotificationDot();
+        }
+
+        function updateNotificationDot() {
+            const notifications = JSON.parse(getUserSpecificItem('notifications') || '[]');
+            const unreadCount = notifications.filter(n => !n.read).length;
+            const dot = document.getElementById('notificationDot');
+            
+            if (unreadCount > 0) {
+                dot.style.display = 'block';
+            } else {
+                dot.style.display = 'none';
+            }
+        }
+
+        function formatNotificationTime(timestamp) {
+            const now = new Date();
+            const time = new Date(timestamp);
+            const diff = now - time;
+            
+            if (diff < 60000) return 'Just now';
+            if (diff < 3600000) return Math.floor(diff / 60000) + ' minutes ago';
+            if (diff < 86400000) return Math.floor(diff / 3600000) + ' hours ago';
+            return Math.floor(diff / 86400000) + ' days ago';
+        }
+
+        // Check form lock status on page load
+        document.addEventListener('DOMContentLoaded', async function() {
+            // Check server status first
+            await checkApplicationStatus();
+            
+            const isLocked = getUserSpecificItem('expertFormLocked');
+            const status = getUserSpecificItem('expertApplicationStatus');
+            
+            // Apply form locking based on status
+            if (status === 'approved') {
+                permanentlyLockExpertForm();
+            } else if (status === 'pending') {
+                lockExpertForm();
+            } else if (isLocked === 'true' && status === 'pending') {
+                lockExpertForm();
+            } else if (isLocked === 'permanent' && status === 'approved') {
+                permanentlyLockExpertForm();
+            }
+            
+            updateNotificationDot();
+            
+            // Close notification panel when clicking outside
+            document.addEventListener('click', function(e) {
+                const panel = document.getElementById('notificationPanel');
+                const notificationBtn = document.querySelector('.notification-btn');
+                
+                if (!panel.contains(e.target) && !notificationBtn.contains(e.target)) {
+                    panel.style.display = 'none';
+                }
+            });
+            
+            // Check for status updates every 30 seconds
+            setInterval(async () => {
+                await checkApplicationStatus();
+            }, 30000);
+        });
+
+        // Simulate admin status updates (for testing)
+        function simulateStatusUpdate(newStatus) {
+            const currentStatus = getUserSpecificItem('expertApplicationStatus');
+            if (currentStatus === 'pending') {
+                if (newStatus === 'approved') {
+                    permanentlyLockExpertForm();
+                    addNotification('Application Approved!', 'Congratulations! Your expert application has been approved. You are now a verified legal expert on LawHub.', 'success');
+                } else if (newStatus === 'rejected') {
+                    unlockExpertForm();
+                    addNotification('Application Update', 'Your expert application has been reviewed. You can submit a new application with updated information.', 'info');
+                }
+            }
+        }
 
     </script>
 </body>

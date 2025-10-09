@@ -1889,28 +1889,23 @@
             
             <form id="expertForm" onsubmit="submitExpertForm(event)">
                 <div class="form-group">
-                    <label class="form-label">Full Name</label>
-                    <input type="text" class="form-input" required placeholder="Enter your full name">
-                </div>
-
-                <div class="form-group">
-                    <label class="form-label">Email Address</label>
-                    <input type="email" class="form-input" required placeholder="Enter your email">
-                </div>
-
-                <div class="form-group">
                     <label class="form-label">Bar Council Registration Number</label>
-                    <input type="text" class="form-input" required placeholder="Enter your Bar Council ID">
+                    <input type="text" name="barCouncilId" class="form-input" required placeholder="Enter your Bar Council ID">
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">License Year</label>
+                    <input type="number" name="licenseYear" class="form-input" required placeholder="Year you got your license" min="1950" max="2025">
                 </div>
 
                 <div class="form-group">
                     <label class="form-label">Years of Experience</label>
-                    <input type="number" class="form-input" required placeholder="Years of legal practice" min="0">
+                    <input type="text" name="experience" class="form-input" required placeholder="e.g., 5 years">
                 </div>
 
                 <div class="form-group">
                     <label class="form-label">Specialization</label>
-                    <select class="form-input" required>
+                    <select name="specialization" class="form-input" required>
                         <option value="">Select your specialization</option>
                         <option value="constitutional">Constitutional Law</option>
                         <option value="criminal">Criminal Law</option>
@@ -1926,18 +1921,43 @@
                 </div>
 
                 <div class="form-group">
-                    <label class="form-label">Professional Summary</label>
-                    <textarea class="form-input form-textarea" required placeholder="Brief description of your legal expertise and experience"></textarea>
+                    <label class="form-label">Firm Name (Optional)</label>
+                    <input type="text" name="firmName" class="form-input" placeholder="Your law firm name">
                 </div>
 
                 <div class="form-group">
-                    <label class="form-label">Education Qualifications</label>
-                    <textarea class="form-input form-textarea" required placeholder="List your educational qualifications"></textarea>
+                    <label class="form-label">Location</label>
+                    <input type="text" name="location" class="form-input" required placeholder="City, State">
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Education</label>
+                    <textarea name="education" class="form-input form-textarea" required placeholder="Your educational qualifications (e.g., LLB from XYZ University, LLM in Constitutional Law)"></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Courts</label>
+                    <input type="text" name="courts" class="form-input" placeholder="Courts you practice in (e.g., High Court, District Court)">
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Professional Bio</label>
+                    <textarea name="bio" class="form-input form-textarea" required placeholder="Brief description of your legal expertise and experience"></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Certifications (Optional)</label>
+                    <textarea name="certifications" class="form-input form-textarea" placeholder="Any additional certifications or special qualifications"></textarea>
                 </div>
 
                 <div class="form-group">
                     <label class="form-label">Languages Spoken</label>
-                    <input type="text" class="form-input" required placeholder="e.g., English, Hindi, Tamil">
+                    <input type="text" name="languages" class="form-input" required placeholder="e.g., English, Hindi, Tamil">
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Availability (Optional)</label>
+                    <input type="text" name="availability" class="form-input" placeholder="e.g., 9am-5pm, Weekdays only">
                 </div>
 
                 <button type="submit" class="submit-btn">Submit Application</button>
@@ -2144,10 +2164,71 @@
             document.getElementById('expertModal').classList.remove('active');
         }
 
-        function submitExpertForm(event) {
+        async function submitExpertForm(event) {
             event.preventDefault();
-            alert('Thank you for your application! We will review your credentials and get back to you within 2-3 business days.');
-            closeExpertModal();
+            
+            const form = event.target;
+            const submitBtn = form.querySelector('.submit-btn');
+            const originalText = submitBtn.textContent;
+            
+            try {
+                // Show loading state
+                submitBtn.textContent = 'Submitting...';
+                submitBtn.disabled = true;
+                
+                // Get form data
+                const formData = new FormData(form);
+                const expertData = {
+                    barCouncilId: formData.get('barCouncilId'),
+                    licenseYear: parseInt(formData.get('licenseYear')),
+                    experience: formData.get('experience'),
+                    specialization: formData.get('specialization'),
+                    firmName: formData.get('firmName') || '',
+                    location: formData.get('location'),
+                    education: formData.get('education'),
+                    courts: formData.get('courts') || '',
+                    bio: formData.get('bio'),
+                    certifications: formData.get('certifications') || '',
+                    languages: formData.get('languages'),
+                    availability: formData.get('availability') || '9am-5pm',
+                    termsAccepted: true,
+                    dataConsent: true
+                };
+                
+                // Get auth token
+                const token = localStorage.getItem('token');
+                if (!token) {
+                    throw new Error('Please login first to submit expert application');
+                }
+                
+                // Submit to API
+                const response = await fetch('/api/expert-application', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify(expertData)
+                });
+                
+                const result = await response.json();
+                
+                if (response.ok) {
+                    alert('✅ Expert application submitted successfully! We will review your credentials and get back to you within 2-3 business days.');
+                    closeExpertModal();
+                    form.reset();
+                } else {
+                    throw new Error(result.message || 'Failed to submit application');
+                }
+                
+            } catch (error) {
+                console.error('Error submitting expert application:', error);
+                alert(`❌ Error: ${error.message}`);
+            } finally {
+                // Reset button state
+                submitBtn.textContent = originalText;
+                submitBtn.disabled = false;
+            }
         }
 
         // Enter key support for chat

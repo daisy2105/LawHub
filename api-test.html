@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>API Test</title>
+</head>
+<body>
+    <h1>Admin API Test</h1>
+    <button onclick="testStats()">Test Stats API</button>
+    <button onclick="testActivities()">Test Activities API</button>
+    <div id="results"></div>
+
+    <script>
+        const API_BASE_URL = 'http://localhost:3000';
+
+        async function testStats() {
+            try {
+                console.log('Testing stats API...');
+                const response = await fetch(`${API_BASE_URL}/api/admin/stats`);
+                const data = await response.json();
+                console.log('Stats API Response:', data);
+                document.getElementById('results').innerHTML = `
+                    <h3>Stats API Success!</h3>
+                    <pre>${JSON.stringify(data, null, 2)}</pre>
+                `;
+            } catch (error) {
+                console.error('Stats API Error:', error);
+                document.getElementById('results').innerHTML = `
+                    <h3>Stats API Error!</h3>
+                    <p>${error.message}</p>
+                `;
+            }
+        }
+
+        async function testActivities() {
+            try {
+                console.log('Testing activities API...');
+                const response = await fetch(`${API_BASE_URL}/api/admin/recent-activity`);
+                const data = await response.json();
+                console.log('Activities API Response:', data);
+                document.getElementById('results').innerHTML = `
+                    <h3>Activities API Success!</h3>
+                    <pre>${JSON.stringify(data, null, 2)}</pre>
+                `;
+            } catch (error) {
+                console.error('Activities API Error:', error);
+                document.getElementById('results').innerHTML = `
+                    <h3>Activities API Error!</h3>
+                    <p>${error.message}</p>
+                `;
+            }
+        }
+    </script>
+</body>
+</html>
