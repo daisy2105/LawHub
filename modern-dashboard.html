@@ -1811,6 +1811,52 @@
             box-shadow: 0 8px 25px rgba(85, 107, 47, 0.4);
         }
 
+        .skip-profile-btn {
+            background: #6b7280;
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .skip-profile-btn:hover {
+            background: #4b5563;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(107, 114, 128, 0.4);
+        }
+
+        .close-modal-btn {
+            position: absolute;
+            top: 15px;
+            right: 20px;
+            background: none;
+            border: none;
+            font-size: 24px;
+            color: #666;
+            cursor: pointer;
+            z-index: 10;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+        }
+
+        .close-modal-btn:hover {
+            background: rgba(107, 114, 128, 0.1);
+            color: #374151;
+            transform: scale(1.1);
+        }
+
         .required-note {
             color: #64748b;
             font-size: 12px;
@@ -2680,6 +2726,7 @@
             <div class="profile-setup-header">
                 <h2>🎯 Complete Your Profile</h2>
                 <p>Welcome to LawHub! Let's set up your profile to personalize your learning experience.</p>
+                <button class="close-modal-btn" onclick="closeProfileSetupModal()" style="position: absolute; top: 15px; right: 20px; background: none; border: none; font-size: 24px; color: #666; cursor: pointer; z-index: 10;">&times;</button>
             </div>
             
             <form id="profileSetupForm" class="profile-setup-form">
@@ -2802,7 +2849,10 @@
                     <button type="submit" class="save-profile-btn">
                         <i class="fas fa-check"></i> Complete Profile Setup
                     </button>
-                    <p class="required-note">* Required fields</p>
+                    <button type="button" class="skip-profile-btn" onclick="skipProfileSetup()" style="background: #6b7280; margin-left: 15px;">
+                        <i class="fas fa-arrow-right"></i> Skip for Now
+                    </button>
+                    <p class="required-note">* Required fields | You can complete this later from your profile section</p>
                 </div>
             </form>
         </div>
@@ -2825,14 +2875,14 @@
                         <input type="text" id="expertBarCouncilId" name="barCouncilId" placeholder="e.g., BAR/2020/12345" required>
                     </div>
                     <div class="form-group">
-                        <label for="expertLicenseYear">Year of Admission *</label>
+                        <label for="expertLicenseYear">License Year *</label>
                         <input type="number" id="expertLicenseYear" name="licenseYear" placeholder="e.g., 2015" min="1950" max="2025" required>
                     </div>
                 </div>
 
                 <div class="form-row">
                     <div class="form-group">
-                        <label for="expertExperience">Years of Experience *</label>
+                        <label for="expertExperience">Experience *</label>
                         <select id="expertExperience" name="experience" required>
                             <option value="">Select experience</option>
                             <option value="0-2">0-2 years (Junior)</option>
@@ -2843,7 +2893,7 @@
                         </select>
                     </div>
                     <div class="form-group">
-                        <label for="expertSpecialization">Primary Specialization *</label>
+                        <label for="expertSpecialization">Specialization *</label>
                         <select id="expertSpecialization" name="specialization" required>
                             <option value="">Select specialization</option>
                             <option value="constitutional">Constitutional Law</option>
@@ -2863,11 +2913,11 @@
                 <!-- Practice Details -->
                 <div class="form-row">
                     <div class="form-group">
-                        <label for="expertFirmName">Law Firm/Practice Name</label>
+                        <label for="expertFirmName">Firm Name</label>
                         <input type="text" id="expertFirmName" name="firmName" placeholder="Enter firm name or 'Independent Practice'">
                     </div>
                     <div class="form-group">
-                        <label for="expertLocation">Practice Location *</label>
+                        <label for="expertLocation">Location *</label>
                         <input type="text" id="expertLocation" name="location" placeholder="City, State" required>
                     </div>
                 </div>
@@ -2875,11 +2925,11 @@
                 <!-- Education -->
                 <div class="form-row">
                     <div class="form-group">
-                        <label for="expertEducation">Legal Education *</label>
+                        <label for="expertEducation">Education *</label>
                         <input type="text" id="expertEducation" name="education" placeholder="e.g., LL.B from XYZ University" required>
                     </div>
                     <div class="form-group">
-                        <label for="expertCourts">Courts of Practice</label>
+                        <label for="expertCourts">Courts</label>
                         <input type="text" id="expertCourts" name="courts" placeholder="e.g., High Court, District Court">
                     </div>
                 </div>
@@ -2887,27 +2937,19 @@
                 <!-- Additional Qualifications -->
                 <div class="form-row">
                     <div class="form-group full-width">
-                        <label for="expertBio">Professional Bio *</label>
+                        <label for="expertBio">Bio *</label>
                         <textarea id="expertBio" name="bio" rows="4" placeholder="Brief description of your legal practice, notable cases, achievements..." required></textarea>
                     </div>
                 </div>
 
-                <!-- Certifications -->
-                <div class="form-row">
-                    <div class="form-group full-width">
-                        <label for="expertCertifications">Additional Certifications</label>
-                        <textarea id="expertCertifications" name="certifications" rows="3" placeholder="Any additional certifications, specializations, awards..."></textarea>
-                    </div>
-                </div>
-
-                <!-- Languages -->
+                <!-- Languages and Availability -->
                 <div class="form-row">
                     <div class="form-group">
-                        <label for="expertLanguages">Languages Spoken *</label>
+                        <label for="expertLanguages">Languages *</label>
                         <input type="text" id="expertLanguages" name="languages" placeholder="e.g., English, Hindi, Tamil" required>
                     </div>
                     <div class="form-group">
-                        <label for="expertAvailability">Preferred Consultation Hours</label>
+                        <label for="expertAvailability">Availability</label>
                         <select id="expertAvailability" name="availability">
                             <option value="9am-5pm">9 AM - 5 PM</option>
                             <option value="10am-6pm">10 AM - 6 PM</option>
@@ -3069,55 +3111,116 @@
         async function openExpertModal() {
             addCommandLog('Expert application form opened...');
             
-            // Check if application already submitted in database
+            // Check if user is logged in
+            const userData = JSON.parse(localStorage.getItem('lawhub_user') || '{}');
+            const userEmail = userData.email;
+            
+            if (!userEmail) {
+                showCustomAlert('⚠️ Error', 'Please log in to submit expert application.', 'error');
+                return;
+            }
+
             try {
-                const userData = JSON.parse(localStorage.getItem('lawhub_user') || '{}');
-                const userEmail = userData.email;
-                
-                if (!userEmail) {
-                    showCustomAlert('⚠️ Error', 'Please log in to submit expert application.', 'error');
-                    return;
+                // Check application status in the database
+                const response = await fetch(`https://lawhub-1.onrender.com/api/expert-application/status/${userEmail}`, {
+                    method: 'GET',
+                    headers: {
+                        'Authorization': `Bearer ${localStorage.getItem('lawhub_token')}`
+                    }
+                });
+
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
                 }
-                
-                const response = await fetch(`https://lawhub-1.onrender.com/api/expert-application/status/${userEmail}`);
+
                 const result = await response.json();
                 
                 if (result.success && result.hasApplication) {
                     const submissionDate = result.submittedAt ? new Date(result.submittedAt).toLocaleDateString() : 'recently';
                     const status = result.status;
-                    let statusMessage = '';
                     
-                    switch(status) {
-                        case 'pending':
-                            statusMessage = 'Your application is under review.';
-                            break;
-                        case 'approved':
-                            statusMessage = 'Your application has been approved!';
-                            break;
-                        case 'rejected':
-                            statusMessage = 'Your application was not approved. You may submit a new application.';
-                            break;
-                        default:
-                            statusMessage = 'Your application is being processed.';
-                    }
-                    
-                    if (status !== 'rejected') {
+                    // Handle expert application status
+                    if (status === 'pending') {
                         showCustomAlert(
-                            '⚠️ Application Already Submitted',
-                            `You submitted an expert application on ${submissionDate}. ${statusMessage} You cannot submit multiple applications.`,
-                            'error'
+                            '⌛ Application Pending',
+                            `Your application submitted on ${submissionDate} is currently under review. Please wait for admin approval.`,
+                            'info'
                         );
-                        addCommandLog(`Expert application blocked - status: ${status}`);
+                        updateExpertButton('pending', true);
+                        return;
+                    } else if (status === 'approved') {
+                        showCustomAlert(
+                            '🎉 Verified Expert',
+                            'You are a verified legal expert on LawHub. Welcome to our expert community!',
+                            'success'
+                        );
+                        updateExpertButton('approved', true);
+                        return;
+                    } else if (status === 'rejected') {
+                        showCustomAlert(
+                            '📝 Application Update',
+                            'Your previous application was not approved. You may submit a new application with updated information.',
+                            'info'
+                        );
+                        updateExpertButton('reapply', false);
+                        showExpertApplicationModal();
                         return;
                     }
                 }
                 
+                // No existing application, show the form
+                updateExpertButton('default', false);
                 showExpertApplicationModal();
+                
             } catch (error) {
                 console.error('Error checking application status:', error);
-                addCommandLog('Error checking application status, proceeding...');
-                showExpertApplicationModal();
+                addCommandLog('Error checking application status: ' + error.message);
+                showCustomAlert(
+                    '⚠️ Error',
+                    'Unable to check application status. Please try again later.',
+                    'error'
+                );
             }
+        }
+
+        // Helper function to update expert button state
+        function updateExpertButton(status, disabled) {
+            const expertBtns = document.querySelectorAll('button[onclick="openExpertModal()"]');
+            
+            expertBtns.forEach(btn => {
+                switch(status) {
+                    case 'pending':
+                        btn.disabled = disabled;
+                        btn.innerHTML = '<i class="fas fa-clock"></i> Application Under Review';
+                        btn.style.opacity = '0.6';
+                        btn.style.cursor = 'not-allowed';
+                        btn.style.background = 'linear-gradient(135deg, #6b7280, #4b5563)';
+                        break;
+                    
+                    case 'approved':
+                        btn.disabled = disabled;
+                        btn.innerHTML = '<i class="fas fa-check-circle"></i> Verified Expert';
+                        btn.style.opacity = '1';
+                        btn.style.cursor = 'not-allowed';
+                        btn.style.background = 'linear-gradient(135deg, #22c55e, #16a34a)';
+                        break;
+                    
+                    case 'reapply':
+                        btn.disabled = disabled;
+                        btn.innerHTML = '<i class="fas fa-user-tie"></i> Apply Again';
+                        btn.style.opacity = '1';
+                        btn.style.cursor = 'pointer';
+                        btn.style.background = 'linear-gradient(135deg, #556b2f, #6b8e23)';
+                        break;
+                    
+                    default:
+                        btn.disabled = disabled;
+                        btn.innerHTML = '<i class="fas fa-user-tie"></i> Become Expert';
+                        btn.style.opacity = '1';
+                        btn.style.cursor = 'pointer';
+                        btn.style.background = 'linear-gradient(135deg, #556b2f, #6b8e23)';
+                }
+            });
         }
 
         // Expert Application Modal Functions
@@ -3153,94 +3256,190 @@
                         
                         // Get user details from localStorage
                         const userData = JSON.parse(localStorage.getItem('lawhub_user') || '{}');
-                        const userEmail = userData.email || 'demo@example.com';
-                        const userName = userData.name || 'Demo User';
+                        if (!userData.email || !userData.name) {
+                            throw new Error('User profile information is incomplete');
+                        }
+
+                        const formData = new FormData(this);
                         
-                        const formData = new FormData(expertForm);
+                        // Validate required fields
+                        const requiredFields = [
+                            'barCouncilId',
+                            'licenseYear',
+                            'experience',
+                            'specialization',
+                            'education',
+                            'location',
+                            'bio',
+                            'languages'
+                        ];
+
+                        for (const field of requiredFields) {
+                            if (!formData.get(field)) {
+                                throw new Error(`Please fill in the required field: ${field.replace(/([A-Z])/g, ' $1').toLowerCase()}`);
+                            }
+                        }
+                        
+                        // Validate license year
+                        const licenseYear = parseInt(formData.get('licenseYear'));
+                        const currentYear = new Date().getFullYear();
+                        if (licenseYear > currentYear || licenseYear < 1950) {
+                            throw new Error('Please enter a valid license year between 1950 and current year');
+                        }
+                        
+                        // Construct expert application data
                         const expertData = {
-                            // Map frontend fields to server/database field names
-                            fullName: userName,
-                            email: userEmail,
-                            phoneNumber: formData.get('phoneNumber') || '',
-                            expertise: formData.get('specialization'), // Map specialization to expertise
-                            yearsOfExperience: formData.get('experience'), // Map experience to yearsOfExperience
-                            education: formData.get('education'),
-                            certifications: formData.get('certifications') || '',
-                            languagesSpoken: formData.get('languages'), // Map languages to languagesSpoken
-                            preferredConsultationHours: formData.get('availability') || '9am-5pm', // Map availability
-                            // Additional fields that might be needed
+                            // Personal Info
+                            name: userData.name,
+                            email: userData.email,
+                            
+                            // Professional Info
                             barCouncilId: formData.get('barCouncilId'),
-                            licenseYear: parseInt(formData.get('licenseYear')),
-                            firmName: formData.get('firmName') || '',
+                            licenseYear: licenseYear,
+                            experience: formData.get('experience'),
+                            specialization: formData.get('specialization'),
+                            firmName: formData.get('firmName') || 'Not specified',
                             location: formData.get('location'),
+                            
+                            // Educational Background
+                            education: formData.get('education'),
+                            
+                            // Practice Details
                             courts: formData.get('courts') || '',
                             bio: formData.get('bio'),
-                            termsAccepted: true,
-                            dataConsent: true
+                            languages: formData.get('languages'),
+                            availability: formData.get('availability') || '9am-5pm',
+                            
+                            // Application Status
+                            submittedAt: new Date().toISOString(),
+                            status: 'pending',
+                            approved: false
                         };
                         
                         addCommandLog('Submitting expert application...');
                         
-                        const headers = {
-                            'Content-Type': 'application/json',
-                            'Authorization': 'Bearer ' + token
-                        };
-                        
-                        console.log('Sending request to https://lawhub-1.onrender.com/api/expert-application');
-                        console.log('Request data:', expertData);
+                        // Disable form while submitting
+                        const submitBtn = expertForm.querySelector('button[type="submit"]');
+                        submitBtn.disabled = true;
+                        submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Submitting...';
                         
                         const response = await fetch('https://lawhub-1.onrender.com/api/expert-application', {
                             method: 'POST',
-                            headers: headers,
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'Authorization': `Bearer ${token}`
+                            },
                             body: JSON.stringify(expertData)
                         });
                         
-                        let result;
-                        try {
-                            result = await response.json();
-                        } catch (jsonError) {
-                            console.error('Failed to parse JSON response:', jsonError);
-                            const responseText = await response.text();
-                            console.error('Response was:', responseText);
-                            throw new Error(`Server returned invalid JSON. Status: ${response.status}, Response: ${responseText}`);
+                        if (!response.ok) {
+                            throw new Error(`Server error (${response.status}): ${response.statusText}`);
                         }
                         
-                        if (response.ok) {
-                            // Lock the form to prevent duplicate submissions
-                            lockExpertForm();
+                        const result = await response.json();
+                        
+                        if (result.success) {
+                            // Update UI
+                            updateExpertButton('pending', true);
                             
-                            // Store submission status
+                            // Store submission data
                             setUserSpecificItem('expertApplicationStatus', 'pending');
                             setUserSpecificItem('expertApplicationSubmittedAt', new Date().toISOString());
                             
-                            // Add notification
-                            addNotification('Application Submitted', 'Your expert application has been submitted and is under review.', 'pending');
+                            // Add notification with details
+                            addNotification(
+                                '📝 Expert Application Submitted', 
+                                `Your application with Bar Council ID ${expertData.barCouncilId} is now under review. We will notify you once reviewed.`,
+                                'info'
+                            );
                             
-                            showCustomAlert('Application Submitted!', 'Your expert application has been submitted successfully. Our admin team will review it within 2-3 business days. You will be notified when there is an update.', 'success');
+                            showCustomAlert(
+                                '✅ Application Submitted!', 
+                                `Your expert application has been submitted successfully with Bar Council ID: ${expertData.barCouncilId}. Our admin team will review it within 2-3 business days. You can track the status in your notifications.`,
+                                'success'
+                            );
+                            
                             closeExpertApplicationModal();
                             expertForm.reset();
-                            addCommandLog('Expert application submitted successfully');
+                            addCommandLog('Expert application submitted with new field structure');
+                            
+                            // Start polling for status updates
+                            startStatusPolling();
                         } else {
-                            throw new Error(result.message || `Server error (${response.status}): ${response.statusText}`);
+                            throw new Error(result.message || 'Failed to submit application');
                         }
                         
                     } catch (error) {
                         console.error('Expert application error:', error);
-                        let errorMessage = error.message || 'Failed to submit expert application. Please try again.';
+                        let errorMessage = error.message;
                         
                         // Handle specific error types
                         if (error.message.includes('Failed to fetch') || error.message.includes('Unable to connect')) {
-                            errorMessage = 'Network error: Cannot connect to server. Please check if the server is running.';
+                            errorMessage = 'Network error: Cannot connect to server. Please check your internet connection and try again.';
                         } else if (error.message.includes('login first')) {
                             errorMessage = 'Authentication error: Please log in to submit an expert application.';
                         }
                         
-                        showCustomAlert('Submission Failed', errorMessage, 'error');
+                        showCustomAlert('❌ Submission Failed', errorMessage, 'error');
                         addCommandLog('Expert application submission failed: ' + errorMessage);
+                        
+                        // Re-enable submit button
+                        const submitBtn = expertForm.querySelector('button[type="submit"]');
+                        submitBtn.disabled = false;
+                        submitBtn.innerHTML = '<i class="fas fa-gavel"></i> Submit Expert Application';
                     }
                 });
             }
         });
+
+        // Start polling for status updates
+        function startStatusPolling() {
+            const POLL_INTERVAL = 30000; // 30 seconds
+            const pollTimer = setInterval(async () => {
+                const status = getUserSpecificItem('expertApplicationStatus');
+                if (status === 'approved' || status === 'rejected') {
+                    clearInterval(pollTimer);
+                    return;
+                }
+                await checkApplicationStatus();
+            }, POLL_INTERVAL);
+        }
+
+        // Helper function to populate form with existing application data
+        function populateFormWithExistingData(applicationData) {
+            if (!applicationData) return;
+
+            // List of all form fields
+            const formFields = [
+                'barCouncilId',
+                'licenseYear',
+                'experience',
+                'specialization',
+                'firmName',
+                'location',
+                'education',
+                'courts',
+                'bio',
+                'languages',
+                'availability'
+            ];
+
+            // Populate form fields
+            formFields.forEach(field => {
+                const element = document.getElementById('expert' + field.charAt(0).toUpperCase() + field.slice(1));
+                if (element && applicationData[field]) {
+                    if (element.tagName === 'SELECT') {
+                        // For select elements, check if option exists
+                        const option = Array.from(element.options).find(opt => opt.value === applicationData[field]);
+                        if (option) {
+                            element.value = applicationData[field];
+                        }
+                    } else {
+                        element.value = applicationData[field];
+                    }
+                }
+            });
+        }
 
         // File conversion helper function
         function convertFileToBase64(file) {
@@ -3607,6 +3806,13 @@
                     return;
                 }
                 
+                // Check if user has previously skipped profile setup
+                const hasSkippedProfile = getUserSpecificItem('profileSkipped');
+                if (hasSkippedProfile === 'true') {
+                    console.log('User has skipped profile setup, not showing modal');
+                    return;
+                }
+                
                 // Simple check if profile exists
                 const response = await fetch('https://lawhub-1.onrender.com/api/auth/profile-check', {
                     method: 'POST',
@@ -3619,7 +3825,7 @@
                 const result = await response.json();
                 
                 if (result.success && !result.hasProfile) {
-                    // Only show modal if no profile exists
+                    // Only show modal if no profile exists and user hasn't skipped
                     setTimeout(() => {
                         showProfileSetupModal();
                     }, 1000);
@@ -3628,10 +3834,8 @@
                     updateProfileDisplay(result.profile);
                 }
             } catch (error) {
-                console.log('Profile check failed, showing setup modal');
-                setTimeout(() => {
-                    showProfileSetupModal();
-                }, 1000);
+                console.log('Profile check failed, but allowing user to continue without setup');
+                // Don't force profile setup if there's an error
             }
         }
 
@@ -3676,7 +3880,7 @@
                 
                 if (!token) return;
                 
-                await fetch('http://localhost:3000/api/activity/login', {
+                await fetch('https://lawhub-1.onrender.com/api/activity/login', {
                     method: 'POST',
                     headers: {
                         'Authorization': `Bearer ${token}`,
@@ -3695,8 +3899,33 @@
             addCommandLog('Profile setup modal opened');
         }
 
+        function setupProfileNow() {
+            // Clear the skip flag so user can setup profile
+            removeUserSpecificItem('profileSkipped');
+            showProfileSetupModal();
+            addCommandLog('User decided to setup profile after previously skipping');
+        }
+
         function closeProfileSetupModal() {
             document.getElementById('profileSetupModal').classList.remove('active');
+            addCommandLog('Profile setup modal closed');
+        }
+
+        function skipProfileSetup() {
+            // Mark that user has skipped profile setup
+            setUserSpecificItem('profileSkipped', 'true');
+            
+            // Close the modal
+            closeProfileSetupModal();
+            
+            // Show a friendly message
+            showCustomAlert(
+                '👋 Welcome to LawHub!', 
+                'You can complete your profile anytime from the Profile section. Enjoy exploring our legal resources!',
+                'info'
+            );
+            
+            addCommandLog('User skipped profile setup - can complete later');
         }
 
         // Helper function to clear localStorage profile data
@@ -3767,18 +3996,37 @@
                 profileData.profilePicture = profilePictureImg.src;
             }
             
-            // Get user ID from localStorage
+            // Get user data from localStorage
             const userData = JSON.parse(localStorage.getItem('lawhub_user') || '{}');
+            
+            // Add user identification
             profileData.userId = userData.id;
+            profileData.email = userData.email;
+            profileData.name = userData.name;
+            
+            // Validate required fields
+            const requiredFields = ['dateOfBirth', 'phone', 'status', 'city', 'learningGoal'];
+            const missingFields = requiredFields.filter(field => !profileData[field]);
+            
+            if (missingFields.length > 0) {
+                showCustomAlert('❌ Missing Fields', `Please fill in: ${missingFields.join(', ')}`, 'error');
+                return;
+            }
+            
+            console.log('Collected profile data:', profileData);
             
             try {
-                console.log('💾 Saving profile like signup...');
+                console.log('💾 Saving profile with data:', profileData);
                 
-                // Simple API call like signup - NO AUTHENTICATION
-                const response = await fetch('http://localhost:3000/api/auth/profile', {
+                // Get token for authenticated request
+                const token = localStorage.getItem('lawhub_token');
+                
+                // Simple API call to deployed server
+                const response = await fetch('https://lawhub-1.onrender.com/api/auth/profile', {
                     method: 'POST',
                     headers: {
-                        'Content-Type': 'application/json'
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
                     },
                     body: JSON.stringify(profileData)
                 });
@@ -3787,13 +4035,20 @@
                 console.log('Profile save result:', result);
                 
                 if (result.success) {
+                    // Clear skip flag since profile is now complete
+                    removeUserSpecificItem('profileSkipped');
+                    
                     // Update UI with saved data
                     updateProfileDisplay(profileData);
                     closeProfileSetupModal();
                     
                     // Show success message
-                    showCustomAlert('🎉 PROFILE SAVED!', 'Your profile has been saved successfully!', 'success');
+                    showCustomAlert('🎉 PROFILE SAVED!', 'Your profile has been saved successfully! Now you\'ll get personalized recommendations.', 'success');
                     addCommandLog('✅ Profile setup completed successfully');
+                    
+                    // Clear form
+                    document.getElementById('profileSetupForm').reset();
+                    
                 } else {
                     throw new Error(result.message || 'Failed to save profile');
                 }
@@ -3811,7 +4066,7 @@
                 
                 if (!token) return;
                 
-                await fetch('http://localhost:3000/api/activity/track', {
+                await fetch('https://lawhub-1.onrender.com/api/activity/track', {
                     method: 'POST',
                     headers: {
                         'Authorization': `Bearer ${token}`,
@@ -3842,16 +4097,25 @@
         function updateProfileSection(profileData) {
             const profileDisplay = document.getElementById('profileDisplay');
             const userData = JSON.parse(localStorage.getItem('lawhub_user') || '{}');
+            const hasSkippedProfile = getUserSpecificItem('profileSkipped');
             
             if (!profileData || Object.keys(profileData).length === 0) {
+                // Show different message based on whether user skipped setup
+                const welcomeMessage = hasSkippedProfile === 'true' 
+                    ? 'Ready to personalize your experience?' 
+                    : 'Complete Your Profile';
+                const description = hasSkippedProfile === 'true'
+                    ? 'Set up your profile now to get personalized course recommendations and track your learning progress.'
+                    : 'Set up your profile to get a personalized learning experience.';
+                
                 // Show placeholder if no profile data
                 profileDisplay.innerHTML = `
                     <div class="profile-placeholder">
                         <i class="fas fa-user-circle" style="font-size: 60px; color: #64748b; margin-bottom: 15px;"></i>
-                        <h3>Complete Your Profile</h3>
-                        <p>Set up your profile to get a personalized learning experience.</p>
-                        <button class="action-btn" onclick="showProfileSetupModal()">
-                            <i class="fas fa-plus"></i> Setup Profile
+                        <h3>${welcomeMessage}</h3>
+                        <p>${description}</p>
+                        <button class="action-btn" onclick="setupProfileNow()">
+                            <i class="fas fa-plus"></i> ${hasSkippedProfile === 'true' ? 'Setup Profile Now' : 'Setup Profile'}
                         </button>
                     </div>
                 `;
@@ -4346,18 +4610,60 @@
             localStorage.removeItem(userSpecificKey);
         }
 
-        // Check application status from server
+        // Check application status from server and update existing application data
         async function checkApplicationStatus() {
             const userEmail = getUserEmail();
+            const token = localStorage.getItem('lawhub_token');
             
             try {
                 console.log('🔍 Checking application status for:', userEmail);
-                const response = await fetch(`http://localhost:3000/api/expert-application/status/${encodeURIComponent(userEmail)}`);
+                
+                // Update existing application if needed
+                try {
+                    await fetch('https://lawhub-1.onrender.com/api/expert-application/update', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': `Bearer ${token}`
+                        },
+                        body: JSON.stringify({
+                            email: userEmail,
+                            fields: [
+                                'barCouncilId',
+                                'licenseYear',
+                                'experience',
+                                'specialization',
+                                'firmName',
+                                'location',
+                                'education',
+                                'courts',
+                                'bio',
+                                'languages',
+                                'availability'
+                            ]
+                        })
+                    });
+                    console.log('✅ Updated existing application field names');
+                } catch (updateError) {
+                    console.warn('Warning: Could not update field names:', updateError);
+                }
+
+                // Then get the updated status
+                const response = await fetch(`https://lawhub-1.onrender.com/api/expert-application/status/${encodeURIComponent(userEmail)}`, {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
                 const data = await response.json();
                 
                 if (data.success && data.hasApplication) {
                     const serverStatus = data.status;
-                    // Only use serverStatus from Atlas DB to control UI
+                    const applicationData = data.application;
+
+                    // Store the full application data for reference
+                    setUserSpecificItem('expertApplicationData', JSON.stringify(applicationData));
+                    
+                    // Update UI based on status
                     if (serverStatus === 'approved') {
                         permanentlyLockExpertForm();
                         addNotification(
@@ -4373,6 +4679,8 @@
                             'Your expert application is under review.',
                             'pending'
                         );
+                        // Update form with existing data using new field names
+                        populateFormWithExistingData(applicationData);
                         console.log('✅ Form locked for pending application');
                     } else if (serverStatus === 'rejected') {
                         unlockExpertForm();
