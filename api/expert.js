@@ -112,7 +112,7 @@ router.post('/expert-application', verifyToken, async (req, res) => {
 // Get user's expert application status
 router.get('/expert-application/status', verifyToken, async (req, res) => {
     try {
-        const userId = req.user?.id;
+        const userId = req.user?._id;
         
         if (!userId) {
             return res.status(401).json({ 

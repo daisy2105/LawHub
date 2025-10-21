@@ -4633,11 +4633,16 @@
             const userEmail = getUserEmail();
             const token = localStorage.getItem('lawhub_token');
             
+            if (!token) {
+                console.log('⚠️ No token found, skipping status check');
+                return;
+            }
+            
             try {
                 console.log('🔍 Checking application status for:', userEmail);
                 
-                // Get the application status
-                const response = await fetch(`https://lawhub-1.onrender.com/api/expert-application/status/${encodeURIComponent(userEmail)}`, {
+                // Get the application status - no email in URL, backend uses token
+                const response = await fetch(`https://lawhub-1.onrender.com/api/expert-application/status`, {
                     headers: {
                         'Authorization': `Bearer ${token}`
                     }
@@ -4645,35 +4650,39 @@
                 const data = await response.json();
                 
                 if (data.success && data.hasApplication) {
-                    const serverStatus = data.status;
                     const applicationData = data.application;
+                    const serverStatus = applicationData.status;
 
                     // Store the full application data for reference
                     setUserSpecificItem('expertApplicationData', JSON.stringify(applicationData));
+                    setUserSpecificItem('expertApplicationStatus', serverStatus);
                     
                     // Update UI based on status
                     if (serverStatus === 'approved') {
+                        updateExpertButton('approved', true);
                         permanentlyLockExpertForm();
                         addNotification(
-                            'Application Approved!', 
+                            '✅ Application Approved!', 
                             'Congratulations! Your expert application has been approved. You are now a verified legal expert on LawHub.',
                             'success'
                         );
                         console.log('✅ Form permanently locked for approved application');
-                    } else if (serverStatus === 'pending') {
+                    } else if (serverStatus === 'pending' || serverStatus === 'under-review') {
+                        updateExpertButton('pending', true);
                         lockExpertForm();
                         addNotification(
-                            'Application Submitted',
-                            'Your expert application is under review.',
-                            'pending'
+                            '⏳ Application Under Review',
+                            'Your expert application is currently being reviewed by our admin team. Please wait for the result.',
+                            'info'
                         );
                         // Update form with existing data using new field names
                         populateFormWithExistingData(applicationData);
                         console.log('✅ Form locked for pending application');
                     } else if (serverStatus === 'rejected') {
+                        updateExpertButton('rejected', false);
                         unlockExpertForm();
                         addNotification(
-                            'Application Update', 
+                            '❌ Application Not Approved', 
                             'Your expert application has been reviewed. You can submit a new application with updated information.',
                             'info'
                         );
@@ -4685,6 +4694,7 @@
                     console.log('🧹 No application found in database, clearing localStorage');
                     clearExpertApplicationData();
                     unlockExpertForm();
+                    updateExpertButton('none', false);
                 }
             } catch (error) {
                 console.error('❌ Error checking application status:', error);
