@@ -2917,16 +2917,15 @@
                         <input type="text" id="expertFirmName" name="firmName" placeholder="Enter firm name or 'Independent Practice'">
                     </div>
                     <div class="form-group">
-                        <label for="expertLocation">Location *</label>
-                        <input type="text" id="expertLocation" name="location" placeholder="City, State" required>
+                        <label for="expertEducation">Education *</label>
+                        <input type="text" id="expertEducation" name="education" placeholder="e.g., LL.B from XYZ University" required>
                     </div>
                 </div>
 
-                <!-- Education -->
                 <div class="form-row">
                     <div class="form-group">
-                        <label for="expertEducation">Education *</label>
-                        <input type="text" id="expertEducation" name="education" placeholder="e.g., LL.B from XYZ University" required>
+                        <label for="expertLocation">Location/City *</label>
+                        <input type="text" id="expertLocation" name="location" placeholder="e.g., Mumbai, Delhi, Bangalore" required>
                     </div>
                     <div class="form-group">
                         <label for="expertCourts">Courts</label>
@@ -2939,6 +2938,13 @@
                     <div class="form-group full-width">
                         <label for="expertBio">Bio *</label>
                         <textarea id="expertBio" name="bio" rows="4" placeholder="Brief description of your legal practice, notable cases, achievements..." required></textarea>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group full-width">
+                        <label for="expertCertifications">Certifications & Awards</label>
+                        <textarea id="expertCertifications" name="certifications" rows="2" placeholder="Any additional certifications, awards, or professional achievements (optional)"></textarea>
                     </div>
                 </div>
 
@@ -3287,34 +3293,46 @@
                             throw new Error('Please enter a valid license year between 1950 and current year');
                         }
                         
-                        // Construct expert application data
+                        // Construct expert application data exactly as backend expects
                         const expertData = {
-                            // Personal Info
+                            // Personal Info (from user data)
                             name: userData.name,
                             email: userData.email,
                             
-                            // Professional Info
+                            // Professional Details
                             barCouncilId: formData.get('barCouncilId'),
                             licenseYear: licenseYear,
                             experience: formData.get('experience'),
                             specialization: formData.get('specialization'),
-                            firmName: formData.get('firmName') || 'Not specified',
-                            location: formData.get('location'),
                             
-                            // Educational Background
+                            // Practice Information  
+                            firmName: formData.get('firmName') || '',
+                            location: formData.get('location'), // Required field
                             education: formData.get('education'),
-                            
-                            // Practice Details
                             courts: formData.get('courts') || '',
+                            
+                            // Professional Profile
                             bio: formData.get('bio'),
+                            certifications: formData.get('certifications') || '',
                             languages: formData.get('languages'),
                             availability: formData.get('availability') || '9am-5pm',
                             
+                            // Consent (required by backend)
+                            termsAccepted: true,
+                            dataConsent: true,
+                            
                             // Application Status
                             submittedAt: new Date().toISOString(),
-                            status: 'pending',
-                            approved: false
+                            status: 'pending'
                         };
+                        
+                        // Debug: Log all form data
+                        console.log('📋 Form Data Debug:');
+                        for (let [key, value] of formData.entries()) {
+                            console.log(`  ${key}: ${value}`);
+                        }
+                        
+                        console.log('📤 Sending expert data:', JSON.stringify(expertData, null, 2));
                         
                         addCommandLog('Submitting expert application...');
                         
@@ -4692,10 +4710,27 @@
                         console.log('✅ Form unlocked for rejected application');
                     }
                     updateNotificationDot();
+                } else {
+                    // No application found in database - clear localStorage and unlock form
+                    console.log('🧹 No application found in database, clearing localStorage');
+                    clearExpertApplicationData();
+                    unlockExpertForm();
                 }
             } catch (error) {
                 console.error('❌ Error checking application status:', error);
+                // If there's an error, assume no application and unlock
+                clearExpertApplicationData();
+                unlockExpertForm();
             }
+        }
+
+        // Clear all expert application data from localStorage
+        function clearExpertApplicationData() {
+            removeUserSpecificItem('expertFormLocked');
+            removeUserSpecificItem('expertApplicationStatus');
+            removeUserSpecificItem('expertApplicationSubmittedAt');
+            removeUserSpecificItem('expertApplicationData');
+            console.log('🧹 Cleared all expert application data from localStorage');
         }
 
         function loadNotifications() {

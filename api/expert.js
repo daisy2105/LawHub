@@ -2,117 +2,7 @@ const express = require('express');
 const router = express.Router();
 const mongoose = require('mongoose');
 const { verifyToken } = require('../middleware/auth');
-
-// Expert Application Schema
-const expertApplicationSchema = new mongoose.Schema({
-    userId: { 
-        type: mongoose.Schema.Types.ObjectId, 
-        ref: 'User', 
-        required: true 
-    },
-    // Personal Info
-    userEmail: String,
-    userName: String,
-    
-    // Professional Details
-    barCouncilId: { 
-        type: String, 
-        required: true, 
-        unique: true 
-    },
-    licenseYear: { 
-        type: Number, 
-        required: true 
-    },
-    experience: { 
-        type: String, 
-        required: true 
-    },
-    specialization: { 
-        type: String, 
-        required: true 
-    },
-    
-    // Practice Information
-    firmName: String,
-    location: { 
-        type: String, 
-        required: true 
-    },
-    education: { 
-        type: String, 
-        required: true 
-    },
-    courts: String,
-    
-    // Professional Profile
-    bio: { 
-        type: String, 
-        required: true 
-    },
-    certifications: String,
-    languages: { 
-        type: String, 
-        required: true 
-    },
-    availability: { 
-        type: String, 
-        default: '9am-5pm' 
-    },
-    
-    // Documents
-    documents: [{
-        name: String,
-        type: String,
-        size: Number,
-        data: String // Base64 encoded
-    }],
-    
-    // Application Status
-    status: { 
-        type: String, 
-        enum: ['pending', 'approved', 'rejected', 'under-review'], 
-        default: 'pending' 
-    },
-    
-    // Review Information
-    reviewedBy: { 
-        type: mongoose.Schema.Types.ObjectId, 
-        ref: 'User' 
-    },
-    reviewedAt: Date,
-    reviewNotes: String,
-    rejectionReason: String,
-    
-    // Consent and Terms
-    termsAccepted: { 
-        type: Boolean, 
-        required: true 
-    },
-    dataConsent: { 
-        type: Boolean, 
-        required: true 
-    },
-    
-    // Timestamps
-    submittedAt: { 
-        type: Date, 
-        default: Date.now 
-    },
-    updatedAt: { 
-        type: Date, 
-        default: Date.now 
-    }
-}, {
-    timestamps: true
-});
-
-// Create index for faster queries
-expertApplicationSchema.index({ userId: 1 });
-expertApplicationSchema.index({ barCouncilId: 1 });
-expertApplicationSchema.index({ status: 1 });
-
-const ExpertApplication = mongoose.model('ExpertApplication', expertApplicationSchema);
+const ExpertApplication = require('../models/ExpertApplication'); // Use centralized model
 
 // Submit Expert Application (proper implementation)
 router.post('/expert-application', verifyToken, async (req, res) => {
@@ -150,13 +40,18 @@ router.post('/expert-application', verifyToken, async (req, res) => {
         if (!experienceValue && req.body.yearsOfExperienceRange) {
             experienceValue = req.body.yearsOfExperienceRange;
         }
+        
+        // Debug: Log all incoming data
+        console.log('📊 All request body fields:', Object.keys(req.body));
+        console.log('📊 Request body data:', JSON.stringify(req.body, null, 2));
+        
         const expertApplication = new ExpertApplication({
             userId: req.user.userId,
-            userEmail: user.email,
-            userName: user.name,
+            userEmail: req.body.email || user.email, // Use from request or fallback to user
+            userName: req.body.name || user.name,    // Use from request or fallback to user
             barCouncilId: req.body.barCouncilId,
-            licenseYear: req.body.licenseYear,
-            experience: experienceValue,
+            licenseYear: parseInt(req.body.licenseYear),
+            experience: experienceValue || req.body.experience,
             specialization: req.body.specialization,
             firmName: req.body.firmName || '',
             location: req.body.location,
@@ -172,19 +67,39 @@ router.post('/expert-application', verifyToken, async (req, res) => {
             submittedAt: new Date()
         });
         
+        // Debug: Log what we're about to save
+        console.log('💾 About to save expert application:', JSON.stringify(expertApplication.toObject(), null, 2));
+        
         // Save to database
         await expertApplication.save();
         
+        // Debug: Verify what was actually saved
+        const savedApplication = await ExpertApplication.findById(expertApplication._id);
         console.log('✅ Expert application saved successfully');
+        console.log('🔍 Saved data verification:', JSON.stringify(savedApplication.toObject(), null, 2));
         
         res.status(201).json({
             success: true,
             message: 'Expert application submitted successfully',
-            applicationId: expertApplication._id
+            applicationId: expertApplication._id,
+            savedData: savedApplication // Include for debugging
         });
         
     } catch (error) {
         console.error('Expert application error:', error);
+        
+        // Handle validation errors specifically
+        if (error.name === 'ValidationError') {
+            const validationErrors = Object.keys(error.errors).map(key => {
+                return `${key}: ${error.errors[key].message}`;
+            });
+            console.error('❌ Validation errors:', validationErrors);
+            return res.status(400).json({
+                success: false,
+                message: 'Validation failed: ' + validationErrors.join(', '),
+                validationErrors: validationErrors
+            });
+        }
         
         if (error.code === 11000) {
             return res.status(400).json({
@@ -195,7 +110,8 @@ router.post('/expert-application', verifyToken, async (req, res) => {
         
         res.status(500).json({
             success: false,
-            message: 'Failed to submit expert application: ' + error.message
+            message: 'Failed to submit expert application: ' + error.message,
+            errorDetails: error.toString()
         });
     }
 });

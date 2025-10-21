@@ -1050,7 +1050,7 @@
                     <div class="item-header">
                         <div class="item-info">
                             <h3>${expert.fullName || expert.userName || 'Unknown Applicant'}</h3>
-                            <p>${expert.email || expert.userEmail} • ${expert.expertise || expert.specialization} • Bar Council: ${expert.barCouncilId}</p>
+                            <p>${expert.email || expert.userEmail} • ${expert.expertise || expert.specialization} • Bar Council: ${expert.barCouncilNumber || expert.barCouncilId}</p>
                         </div>
                         <div class="item-actions">
                             <span class="status-badge status-${expert.status || 'pending'}">${expert.status || 'pending'}</span>
@@ -1275,8 +1275,8 @@
                                     <div style="background: rgba(255,255,255,0.05); padding: 20px; border-radius: 12px; margin-bottom: 20px;">
                                         <p><strong>Name:</strong> ${expert.fullName || expert.userName || 'N/A'}</p>
                                         <p><strong>Email:</strong> ${expert.email || expert.userEmail || 'N/A'}</p>
-                                        <p><strong>Bar Council ID:</strong> ${expert.barCouncilId || 'N/A'}</p>
-                                        <p><strong>License Year:</strong> ${expert.licenseYear || 'N/A'}</p>
+                                        <p><strong>Bar Council ID:</strong> ${expert.barCouncilNumber || expert.barCouncilId || 'N/A'}</p>
+                                        <p><strong>License Year:</strong> ${expert.yearOfRegistration || expert.licenseYear || 'N/A'}</p>
                                     </div>
                                 </div>
                                 
@@ -1285,8 +1285,7 @@
                                     <div style="background: rgba(255,255,255,0.05); padding: 20px; border-radius: 12px; margin-bottom: 20px;">
                                         <p><strong>Specialization:</strong> ${expert.expertise || expert.specialization || 'N/A'}</p>
                                         <p><strong>Experience:</strong> ${expert.yearsOfExperience || expert.experience || 'N/A'}</p>
-                                        <p><strong>Location:</strong> ${expert.location || 'N/A'}</p>
-                                        <p><strong>Firm Name:</strong> ${expert.firmName || 'Not specified'}</p>
+                                        <p><strong>Firm Name:</strong> ${expert.currentFirm || expert.firmName || 'Not specified'}</p>
                                     </div>
                                 </div>
                             </div>
@@ -1294,9 +1293,9 @@
                             <div style="margin-bottom: 20px;">
                                 <h4>🎓 Education & Background</h4>
                                 <div style="background: rgba(255,255,255,0.05); padding: 20px; border-radius: 12px;">
-                                    <p><strong>Education:</strong> ${expert.education || 'N/A'}</p>
-                                    <p><strong>Courts:</strong> ${expert.courts || 'Not specified'}</p>
-                                    <p><strong>Languages:</strong> ${expert.languagesSpoken || expert.languages || 'N/A'}</p>
+                                    <p><strong>Education:</strong> ${expert.legalEducation || expert.education || 'N/A'}</p>
+                                    <p><strong>Courts:</strong> ${expert.courtsOfPractice || expert.courts || 'Not specified'}</p>
+                                    <p><strong>Languages:</strong> ${expert.languagesSpoken|| 'N/A'}</p>
                                     <p><strong>Availability:</strong> ${expert.preferredConsultationHours || expert.availability || 'Not specified'}</p>
                                 </div>
                             </div>
@@ -1304,7 +1303,7 @@
                             <div style="margin-bottom: 20px;">
                                 <h4>📝 Professional Bio</h4>
                                 <div style="background: rgba(255,255,255,0.05); padding: 20px; border-radius: 12px;">
-                                    <p style="line-height: 1.6; color: #e0e0e0;">${expert.bio || 'No bio provided'}</p>
+                                    <p style="line-height: 1.6; color: #e0e0e0;">${expert.professionalBio || expert.bio || 'No bio provided'}</p>
                                 </div>
                             </div>
                             
