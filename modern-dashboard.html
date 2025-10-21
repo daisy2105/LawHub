@@ -4636,37 +4636,7 @@
             try {
                 console.log('🔍 Checking application status for:', userEmail);
                 
-                // Update existing application if needed
-                try {
-                    await fetch('https://lawhub-1.onrender.com/api/expert-application/update', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'Authorization': `Bearer ${token}`
-                        },
-                        body: JSON.stringify({
-                            email: userEmail,
-                            fields: [
-                                'barCouncilId',
-                                'licenseYear',
-                                'experience',
-                                'specialization',
-                                'firmName',
-                                'location',
-                                'education',
-                                'courts',
-                                'bio',
-                                'languages',
-                                'availability'
-                            ]
-                        })
-                    });
-                    console.log('✅ Updated existing application field names');
-                } catch (updateError) {
-                    console.warn('Warning: Could not update field names:', updateError);
-                }
-
-                // Then get the updated status
+                // Get the application status
                 const response = await fetch(`https://lawhub-1.onrender.com/api/expert-application/status/${encodeURIComponent(userEmail)}`, {
                     headers: {
                         'Authorization': `Bearer ${token}`
