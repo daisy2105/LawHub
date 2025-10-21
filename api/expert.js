@@ -8,11 +8,11 @@ const ExpertApplication = require('../models/ExpertApplication'); // Use central
 router.post('/expert-application', verifyToken, async (req, res) => {
     try {
         console.log('🔥 Expert application POST request received');
-        console.log('User ID from token:', req.user.userId);
+        console.log('User ID from token:', req.user._id);
         console.log('Form data received:', req.body);
         
         // Check if user already has an application
-        const existingApplication = await ExpertApplication.findOne({ userId: req.user.userId });
+        const existingApplication = await ExpertApplication.findOne({ userId: req.user._id });
         if (existingApplication) {
             return res.status(400).json({
                 success: false,
@@ -20,15 +20,8 @@ router.post('/expert-application', verifyToken, async (req, res) => {
             });
         }
         
-        // Get user details from User collection
-        const User = require('../models/User');
-        const user = await User.findById(req.user.userId);
-        if (!user) {
-            return res.status(404).json({
-                success: false,
-                message: 'User not found'
-            });
-        }
+        // User already available from verifyToken middleware
+        const user = req.user;
         
         // Create expert application with user details
         // Accept both yearsOfExperience (number) and experience (string)
@@ -46,7 +39,7 @@ router.post('/expert-application', verifyToken, async (req, res) => {
         console.log('📊 Request body data:', JSON.stringify(req.body, null, 2));
         
         const expertApplication = new ExpertApplication({
-            userId: req.user.userId,
+            userId: req.user._id,
             userEmail: req.body.email || user.email, // Use from request or fallback to user
             userName: req.body.name || user.name,    // Use from request or fallback to user
             barCouncilId: req.body.barCouncilId,
