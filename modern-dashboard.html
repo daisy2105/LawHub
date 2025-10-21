@@ -2264,13 +2264,13 @@
                             </div>
                         </div>
 
-                        <div class="action-item expert" onclick="openExpertModal()">
+                        <div class="action-item expert" id="expertActionItem" onclick="openExpertModal()">
                             <div class="action-icon expert">
                                 <i class="fas fa-user-tie"></i>
                             </div>
-                            <div class="action-text">
-                                <h4>Expert Consultation</h4>
-                                <p>Book 1-on-1 sessions</p>
+                            <div class="action-text" id="expertActionText">
+                                <h4>Become an Expert</h4>
+                                <p>Apply as a legal expert</p>
                             </div>
                         </div>
                     </div>
@@ -4569,6 +4569,49 @@
             }
         }
 
+        // Update Quick Actions Expert Item based on status
+        function updateQuickActionsExpertItem(status) {
+            const expertActionText = document.getElementById('expertActionText');
+            const expertActionItem = document.getElementById('expertActionItem');
+            
+            if (!expertActionText || !expertActionItem) return;
+            
+            switch(status) {
+                case 'approved':
+                    expertActionText.innerHTML = `
+                        <h4>✅ Verified Expert</h4>
+                        <p>You are an approved expert</p>
+                    `;
+                    expertActionItem.style.background = 'linear-gradient(135deg, rgba(34, 197, 94, 0.1), rgba(22, 163, 74, 0.1))';
+                    expertActionItem.style.border = '1px solid rgba(34, 197, 94, 0.3)';
+                    break;
+                case 'pending':
+                case 'under-review':
+                    expertActionText.innerHTML = `
+                        <h4>⏳ Application Pending</h4>
+                        <p>Under review by admin</p>
+                    `;
+                    expertActionItem.style.background = 'linear-gradient(135deg, rgba(234, 179, 8, 0.1), rgba(202, 138, 4, 0.1))';
+                    expertActionItem.style.border = '1px solid rgba(234, 179, 8, 0.3)';
+                    break;
+                case 'rejected':
+                    expertActionText.innerHTML = `
+                        <h4>Reapply as Expert</h4>
+                        <p>Submit updated application</p>
+                    `;
+                    expertActionItem.style.background = '';
+                    expertActionItem.style.border = '';
+                    break;
+                default:
+                    expertActionText.innerHTML = `
+                        <h4>Become an Expert</h4>
+                        <p>Apply as a legal expert</p>
+                    `;
+                    expertActionItem.style.background = '';
+                    expertActionItem.style.border = '';
+            }
+        }
+
         // Notification System
         async function toggleNotifications() {
             const panel = document.getElementById('notificationPanel');
@@ -4660,6 +4703,7 @@
                     // Update UI based on status
                     if (serverStatus === 'approved') {
                         updateExpertButton('approved', true);
+                        updateQuickActionsExpertItem('approved');
                         permanentlyLockExpertForm();
                         addNotification(
                             '✅ Application Approved!', 
@@ -4669,6 +4713,7 @@
                         console.log('✅ Form permanently locked for approved application');
                     } else if (serverStatus === 'pending' || serverStatus === 'under-review') {
                         updateExpertButton('pending', true);
+                        updateQuickActionsExpertItem('pending');
                         lockExpertForm();
                         addNotification(
                             '⏳ Application Under Review',
@@ -4680,6 +4725,7 @@
                         console.log('✅ Form locked for pending application');
                     } else if (serverStatus === 'rejected') {
                         updateExpertButton('rejected', false);
+                        updateQuickActionsExpertItem('rejected');
                         unlockExpertForm();
                         addNotification(
                             '❌ Application Not Approved', 
@@ -4695,6 +4741,7 @@
                     clearExpertApplicationData();
                     unlockExpertForm();
                     updateExpertButton('none', false);
+                    updateQuickActionsExpertItem('default');
                 }
             } catch (error) {
                 console.error('❌ Error checking application status:', error);
