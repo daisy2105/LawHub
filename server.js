@@ -41,10 +41,10 @@ app.use(session({
 // Serve static files (your HTML, CSS, JS)
 app.use(express.static(path.join(__dirname)));
 
-// Load models BEFORE connecting to database
+// Load User models BEFORE connecting to database
 const User = require('./models/User');
 const UserProfile = require('./models/UserProfile');
-const ExpertApplication = require('./models/ExpertApplication');
+// ExpertApplication is loaded dynamically later to avoid conflicts
 
 // MongoDB Connection
 const connectDB = async () => {
