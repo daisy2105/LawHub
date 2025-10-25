@@ -282,11 +282,8 @@ function showNotification(title, message, type = 'info') {
 
 // Initialize on page load
 document.addEventListener('DOMContentLoaded', () => {
-    // Load active connections when chat opens
-    loadActiveConnections();
-    
-    // Refresh connections every 30 seconds
-    setInterval(loadActiveConnections, 30000);
+    // Load active connections only when chat modal is opened (not automatically)
+    // Removed auto-refresh to prevent repetitive server calls
 });
 
 // Export functions for global access

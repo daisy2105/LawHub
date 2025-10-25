@@ -275,7 +275,10 @@ router.get('/connections', authenticateUser, async (req, res) => {
             ]
         }).sort({ updatedAt: -1 });
 
-        console.log(`💬 Found ${connections.length} active connections for ${userId}`);
+        // Only log if connections exist (reduce console spam)
+        if (connections.length > 0) {
+            console.log(`💬 ${connections.length} active connection(s) for ${userId}`);
+        }
 
         res.json({
             success: true,
