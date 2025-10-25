@@ -4475,8 +4475,11 @@
             try {
                 console.log('👥 Loading experts from database...');
                 
+                // Always use deployed Render server
+                const API_BASE = 'https://lawhub-1.onrender.com';
+                
                 const token = localStorage.getItem('lawhub_token');
-                const response = await fetch('/api/experts', {
+                const response = await fetch(`${API_BASE}/api/experts`, {
                     headers: {
                         'Authorization': 'Bearer ' + token
                     }
@@ -4485,11 +4488,12 @@
                 if (response.ok) {
                     const data = await response.json();
                     allExperts = data.experts || [];
-                    console.log(`✅ Loaded ${allExperts.length} experts`);
+                    console.log(`✅ Loaded ${allExperts.length} experts from ${API_BASE}`);
                     displayExperts(allExperts);
                     loadSpecializations();
                 } else {
-                    throw new Error('Failed to load experts');
+                    const errorData = await response.json();
+                    throw new Error(errorData.message || 'Failed to load experts');
                 }
                 
             } catch (error) {
@@ -4498,6 +4502,7 @@
                     <div style="text-align: center; color: #ff6b6b; padding: 40px;">
                         <i class="fas fa-exclamation-triangle" style="font-size: 24px; margin-bottom: 15px;"></i>
                         <p>Unable to load experts. Please try again later.</p>
+                        <p style="font-size: 12px; color: #999; margin-top: 10px;">${error.message}</p>
                     </div>
                 `;
             }
@@ -4556,12 +4561,17 @@
         
         async function loadSpecializations() {
             try {
-                const response = await fetch('/api/specializations');
+                // Always use deployed Render server
+                const API_BASE = 'https://lawhub-1.onrender.com';
+                
+                const response = await fetch(`${API_BASE}/api/experts/specializations`);
                 if (response.ok) {
                     const data = await response.json();
                     const select = document.getElementById('specializationFilter');
-                    select.innerHTML = '<option value="">All Specializations</option>' + 
-                        data.specializations.map(spec => `<option value="${spec.value}">${spec.label}</option>`).join('');
+                    if (select) {
+                        select.innerHTML = '<option value="">All Specializations</option>' + 
+                            data.specializations.map(spec => `<option value="${spec.value}">${spec.label}</option>`).join('');
+                    }
                 }
             } catch (error) {
                 console.error('Error loading specializations:', error);
@@ -4595,8 +4605,11 @@
         
         async function viewExpertProfile(expertId) {
             try {
+                // Always use deployed Render server
+                const API_BASE = 'https://lawhub-1.onrender.com';
+                
                 const token = localStorage.getItem('lawhub_token');
-                const response = await fetch(`/api/experts/${expertId}`, {
+                const response = await fetch(`${API_BASE}/api/experts/${expertId}`, {
                     headers: {
                         'Authorization': 'Bearer ' + token
                     }
@@ -4638,17 +4651,42 @@
             }
         }
         
-        function requestChat(expertId) {
-            // For now, show a placeholder message
-            showCustomAlert('Chat Request', `
-                Chat request functionality will be implemented next!
+        async function requestChat(expertId) {
+            try {
+                console.log('🔍 Requesting chat with expert ID:', expertId);
+                console.log('📋 All experts array:', allExperts);
                 
-                This will:
-                1. Send a chat request to the expert
-                2. Expert will receive a notification
-                3. Once accepted, you can start chatting
-                4. Real-time messaging with security features
-            `, 'info');
+                // Find the expert details from allExperts array
+                const expert = allExperts.find(e => e.id === expertId);
+                
+                console.log('👤 Found expert:', expert);
+                
+                if (!expert) {
+                    console.error('❌ Expert not found in allExperts array');
+                    showCustomAlert('Error', 'Expert not found', 'error');
+                    return;
+                }
+                
+                if (!expert.userId) {
+                    console.error('❌ Expert userId is missing:', expert);
+                    showCustomAlert('Error', 'Expert user ID not available', 'error');
+                    return;
+                }
+                
+                console.log(`💬 Calling sendConnectionRequest with userId: ${expert.userId}, name: ${expert.name}`);
+                
+                // Use the sendConnectionRequest function from chat-functionality.js
+                if (typeof sendConnectionRequest === 'function') {
+                    await sendConnectionRequest(expert.userId, expert.name);
+                } else {
+                    console.error('❌ sendConnectionRequest function not found!');
+                    showCustomAlert('Error', 'Chat system not initialized. Please refresh the page.', 'error');
+                }
+                
+            } catch (error) {
+                console.error('❌ Error requesting chat:', error);
+                showCustomAlert('Error', 'Failed to send chat request: ' + error.message, 'error');
+            }
         }
         
         // Load experts when experts section is opened

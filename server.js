@@ -41,6 +41,11 @@ app.use(session({
 // Serve static files (your HTML, CSS, JS)
 app.use(express.static(path.join(__dirname)));
 
+// Load models BEFORE connecting to database
+const User = require('./models/User');
+const UserProfile = require('./models/UserProfile');
+const ExpertApplication = require('./models/ExpertApplication');
+
 // MongoDB Connection
 const connectDB = async () => {
   try {
@@ -110,6 +115,7 @@ app.use('/api/activity', require('./api/activity'));
 app.use('/api', require('./api/expert')); // Use the correct expert.js with proper field mappings
 app.use('/api', require('./api/admin'));
 app.use('/api/chat', require('./api/chat')); // Chat API routes
+app.use('/api/experts', require('./api/experts')); // Get approved experts list
 
 // Health check endpoint
 app.get('/api/health', (req, res) => {

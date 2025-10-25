@@ -110,4 +110,5 @@ expertApplicationSchema.index({ userId: 1 });
 expertApplicationSchema.index({ barCouncilId: 1 });
 expertApplicationSchema.index({ status: 1 });
 
-module.exports = mongoose.model('ExpertApplication', expertApplicationSchema);
+// Force collection name to match existing Atlas collection (lowercase 'a')
+module.exports = mongoose.model('ExpertApplication', expertApplicationSchema, 'expertapplications');

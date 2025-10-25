@@ -398,7 +398,7 @@ router.get('/messages/:connectionId', authenticateUser, async (req, res) => {
 });
 
 /**
- * Get unread message count
+ * Get unread message count and pending requests count (for notification badge)
  */
 router.get('/unread-count', authenticateUser, async (req, res) => {
     try {
@@ -416,24 +416,138 @@ router.get('/unread-count', authenticateUser, async (req, res) => {
         const connectionIds = connections.map(c => c._id.toString());
 
         // Count unread messages
-        const count = await ChatMessage.countDocuments({
+        const unreadMessages = await ChatMessage.countDocuments({
             connectionId: { $in: connectionIds },
             isRead: false,
             senderId: { $ne: userId }
         });
 
-        console.log(`📬 Unread count for ${userId}: ${count}`);
+        // Count pending requests (for lawyers/experts only)
+        const pendingRequests = await ChatConnection.countDocuments({
+            lawyerId: userId,
+            status: 'pending'
+        });
+
+        const totalCount = unreadMessages + pendingRequests;
+
+        console.log(`📬 Notification count for ${userId}: ${totalCount} (${unreadMessages} messages + ${pendingRequests} requests)`);
 
         res.json({
             success: true,
-            unreadCount: count
+            unreadCount: unreadMessages,
+            pendingRequests: pendingRequests,
+            totalCount: totalCount
         });
     } catch (error) {
         console.error('❌ Get unread count error:', error);
         res.status(500).json({
             success: false,
             message: 'Failed to get unread count',
-            unreadCount: 0
+            unreadCount: 0,
+            pendingRequests: 0,
+            totalCount: 0
+        });
+    }
+});
+
+/**
+ * Delete a chat connection and all its messages
+ */
+router.delete('/delete-connection/:connectionId', authenticateUser, async (req, res) => {
+    try {
+        const { connectionId } = req.params;
+        const userId = req.userId;
+
+        console.log(`🗑️ Deleting connection ${connectionId} by user ${userId}`);
+
+        // Verify user is part of this connection
+        const connection = await ChatConnection.findOne({
+            _id: connectionId,
+            $or: [
+                { userId: userId },
+                { lawyerId: userId }
+            ]
+        });
+
+        if (!connection) {
+            return res.status(404).json({
+                success: false,
+                message: 'Connection not found or you do not have permission to delete it'
+            });
+        }
+
+        // Delete all messages in this connection
+        const deletedMessages = await ChatMessage.deleteMany({
+            connectionId: connectionId
+        });
+
+        console.log(`🗑️ Deleted ${deletedMessages.deletedCount} messages`);
+
+        // Delete the connection itself
+        await ChatConnection.deleteOne({ _id: connectionId });
+
+        console.log('✅ Connection deleted successfully');
+
+        res.json({
+            success: true,
+            message: 'Chat deleted successfully',
+            deletedMessages: deletedMessages.deletedCount
+        });
+    } catch (error) {
+        console.error('❌ Delete connection error:', error);
+        res.status(500).json({
+            success: false,
+            message: 'Failed to delete chat'
+        });
+    }
+});
+
+/**
+ * Mark messages as read
+ */
+router.post('/mark-read/:connectionId', authenticateUser, async (req, res) => {
+    try {
+        const { connectionId } = req.params;
+        const userId = req.userId;
+
+        console.log(`📖 Marking messages as read in connection ${connectionId}`);
+
+        // Verify user is part of this connection
+        const connection = await ChatConnection.findOne({
+            _id: connectionId,
+            $or: [
+                { userId: userId },
+                { lawyerId: userId }
+            ]
+        });
+
+        if (!connection) {
+            return res.status(403).json({
+                success: false,
+                message: 'Not authorized to mark messages in this connection'
+            });
+        }
+
+        // Mark all messages from other person as read
+        const result = await ChatMessage.updateMany({
+            connectionId: connectionId,
+            senderId: { $ne: userId },
+            isRead: false
+        }, {
+            $set: { isRead: true }
+        });
+
+        console.log(`✅ Marked ${result.modifiedCount} messages as read`);
+
+        res.json({
+            success: true,
+            markedCount: result.modifiedCount
+        });
+    } catch (error) {
+        console.error('❌ Mark as read error:', error);
+        res.status(500).json({
+            success: false,
+            message: 'Failed to mark messages as read'
         });
     }
 });

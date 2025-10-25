@@ -1,10 +1,8 @@
 // Real-time Chat Functionality with Request-Accept Flow
 // This file handles the complete chat workflow
 
-// Auto-detect environment: Use deployed URL in production, localhost in development
-const CHAT_API_BASE = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
-    ? 'http://localhost:3000/api/chat'
-    : 'https://lawhub-1.onrender.com/api/chat';
+// ALWAYS use deployed Render server (not localhost)
+const CHAT_API_BASE = 'https://lawhub-1.onrender.com/api/chat';
 
 let currentConnection = null;
 let currentLawyer = null;
