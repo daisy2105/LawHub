@@ -3702,10 +3702,195 @@
             chatInterface.classList.add('active');
             chatBackdrop.classList.add('active');
             
-            // Load active connections when chat opens
-            loadActiveConnections();
+            // Check if user is an expert - show pending requests
+            // Otherwise show active connections
+            checkAndLoadChatContent();
             
             addCommandLog('Chat interface opened');
+        }
+        
+        // Check if user is expert and load appropriate content
+        async function checkAndLoadChatContent() {
+            try {
+                const token = localStorage.getItem('lawhub_token');
+                const userData = JSON.parse(localStorage.getItem('lawhub_user') || '{}');
+                
+                if (!token || !userData.id) return;
+                
+                const API_BASE = 'https://lawhub-1.onrender.com';
+                
+                // Check if user is an approved expert
+                const response = await fetch(`${API_BASE}/api/experts`, {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    const experts = data.experts || [];
+                    const isExpert = experts.some(expert => expert.userId === userData.id);
+                    
+                    if (isExpert) {
+                        // Expert user - show pending requests
+                        await loadPendingRequestsForExpert();
+                    } else {
+                        // Regular user - show active connections
+                        loadActiveConnections();
+                    }
+                } else {
+                    // Fallback to active connections
+                    loadActiveConnections();
+                }
+            } catch (error) {
+                console.error('Error checking user type:', error);
+                loadActiveConnections();
+            }
+        }
+        
+        // Load pending requests for expert users
+        async function loadPendingRequestsForExpert() {
+            try {
+                const token = localStorage.getItem('lawhub_token');
+                const CHAT_API_BASE = 'https://lawhub-1.onrender.com/api/chat';
+                
+                const response = await fetch(`${CHAT_API_BASE}/pending-requests`, {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    const pendingRequests = data.pendingRequests || [];
+                    displayPendingRequests(pendingRequests);
+                } else {
+                    console.error('Failed to load pending requests');
+                }
+            } catch (error) {
+                console.error('Error loading pending requests:', error);
+            }
+        }
+        
+        // Display pending requests for expert to accept/decline
+        function displayPendingRequests(requests) {
+            const lawyerGrid = document.querySelector('.lawyer-grid');
+            if (!lawyerGrid) return;
+            
+            // Update header
+            const chatHeader = document.querySelector('.chat-header h3');
+            if (chatHeader) {
+                chatHeader.textContent = '📬 Connection Requests';
+            }
+            
+            if (requests.length === 0) {
+                lawyerGrid.innerHTML = `
+                    <div style="text-align: center; padding: 40px 20px; color: #888;">
+                        <i class="fas fa-inbox" style="font-size: 48px; margin-bottom: 16px; opacity: 0.3;"></i>
+                        <p>No pending connection requests</p>
+                        <p style="font-size: 12px; margin-top: 8px;">You'll see requests here when users want to connect with you</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            lawyerGrid.innerHTML = requests.map(req => `
+                <div class="lawyer-card" style="cursor: default; position: relative; padding-right: 120px;">
+                    <div class="lawyer-avatar">
+                        <i class="fas fa-user" style="font-size: 24px; color: #556b2f;"></i>
+                    </div>
+                    <div class="lawyer-info">
+                        <h4>${req.fromUserName || 'User'}</h4>
+                        <p style="color: #6b8e23; font-size: 12px;">wants to connect with you</p>
+                        <p style="color: #888; font-size: 11px; margin-top: 4px;">${formatRequestTime(req.createdAt)}</p>
+                    </div>
+                    <div style="position: absolute; right: 10px; top: 50%; transform: translateY(-50%); display: flex; gap: 8px;">
+                        <button onclick="acceptConnectionRequest('${req._id}')" style="background: #10b981; color: white; border: none; padding: 8px 16px; border-radius: 8px; cursor: pointer; font-size: 12px; font-weight: 600;">
+                            <i class="fas fa-check"></i> Accept
+                        </button>
+                        <button onclick="declineConnectionRequest('${req._id}')" style="background: #ef4444; color: white; border: none; padding: 8px 16px; border-radius: 8px; cursor: pointer; font-size: 12px; font-weight: 600;">
+                            <i class="fas fa-times"></i> Decline
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+        }
+        
+        // Accept connection request
+        async function acceptConnectionRequest(requestId) {
+            try {
+                const token = localStorage.getItem('lawhub_token');
+                const CHAT_API_BASE = 'https://lawhub-1.onrender.com/api/chat';
+                
+                const response = await fetch(`${CHAT_API_BASE}/accept-request/${requestId}`, {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+                
+                if (response.ok) {
+                    showCustomAlert('Success', 'Connection request accepted!', 'success');
+                    // Reload pending requests
+                    await loadPendingRequestsForExpert();
+                    // Update badge
+                    await updateChatBadge();
+                } else {
+                    const data = await response.json();
+                    showCustomAlert('Error', data.error || 'Failed to accept request', 'error');
+                }
+            } catch (error) {
+                console.error('Error accepting request:', error);
+                showCustomAlert('Error', 'Failed to accept request', 'error');
+            }
+        }
+        
+        // Decline connection request
+        async function declineConnectionRequest(requestId) {
+            try {
+                const token = localStorage.getItem('lawhub_token');
+                const CHAT_API_BASE = 'https://lawhub-1.onrender.com/api/chat';
+                
+                const response = await fetch(`${CHAT_API_BASE}/decline-request/${requestId}`, {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+                
+                if (response.ok) {
+                    showCustomAlert('Info', 'Connection request declined', 'info');
+                    // Reload pending requests
+                    await loadPendingRequestsForExpert();
+                    // Update badge
+                    await updateChatBadge();
+                } else {
+                    const data = await response.json();
+                    showCustomAlert('Error', data.error || 'Failed to decline request', 'error');
+                }
+            } catch (error) {
+                console.error('Error declining request:', error);
+                showCustomAlert('Error', 'Failed to decline request', 'error');
+            }
+        }
+        
+        // Format request timestamp
+        function formatRequestTime(timestamp) {
+            const date = new Date(timestamp);
+            const now = new Date();
+            const diffMs = now - date;
+            const diffMins = Math.floor(diffMs / 60000);
+            
+            if (diffMins < 1) return 'Just now';
+            if (diffMins < 60) return `${diffMins} min${diffMins > 1 ? 's' : ''} ago`;
+            
+            const diffHours = Math.floor(diffMins / 60);
+            if (diffHours < 24) return `${diffHours} hour${diffHours > 1 ? 's' : ''} ago`;
+            
+            const diffDays = Math.floor(diffHours / 24);
+            if (diffDays < 7) return `${diffDays} day${diffDays > 1 ? 's' : ''} ago`;
+            
+            return date.toLocaleDateString();
         }
 
         function closeChatInterface() {
@@ -4963,6 +5148,11 @@
 
                     // Store the full application data for reference
                     setUserSpecificItem('expertApplicationData', JSON.stringify(applicationData));
+                    
+                    // Check if status has changed before showing notification
+                    const previousStatus = getUserSpecificItem('expertApplicationStatus');
+                    const statusChanged = previousStatus !== serverStatus;
+                    
                     setUserSpecificItem('expertApplicationStatus', serverStatus);
                     
                     // Update UI based on status
@@ -4970,21 +5160,29 @@
                         updateExpertButton('approved', true);
                         updateQuickActionsExpertItem('approved');
                         permanentlyLockExpertForm();
-                        addNotification(
-                            '✅ Application Approved!', 
-                            'Congratulations! Your expert application has been approved. You are now a verified legal expert on LawHub.',
-                            'success'
-                        );
+                        
+                        // Only show notification if status just changed to approved
+                        if (statusChanged && previousStatus !== null) {
+                            addNotification(
+                                '✅ Application Approved!', 
+                                'Congratulations! Your expert application has been approved. You are now a verified legal expert on LawHub.',
+                                'success'
+                            );
+                        }
                         console.log('✅ Form permanently locked for approved application');
                     } else if (serverStatus === 'pending' || serverStatus === 'under-review') {
                         updateExpertButton('pending', true);
                         updateQuickActionsExpertItem('pending');
                         lockExpertForm();
-                        addNotification(
-                            '⏳ Application Under Review',
-                            'Your expert application is currently being reviewed by our admin team. Please wait for the result.',
-                            'info'
-                        );
+                        
+                        // Only show notification if status just changed to pending
+                        if (statusChanged && previousStatus !== null) {
+                            addNotification(
+                                '⏳ Application Under Review',
+                                'Your expert application is currently being reviewed by our admin team. Please wait for the result.',
+                                'info'
+                            );
+                        }
                         // Update form with existing data using new field names
                         populateFormWithExistingData(applicationData);
                         console.log('✅ Form locked for pending application');
@@ -4992,11 +5190,15 @@
                         updateExpertButton('rejected', false);
                         updateQuickActionsExpertItem('rejected');
                         unlockExpertForm();
-                        addNotification(
-                            '❌ Application Not Approved', 
-                            'Your expert application has been reviewed. You can submit a new application with updated information.',
-                            'info'
-                        );
+                        
+                        // Only show notification if status just changed to rejected
+                        if (statusChanged && previousStatus !== null) {
+                            addNotification(
+                                '❌ Application Not Approved', 
+                                'Your expert application has been reviewed. You can submit a new application with updated information.',
+                                'info'
+                            );
+                        }
                         console.log('✅ Form unlocked for rejected application');
                     }
                     updateNotificationDot();
