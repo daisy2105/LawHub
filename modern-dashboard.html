@@ -2807,10 +2807,10 @@
         </div>
     </div>
 
-    <!-- Chat FAB with notification badge -->
+    <!-- Chat FAB with notification badge (Facebook Messenger style) -->
     <button class="chat-fab" onclick="openChatInterface()" style="background: linear-gradient(135deg, #556b2f, #6b8e23); position: relative;">
         <i class="fas fa-comments"></i>
-        <span id="chatNotificationBadge" style="display: none; position: absolute; top: -5px; right: -5px; background: #ff4444; color: white; border-radius: 50%; width: 20px; height: 20px; font-size: 11px; font-weight: bold; display: flex; align-items: center; justify-content: center; border: 2px solid white;">0</span>
+        <span id="chatNotificationBadge" style="position: absolute; top: -8px; right: -8px; background: #ff3b30; color: white; border-radius: 50%; min-width: 22px; height: 22px; font-size: 12px; font-weight: bold; display: none; align-items: center; justify-content: center; border: 3px solid white; box-shadow: 0 2px 8px rgba(255, 59, 48, 0.5); padding: 0 6px;">0</span>
     </button>
 
     <!-- Profile Setup Modal for First Time Users -->
@@ -5233,6 +5233,11 @@
             }
         `;
         document.head.appendChild(style);
+
+        // Periodically check for chat notifications (every 60 seconds)
+        setInterval(async () => {
+            await updateChatBadge();
+        }, 60000); // 60 seconds - not spammy!
 
 
         // Simulate admin status updates (for testing)
