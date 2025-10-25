@@ -109,6 +109,7 @@ app.use('/api/profile', require('./api/profile'));
 app.use('/api/activity', require('./api/activity'));
 app.use('/api', require('./api/expert')); // Use the correct expert.js with proper field mappings
 app.use('/api', require('./api/admin'));
+app.use('/api/chat', require('./api/chat')); // Chat API routes
 
 // Health check endpoint
 app.get('/api/health', (req, res) => {
