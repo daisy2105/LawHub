@@ -42,6 +42,11 @@ async function sendConnectionRequest(lawyerId, lawyerName) {
 
         if (response.ok) {
             showNotification('✅ Connection Request Sent!', `Your request has been sent to ${lawyerName}. You'll be notified when they accept.`, 'success');
+            
+            // Update chat badge after sending request
+            if (typeof updateChatBadge === 'function') {
+                await updateChatBadge();
+            }
         } else {
             if (data.status === 'pending') {
                 showNotification('⏳ Request Pending', `You already have a pending request with ${lawyerName}.`, 'info');
@@ -74,6 +79,11 @@ async function loadActiveConnections() {
             const data = await response.json();
             connections = data.connections;
             displayActiveConnections();
+            
+            // Update chat badge after loading connections
+            if (typeof updateChatBadge === 'function') {
+                await updateChatBadge();
+            }
         }
     } catch (error) {
         console.error('Load connections error:', error);

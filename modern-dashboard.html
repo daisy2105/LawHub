@@ -2178,7 +2178,7 @@
                         Community
                     </a>
                 </li>
-                <li class="nav-item">
+                <li class="nav-item" id="findExpertsNav">
                     <a href="#" class="nav-link" data-section="experts">
                         <i class="fas fa-user-tie"></i>
                         Find Experts
@@ -2807,9 +2807,10 @@
         </div>
     </div>
 
-    <!-- Chat FAB -->
-    <button class="chat-fab" onclick="openChatInterface()" style="background: linear-gradient(135deg, #556b2f, #6b8e23);">
+    <!-- Chat FAB with notification badge -->
+    <button class="chat-fab" onclick="openChatInterface()" style="background: linear-gradient(135deg, #556b2f, #6b8e23); position: relative;">
         <i class="fas fa-comments"></i>
+        <span id="chatNotificationBadge" style="display: none; position: absolute; top: -5px; right: -5px; background: #ff4444; color: white; border-radius: 50%; width: 20px; height: 20px; font-size: 11px; font-weight: bold; display: flex; align-items: center; justify-content: center; border: 2px solid white;">0</span>
     </button>
 
     <!-- Profile Setup Modal for First Time Users -->
@@ -4618,30 +4619,75 @@
                 if (response.ok) {
                     const data = await response.json();
                     const expert = data.expert;
-                    showCustomAlert('Expert Profile', `
-                        <div style="text-align: left;">
-                            <div style="display: flex; align-items: center; margin-bottom: 20px;">
-                                <div style="font-size: 60px; margin-right: 20px;">${expert.avatar}</div>
-                                <div>
-                                    <h3 style="margin: 0;">${expert.name}</h3>
-                                    <p style="margin: 5px 0; color: #666;">${expert.specialization}</p>
-                                    <p style="margin: 5px 0; color: #666;">${expert.experience} experience</p>
+                    
+                    // Populate modal content
+                    const modalContent = document.getElementById('expertProfileContent');
+                    modalContent.innerHTML = `
+                        <div style="text-align: left; color: white;">
+                            <!-- Header with Avatar and Basic Info -->
+                            <div style="display: flex; align-items: center; margin-bottom: 30px; padding-bottom: 20px; border-bottom: 2px solid rgba(255,255,255,0.2);">
+                                <div style="font-size: 80px; margin-right: 25px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 50%; width: 100px; height: 100px; display: flex; align-items: center; justify-content: center; box-shadow: 0 10px 25px rgba(102,126,234,0.3);">
+                                    ${expert.avatar}
+                                </div>
+                                <div style="flex: 1;">
+                                    <h2 style="margin: 0 0 10px 0; color: #fff; font-size: 28px;">${expert.name}</h2>
+                                    <p style="margin: 5px 0; color: #a0aec0; font-size: 16px;"><i class="fas fa-balance-scale" style="margin-right: 8px; color: #667eea;"></i>${expert.specialization}</p>
+                                    <p style="margin: 5px 0; color: #a0aec0; font-size: 16px;"><i class="fas fa-briefcase" style="margin-right: 8px; color: #667eea;"></i>${expert.experience} experience</p>
                                 </div>
                             </div>
                             
-                            <h4>Professional Details</h4>
-                            <p><strong>Bar Council ID:</strong> ${expert.barCouncilId}</p>
-                            <p><strong>License Year:</strong> ${expert.licenseYear}</p>
-                            <p><strong>Firm:</strong> ${expert.firmName || 'Independent Practice'}</p>
-                            <p><strong>Education:</strong> ${expert.education}</p>
-                            <p><strong>Location:</strong> ${expert.location}</p>
-                            <p><strong>Languages:</strong> ${expert.languages}</p>
-                            <p><strong>Availability:</strong> ${expert.availability}</p>
+                            <!-- Professional Details Grid -->
+                            <h3 style="color: #fff; margin: 25px 0 15px 0; font-size: 20px;">
+                                <i class="fas fa-user-tie" style="margin-right: 10px; color: #667eea;"></i>Professional Details
+                            </h3>
+                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 25px;">
+                                <div style="background: rgba(255,255,255,0.05); padding: 15px; border-radius: 10px; border-left: 3px solid #667eea;">
+                                    <p style="margin: 0; color: #a0aec0; font-size: 12px; text-transform: uppercase; letter-spacing: 1px;">Bar Council ID</p>
+                                    <p style="margin: 5px 0 0 0; color: #fff; font-size: 16px; font-weight: 600;">${expert.barCouncilId}</p>
+                                </div>
+                                <div style="background: rgba(255,255,255,0.05); padding: 15px; border-radius: 10px; border-left: 3px solid #764ba2;">
+                                    <p style="margin: 0; color: #a0aec0; font-size: 12px; text-transform: uppercase; letter-spacing: 1px;">License Year</p>
+                                    <p style="margin: 5px 0 0 0; color: #fff; font-size: 16px; font-weight: 600;">${expert.licenseYear}</p>
+                                </div>
+                                <div style="background: rgba(255,255,255,0.05); padding: 15px; border-radius: 10px; border-left: 3px solid #667eea;">
+                                    <p style="margin: 0; color: #a0aec0; font-size: 12px; text-transform: uppercase; letter-spacing: 1px;">Firm</p>
+                                    <p style="margin: 5px 0 0 0; color: #fff; font-size: 16px; font-weight: 600;">${expert.firmName || 'Independent Practice'}</p>
+                                </div>
+                                <div style="background: rgba(255,255,255,0.05); padding: 15px; border-radius: 10px; border-left: 3px solid #764ba2;">
+                                    <p style="margin: 0; color: #a0aec0; font-size: 12px; text-transform: uppercase; letter-spacing: 1px;">Education</p>
+                                    <p style="margin: 5px 0 0 0; color: #fff; font-size: 16px; font-weight: 600;">${expert.education}</p>
+                                </div>
+                                <div style="background: rgba(255,255,255,0.05); padding: 15px; border-radius: 10px; border-left: 3px solid #667eea;">
+                                    <p style="margin: 0; color: #a0aec0; font-size: 12px; text-transform: uppercase; letter-spacing: 1px;">Location</p>
+                                    <p style="margin: 5px 0 0 0; color: #fff; font-size: 16px; font-weight: 600;">${expert.location}</p>
+                                </div>
+                                <div style="background: rgba(255,255,255,0.05); padding: 15px; border-radius: 10px; border-left: 3px solid #764ba2;">
+                                    <p style="margin: 0; color: #a0aec0; font-size: 12px; text-transform: uppercase; letter-spacing: 1px;">Languages</p>
+                                    <p style="margin: 5px 0 0 0; color: #fff; font-size: 16px; font-weight: 600;">${expert.languages}</p>
+                                </div>
+                            </div>
                             
-                            <h4>About</h4>
-                            <p>${expert.bio}</p>
+                            <!-- Availability -->
+                            <div style="background: linear-gradient(135deg, rgba(102,126,234,0.2) 0%, rgba(118,75,162,0.2) 100%); padding: 15px; border-radius: 10px; margin-bottom: 25px; border: 1px solid rgba(102,126,234,0.3);">
+                                <p style="margin: 0; color: #a0aec0; font-size: 12px; text-transform: uppercase; letter-spacing: 1px;">
+                                    <i class="fas fa-clock" style="margin-right: 8px;"></i>Availability
+                                </p>
+                                <p style="margin: 5px 0 0 0; color: #fff; font-size: 16px; font-weight: 600;">${expert.availability}</p>
+                            </div>
+                            
+                            <!-- About Section -->
+                            <h3 style="color: #fff; margin: 25px 0 15px 0; font-size: 20px;">
+                                <i class="fas fa-info-circle" style="margin-right: 10px; color: #667eea;"></i>About
+                            </h3>
+                            <div style="background: rgba(255,255,255,0.05); padding: 20px; border-radius: 10px; line-height: 1.8;">
+                                <p style="margin: 0; color: #e2e8f0; font-size: 15px;">${expert.bio}</p>
+                            </div>
                         </div>
-                    `, 'info');
+                    `;
+                    
+                    // Show modal
+                    document.getElementById('expertProfileModal').style.display = 'block';
+                    document.body.style.overflow = 'hidden'; // Prevent background scrolling
                 } else {
                     throw new Error('Failed to load expert profile');
                 }
@@ -4651,10 +4697,27 @@
             }
         }
         
+        function closeExpertProfileModal() {
+            document.getElementById('expertProfileModal').style.display = 'none';
+            document.body.style.overflow = 'auto'; // Restore scrolling
+        }
+        
+        // Close modal when clicking outside the content
+        document.addEventListener('click', function(e) {
+            const modal = document.getElementById('expertProfileModal');
+            if (e.target === modal) {
+                closeExpertProfileModal();
+            }
+        });
+        
+        
         async function requestChat(expertId) {
             try {
                 console.log('🔍 Requesting chat with expert ID:', expertId);
                 console.log('📋 All experts array:', allExperts);
+                
+                // Get current user data
+                const userData = JSON.parse(localStorage.getItem('lawhub_user') || '{}');
                 
                 // Find the expert details from allExperts array
                 const expert = allExperts.find(e => e.id === expertId);
@@ -4670,6 +4733,13 @@
                 if (!expert.userId) {
                     console.error('❌ Expert userId is missing:', expert);
                     showCustomAlert('Error', 'Expert user ID not available', 'error');
+                    return;
+                }
+                
+                // Prevent users from requesting chat with themselves
+                if (userData.id && expert.userId === userData.id) {
+                    showCustomAlert('Info', 'You cannot send a chat request to yourself!', 'info');
+                    console.log('⚠️ Prevented self-request');
                     return;
                 }
                 
@@ -5061,7 +5131,109 @@
             setInterval(async () => {
                 await checkApplicationStatus();
             }, 30000);
+            
+            // Initialize expert-specific UI features
+            await initializeExpertUI();
         });
+
+        // Check if current user is an expert and update UI accordingly
+        async function initializeExpertUI() {
+            try {
+                const token = localStorage.getItem('lawhub_token');
+                const userData = JSON.parse(localStorage.getItem('lawhub_user') || '{}');
+                
+                if (!token || !userData.id) return;
+                
+                const API_BASE = 'https://lawhub-1.onrender.com';
+                
+                // Check if user is an approved expert
+                const response = await fetch(`${API_BASE}/api/experts`, {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    const experts = data.experts || [];
+                    
+                    // Check if current user is in the experts list
+                    const isExpert = experts.some(expert => expert.userId === userData.id);
+                    
+                    if (isExpert) {
+                        // Hide "Find Experts" menu for expert users
+                        const findExpertsNav = document.getElementById('findExpertsNav');
+                        if (findExpertsNav) {
+                            findExpertsNav.style.display = 'none';
+                            console.log('✅ Find Experts menu hidden for expert user');
+                        }
+                    }
+                }
+                
+                // Load and update chat notification badge
+                await updateChatBadge();
+            } catch (error) {
+                console.error('Error initializing expert UI:', error);
+            }
+        }
+        
+        // Update the chat notification badge with pending requests count
+        async function updateChatBadge() {
+            try {
+                const token = localStorage.getItem('lawhub_token');
+                if (!token) return;
+                
+                const CHAT_API_BASE = 'https://lawhub-1.onrender.com/api/chat';
+                
+                const response = await fetch(`${CHAT_API_BASE}/pending-requests`, {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    const pendingCount = data.pendingRequests ? data.pendingRequests.length : 0;
+                    
+                    const badge = document.getElementById('chatNotificationBadge');
+                    if (badge) {
+                        if (pendingCount > 0) {
+                            badge.textContent = pendingCount > 9 ? '9+' : pendingCount;
+                            badge.style.display = 'flex';
+                            // Add pulse animation
+                            badge.style.animation = 'pulse 2s infinite';
+                            console.log(`📬 Chat badge updated: ${pendingCount} pending request(s)`);
+                        } else {
+                            badge.style.display = 'none';
+                        }
+                    }
+                }
+            } catch (error) {
+                console.error('Error updating chat badge:', error);
+            }
+        }
+        
+        // Add CSS animation for badge pulse
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes pulse {
+                0%, 100% {
+                    transform: scale(1);
+                    opacity: 1;
+                }
+                50% {
+                    transform: scale(1.1);
+                    opacity: 0.8;
+                }
+            }
+            
+            #expertProfileModal button:hover {
+                background: rgba(255,255,255,0.2) !important;
+                transform: scale(1.1);
+            }
+        `;
+        document.head.appendChild(style);
+
 
         // Simulate admin status updates (for testing)
         function simulateStatusUpdate(newStatus) {
@@ -5078,6 +5250,19 @@
         }
 
     </script>
+    
+    <!-- Expert Profile Modal -->
+    <div id="expertProfileModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); z-index: 10000; overflow-y: auto;">
+        <div style="position: relative; max-width: 700px; margin: 50px auto; background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%); border-radius: 20px; padding: 40px; box-shadow: 0 20px 60px rgba(0,0,0,0.5);">
+            <!-- Close Button -->
+            <button onclick="closeExpertProfileModal()" style="position: absolute; top: 20px; right: 20px; background: rgba(255,255,255,0.1); border: 2px solid rgba(255,255,255,0.3); color: white; width: 40px; height: 40px; border-radius: 50%; font-size: 24px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.3s;">
+                ×
+            </button>
+            
+            <!-- Modal Content -->
+            <div id="expertProfileContent"></div>
+        </div>
+    </div>
     
     <!-- Real Chat Functionality -->
     <script src="chat-functionality.js"></script>
