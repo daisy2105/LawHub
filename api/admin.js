@@ -3,35 +3,7 @@ const router = express.Router();
 const mongoose = require('mongoose');
 const User = require('../models/User');
 const UserProfile = require('../models/UserProfile');
-
-// Simple ExpertApplication model - just like User model
-const expertApplicationSchema = new mongoose.Schema({
-  userId: String,
-  fullName: String,
-  email: String,
-  phoneNumber: String,
-  expertise: String,
-  yearsOfExperience: Number,
-  education: String,
-  certifications: String,
-  languagesSpoken: String,
-  preferredConsultationHours: String,
-  documents: [{ name: String, type: String, size: Number, data: String }],
-  termsAccepted: Boolean,
-  dataConsent: Boolean,
-  status: { type: String, enum: ['pending', 'approved', 'rejected'], default: 'pending' },
-  reviewedAt: Date,
-  reviewNotes: String,
-  submittedAt: { type: Date, default: Date.now },
-  updatedAt: { type: Date, default: Date.now }
-});
-
-let ExpertApplication;
-try {
-  ExpertApplication = mongoose.model('ExpertApplication');
-} catch {
-  ExpertApplication = mongoose.model('ExpertApplication', expertApplicationSchema);
-}
+const ExpertApplication = require('../models/ExpertApplication'); // Use centralized model
 
 // SIMPLE Admin Stats - just like login/signup logic
 router.get('/admin/stats', async (req, res) => {
@@ -105,12 +77,47 @@ router.get('/admin/expert-applications/:id', async (req, res) => {
       });
     }
     
-    console.log('👨‍⚖️ Found expert application:', application.fullName);
+    console.log('👨‍⚖️ Found expert application:', application.userName || application.userEmail);
     console.log('👨‍⚖️ Raw application data:', JSON.stringify(application, null, 2));
+    
+    // Format the response to match the frontend expectations
+    const formattedApplication = {
+      _id: application._id,
+      
+      // Personal Information
+      name: application.userName || 'N/A',
+      email: application.userEmail || 'N/A',
+      
+      // Professional Details  
+      barCouncilId: application.barCouncilId || 'N/A',
+      licenseYear: application.licenseYear || 'N/A',
+      experience: application.experience || 'N/A',
+      specialization: application.specialization || 'N/A',
+      firmName: application.firmName || 'Not specified',
+      
+      // Education & Background
+      education: application.education || 'N/A',
+      location: application.location || 'N/A',
+      courts: application.courts || 'Not specified',
+      languages: application.languages || 'N/A',
+      availability: application.availability || 'Not specified',
+      
+      // Professional Bio
+      bio: application.bio || 'No bio provided',
+      
+      // Application Status
+      status: application.status || 'pending',
+      submittedAt: application.submittedAt,
+      reviewedAt: application.reviewedAt,
+      reviewNotes: application.reviewNotes,
+      
+      // Keep original data for debugging
+      _original: application
+    };
     
     res.json({
       success: true,
-      application: application
+      application: formattedApplication
     });
     
   } catch (error) {

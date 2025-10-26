@@ -317,6 +317,13 @@
             justify-content: center;
             margin-right: 12px;
             font-size: 18px;
+            overflow: hidden;
+        }
+
+        .lawyer-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
         }
 
         .lawyer-details h4 {
@@ -421,18 +428,37 @@
         /* Connect Modal */
         .connect-modal {
             position: fixed;
-            bottom: 100px;
-            right: 30px;
-            width: 300px;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 90%;
+            max-width: 400px;
             background: white;
             border-radius: 15px;
-            box-shadow: 0 15px 50px rgba(0, 0, 0, 0.2);
+            box-shadow: 0 15px 50px rgba(0, 0, 0, 0.3);
             z-index: 1700;
             display: none;
             padding: 20px;
         }
 
         .connect-modal.active {
+            display: block;
+        }
+
+        /* Overlay for connect modal */
+        .connect-modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(5px);
+            z-index: 1650;
+            display: none;
+        }
+
+        .connect-modal-overlay.active {
             display: block;
         }
 
@@ -473,6 +499,13 @@
             margin-right: 12px;
             color: white;
             font-size: 16px;
+            overflow: hidden;
+        }
+
+        .lawyer-item-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
         }
 
         .lawyer-item-info h4 {
@@ -1728,8 +1761,9 @@
                     <h1 style="color: white; font-size: 36px; margin-bottom: 20px;"><i class="fas fa-user"></i> My Profile</h1>
                     <div style="display: grid; grid-template-columns: 1fr 2fr; gap: 30px; margin-top: 30px;">
                         <div style="background: rgba(255, 255, 255, 0.1); padding: 30px; border-radius: 20px; border: 1px solid rgba(255, 255, 255, 0.2); text-align: center;">
-                            <div style="width: 120px; height: 120px; border-radius: 50%; background: linear-gradient(135deg, #ff6b6b, #ee5a24); margin: 0 auto 20px; display: flex; align-items: center; justify-content: center;">
-                                <i class="fas fa-user" style="color: white; font-size: 48px;"></i>
+                            <div style="width: 120px; height: 120px; border-radius: 50%; background: linear-gradient(135deg, #ff6b6b, #ee5a24); margin: 0 auto 20px; display: flex; align-items: center; justify-content: center; overflow: hidden; position: relative;">
+                                <img id="profile-avatar-img" src="data:image/png;base64,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" alt="Profile" style="width: 100%; height: 100%; object-fit: cover; display: block;" onerror="this.style.display='none'; document.getElementById('profile-avatar-icon').style.display='flex';">
+                                <i class="fas fa-user" id="profile-avatar-icon" style="color: white; font-size: 48px; position: absolute; display: none;"></i>
                             </div>
                             <h3 id="profile-name" style="color: white; margin-bottom: 10px;">Loading...</h3>
                             <p style="color: rgba(255, 255, 255, 0.8); margin-bottom: 15px;">Law Student</p>
@@ -1958,13 +1992,17 @@
         <i class="fas fa-comments"></i>
     </button>
 
+    <!-- Connect Modal Overlay -->
+    <div class="connect-modal-overlay" id="connectModalOverlay" onclick="closeConnectModal()"></div>
+
     <!-- Connect Modal -->
     <div class="connect-modal" id="connectModal">
         <h3>Connect with Lawyers</h3>
         <div class="lawyer-list">
             <div class="lawyer-item" onclick="connectToLawyer('Rohini', 'Constitutional Law Expert')">
                 <div class="lawyer-item-avatar">
-                    <i class="fas fa-user-graduate"></i>
+                    <img src="data:image/png;base64,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" alt="Lawyer" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                    <i class="fas fa-user-graduate" style="display: none;"></i>
                 </div>
                 <div class="lawyer-item-info">
                     <h4>Adv. Rohini Sharma</h4>
@@ -1973,7 +2011,8 @@
             </div>
             <div class="lawyer-item" onclick="connectToLawyer('Rajesh', 'Criminal Law Specialist')">
                 <div class="lawyer-item-avatar">
-                    <i class="fas fa-briefcase"></i>
+                    <img src="data:image/png;base64,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" alt="Lawyer" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                    <i class="fas fa-briefcase" style="display: none;"></i>
                 </div>
                 <div class="lawyer-item-info">
                     <h4>Adv. Rajesh Kumar</h4>
@@ -1988,8 +2027,9 @@
     <div class="chat-container" id="chatContainer">
         <div class="chat-header">
             <div class="chat-header-info">
-                <div class="lawyer-avatar">
-                    <i class="fas fa-user-graduate"></i>
+                <div class="lawyer-avatar" id="lawyerAvatarContainer">
+                    <img id="lawyerAvatarImg" src="data:image/png;base64,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" alt="Default Avatar" style="display: block;" onerror="this.style.display='none'; document.getElementById('lawyerAvatarIcon').style.display='flex';">
+                    <i class="fas fa-user-graduate" id="lawyerAvatarIcon" style="display: none;"></i>
                 </div>
                 <div class="lawyer-details">
                     <h4 id="currentLawyerName">Select a Lawyer</h4>
@@ -2190,7 +2230,7 @@
                 }
                 
                 // Submit to API
-                const response = await fetch('/api/expert-application', {
+                const response = await fetch('https://lawhub-1.onrender.com/api/expert-application', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
@@ -2310,10 +2350,12 @@
 
         function showConnectModal() {
             document.getElementById('connectModal').classList.add('active');
+            document.getElementById('connectModalOverlay').classList.add('active');
         }
 
         function closeConnectModal() {
             document.getElementById('connectModal').classList.remove('active');
+            document.getElementById('connectModalOverlay').classList.remove('active');
         }
 
         function connectToLawyer(name, specialization) {
@@ -2435,6 +2477,9 @@
                 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InduZWp5bHRjbWloeGl3dnFnc3B4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTQ5Mjk1ODcsImV4cCI6MjA3MDUwNTU4N30.pIYpLXs0YLmXiPi8Bkio-goGpBKSFdaiDcJtBePz8wQ'
             );
 
+            // Default no-profile image
+            const defaultProfileImage = 'data:image/png;base64,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';
+
             try {
                 const { data: { user }, error } = await supabase.auth.getUser();
                 
@@ -2454,6 +2499,22 @@
                     const profileEmail = document.getElementById('profile-email');
                     if (profileName) profileName.textContent = user.user_metadata.name;
                     if (profileEmail) profileEmail.value = user.email;
+
+                    // Update profile image
+                    const profileAvatarImg = document.getElementById('profile-avatar-img');
+                    const profileAvatarIcon = document.getElementById('profile-avatar-icon');
+                    
+                    if (user.user_metadata.profile_image && user.user_metadata.profile_image.trim() !== '') {
+                        // User has a profile image
+                        profileAvatarImg.src = user.user_metadata.profile_image;
+                        profileAvatarImg.style.display = 'block';
+                        profileAvatarIcon.style.display = 'none';
+                    } else {
+                        // Use default no-profile image
+                        profileAvatarImg.src = defaultProfileImage;
+                        profileAvatarImg.style.display = 'block';
+                        profileAvatarIcon.style.display = 'none';
+                    }
                 } else {
                     // If no name found, redirect to login
                     window.location.href = 'login2.html';

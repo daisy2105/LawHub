@@ -372,6 +372,18 @@
             margin-right: auto;
         }
 
+        .name-row .input-group.half {
+            width: 48%;
+            display: inline-block;
+            margin-right: 4%;
+            margin-left: 0;
+            margin-right: 0;
+        }
+
+        .name-row .input-group.half:first-child {
+            margin-right: 4%;
+        }
+
         .name-row {
             width: 100%;
             max-width: 520px;
@@ -751,7 +763,7 @@
             button.textContent = 'Logging in...';
             
             try {
-                const response = await fetch('http://localhost:3000/api/auth/login', {
+                const response = await fetch('https://lawhub-1.onrender.com/api/auth/login', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
@@ -813,7 +825,7 @@
             button.textContent = 'Creating Account...';
             
             try {
-                const response = await fetch('http://localhost:3000/api/auth/register', {
+                const response = await fetch('https://lawhub-1.onrender.com/api/auth/register', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',

@@ -8,7 +8,7 @@ const jwt = require('jsonwebtoken');
 require('dotenv').config();
 
 const JWT_SECRET = process.env.JWT_SECRET || 'lawhub-secret-key-2025';
-const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://localhost:27017/lawhub';
+const MONGODB_URI = process.env.MONGODB_URI;
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -40,6 +40,11 @@ app.use(session({
 
 // Serve static files (your HTML, CSS, JS)
 app.use(express.static(path.join(__dirname)));
+
+// Load User models BEFORE connecting to database
+const User = require('./models/User');
+const UserProfile = require('./models/UserProfile');
+// ExpertApplication is loaded dynamically later to avoid conflicts
 
 // MongoDB Connection
 const connectDB = async () => {
@@ -107,7 +112,10 @@ async function createDatabaseIndexes() {
 app.use('/api/auth', require('./routes/auth'));
 app.use('/api/profile', require('./api/profile'));
 app.use('/api/activity', require('./api/activity'));
+app.use('/api', require('./api/expert')); // Use the correct expert.js with proper field mappings
 app.use('/api', require('./api/admin'));
+app.use('/api/chat', require('./api/chat')); // Chat API routes
+app.use('/api/experts', require('./api/experts')); // Get approved experts list
 
 // Health check endpoint
 app.get('/api/health', (req, res) => {
@@ -125,7 +133,7 @@ app.get('/api/cleanup-expert-applications', async (req, res) => {
     console.log('🧹 Starting expert applications cleanup...');
     
     const { MongoClient } = require('mongodb');
-    const client = new MongoClient('mongodb://localhost:27017/lawhub');
+  const client = new MongoClient(MONGODB_URI);
     await client.connect();
     const db = client.db('lawhub');
     
@@ -344,125 +352,8 @@ app.put('/api/admin/expert-applications/:id', async (req, res) => {
 });
 
 // SIMPLE EXPERT APPLICATION ENDPOINT - ENABLED
-app.post('/api/expert-application', async (req, res) => {
-  console.log('🔥 EXPERT APPLICATION RECEIVED!');
-  console.log('📝 Data:', req.body);
-  
-  try {
-    // Extract userId from JWT token or use default for demo
-    let userId = null;
-    let userEmail = req.body.email || 'demo@lawhub.com';
-    let userName = req.body.fullName || 'Demo User';
-    
-    const authHeader = req.headers.authorization;
-    if (authHeader && authHeader.startsWith('Bearer ')) {
-      try {
-        const token = authHeader.substring(7);
-        const decoded = jwt.verify(token, JWT_SECRET);
-        userId = decoded.userId;
-        userEmail = decoded.email || userEmail;
-        userName = decoded.name || userName;
-        console.log('👤 Extracted userId from token:', userId);
-      } catch (err) {
-        console.log('❌ Failed to decode JWT token:', err.message);
-      }
-    }
-    
-    // For demo purposes, use a default userId if none provided
-    if (!userId) {
-      console.log('🎭 Using demo userId for deployment testing');
-      userId = '507f1f77bcf86cd799439011'; // Default demo ObjectId
-      userEmail = req.body.email || 'demo@lawhub.com';
-      userName = req.body.fullName || 'Demo User';
-    }
-
-    // Handle documents properly
-    let documents = [];
-    if (req.body.documents) {
-      try {
-        if (typeof req.body.documents === 'string') {
-          const parsed = JSON.parse(req.body.documents);
-          if (Array.isArray(parsed)) {
-            documents = parsed.map(doc => ({
-              name: doc.name || '',
-              type: doc.type || '',
-              size: doc.size || 0,
-              data: doc.data || ''
-            }));
-          }
-        } else if (Array.isArray(req.body.documents)) {
-          documents = req.body.documents;
-        }
-      } catch (parseError) {
-        console.log('📄 Could not parse documents, using empty array');
-        documents = [];
-      }
-    }
-    
-    console.log('🔍 DEBUG: Request body data:');
-    console.log('📝 fullName:', req.body.fullName);
-    console.log('📝 email:', req.body.email); 
-    console.log('📝 barCouncilId:', req.body.barCouncilId);
-    console.log('📝 expertise:', req.body.expertise);
-    console.log('📝 yearsOfExperience:', req.body.yearsOfExperience);
-    
-    // Use simple mongoose create with correct field names that match the schema
-    const expertApplication = new ExpertApplication({
-      userId: userId,
-      fullName: req.body.fullName,
-      email: req.body.email,
-      phoneNumber: req.body.phoneNumber,
-      expertise: req.body.expertise,
-      yearsOfExperience: req.body.yearsOfExperience,
-      education: req.body.education,
-      certifications: req.body.certifications,
-      languagesSpoken: req.body.languagesSpoken,
-      preferredConsultationHours: req.body.preferredConsultationHours,
-      barCouncilId: req.body.barCouncilId,
-      licenseYear: parseInt(req.body.licenseYear) || new Date().getFullYear(),
-      firmName: req.body.firmName,
-      location: req.body.location,
-      courts: req.body.courts,
-      bio: req.body.bio,
-      documents: documents,
-      termsAccepted: req.body.termsAccepted === 'true' || req.body.termsAccepted === true,
-      dataConsent: req.body.dataConsent === 'true' || req.body.dataConsent === true,
-      status: 'pending'
-    });
-    
-    console.log('🔍 DEBUG: Application object before save:');
-    console.log('📝 fullName:', expertApplication.fullName);
-    console.log('📝 email:', expertApplication.email);
-    console.log('📝 barCouncilId:', expertApplication.barCouncilId);
-    console.log('📝 expertise:', expertApplication.expertise);
-    console.log('📝 yearsOfExperience:', expertApplication.yearsOfExperience);
-    
-    const savedApplication = await expertApplication.save();
-    
-    console.log('🔍 DEBUG: Saved application object:');
-    console.log('📝 fullName:', savedApplication.fullName);
-    console.log('📝 email:', savedApplication.email);
-    console.log('📝 barCouncilId:', savedApplication.barCouncilId);
-    console.log('📝 expertise:', savedApplication.expertise);
-    console.log('📝 yearsOfExperience:', savedApplication.yearsOfExperience);
-    
-    console.log('✅ Expert application saved to database');
-    console.log('📧 Email:', userEmail, '| ID:', savedApplication._id);
-    
-    res.json({
-      success: true,
-      message: 'Expert application submitted successfully! Our admin will review it within 2-3 business days.',
-      applicationId: savedApplication._id
-    });
-    
-  } catch (error) {
-    console.error('❌ Expert application error:', error);
-    res.status(500).json({ 
-      success: false, 
-      message: 'Failed to save application: ' + error.message 
-    });
-  }
-});
+// REMOVED: Old expert application route - now using api/expert.js which has correct field mappings
+// This route was using wrong field names (fullName vs name, expertise vs specialization, etc.)
 
 // Get user's expert application status
 app.get('/api/expert-application/status/:email', async (req, res) => {
@@ -567,7 +458,7 @@ app.get('/api/simple-stats', async (req, res) => {
     
     // Use MongoDB direct connection for users count (since users might not have Mongoose model in server.js)
     const MongoClient = require('mongodb').MongoClient;
-    const client = await MongoClient.connect('mongodb://localhost:27017/lawhub');
+  const client = await MongoClient.connect(MONGODB_URI);
     const db = client.db('lawhub');
     
     // Simple counts

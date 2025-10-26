@@ -834,7 +834,7 @@
         }
 
         // Backend API configuration
-        const API_BASE_URL = 'http://localhost:3000';
+    const API_BASE_URL = 'https://lawhub-1.onrender.com';
         
         // Load overview data - WORKING VERSION WITH REAL DATA
         async function loadOverviewData() {
@@ -1050,7 +1050,7 @@
                     <div class="item-header">
                         <div class="item-info">
                             <h3>${expert.fullName || expert.userName || 'Unknown Applicant'}</h3>
-                            <p>${expert.email || expert.userEmail} • ${expert.expertise || expert.specialization} • Bar Council: ${expert.barCouncilId}</p>
+                            <p>${expert.email || expert.userEmail} • ${expert.expertise || expert.specialization} • Bar Council: ${expert.barCouncilNumber || expert.barCouncilId}</p>
                         </div>
                         <div class="item-actions">
                             <span class="status-badge status-${expert.status || 'pending'}">${expert.status || 'pending'}</span>
@@ -1273,7 +1273,7 @@
                                 <div>
                                     <h4>👤 Personal Information</h4>
                                     <div style="background: rgba(255,255,255,0.05); padding: 20px; border-radius: 12px; margin-bottom: 20px;">
-                                        <p><strong>Name:</strong> ${expert.fullName || expert.userName || 'N/A'}</p>
+                                        <p><strong>Name:</strong> ${expert.name || expert.userName || 'N/A'}</p>
                                         <p><strong>Email:</strong> ${expert.email || expert.userEmail || 'N/A'}</p>
                                         <p><strong>Bar Council ID:</strong> ${expert.barCouncilId || 'N/A'}</p>
                                         <p><strong>License Year:</strong> ${expert.licenseYear || 'N/A'}</p>
@@ -1283,9 +1283,8 @@
                                 <div>
                                     <h4>⚖️ Professional Details</h4>
                                     <div style="background: rgba(255,255,255,0.05); padding: 20px; border-radius: 12px; margin-bottom: 20px;">
-                                        <p><strong>Specialization:</strong> ${expert.expertise || expert.specialization || 'N/A'}</p>
-                                        <p><strong>Experience:</strong> ${expert.yearsOfExperience || expert.experience || 'N/A'}</p>
-                                        <p><strong>Location:</strong> ${expert.location || 'N/A'}</p>
+                                        <p><strong>Specialization:</strong> ${expert.specialization || 'N/A'}</p>
+                                        <p><strong>Experience:</strong> ${expert.experience || 'N/A'}</p>
                                         <p><strong>Firm Name:</strong> ${expert.firmName || 'Not specified'}</p>
                                     </div>
                                 </div>
@@ -1295,9 +1294,10 @@
                                 <h4>🎓 Education & Background</h4>
                                 <div style="background: rgba(255,255,255,0.05); padding: 20px; border-radius: 12px;">
                                     <p><strong>Education:</strong> ${expert.education || 'N/A'}</p>
+                                    <p><strong>Location:</strong> ${expert.location || 'N/A'}</p>
                                     <p><strong>Courts:</strong> ${expert.courts || 'Not specified'}</p>
-                                    <p><strong>Languages:</strong> ${expert.languagesSpoken || expert.languages || 'N/A'}</p>
-                                    <p><strong>Availability:</strong> ${expert.preferredConsultationHours || expert.availability || 'Not specified'}</p>
+                                    <p><strong>Languages:</strong> ${expert.languages || 'N/A'}</p>
+                                    <p><strong>Availability:</strong> ${expert.availability || 'Not specified'}</p>
                                 </div>
                             </div>
                             

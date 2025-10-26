@@ -23,8 +23,8 @@ const expertApplicationSchema = new mongoose.Schema({
         required: true 
     },
     experience: { 
-        type: String, 
-        required: true 
+    type: String, // Accepts both number and range as string (e.g., "6", "6-10")
+    required: true 
     },
     specialization: { 
         type: String, 
@@ -110,4 +110,5 @@ expertApplicationSchema.index({ userId: 1 });
 expertApplicationSchema.index({ barCouncilId: 1 });
 expertApplicationSchema.index({ status: 1 });
 
-module.exports = mongoose.model('ExpertApplication', expertApplicationSchema);
+// Force collection name to match existing Atlas collection (lowercase 'a')
+module.exports = mongoose.model('ExpertApplication', expertApplicationSchema, 'expertapplications');
