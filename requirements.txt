@@ -1,0 +1,64 @@
+# LawHub Backend Requirements
+# ============================
+# This file lists all the dependencies and requirements for the LawHub application
+# Created on: October 26, 2025
+
+# Node.js Version Requirement
+# Node.js >= 14.0.0
+
+# Production Dependencies
+# =======================
+
+# Web Framework
+express@^4.18.2
+
+# Database & ODM
+mongodb@^6.20.0
+mongoose@^7.5.0
+
+# Authentication & Security
+bcrypt@^6.0.0
+bcryptjs@^2.4.3
+jsonwebtoken@^9.0.2
+
+# Session Management
+express-session@^1.18.2
+connect-mongo@^5.1.0
+
+# Middleware & Utilities
+cors@^2.8.5
+dotenv@^16.3.1
+express-validator@^7.0.1
+
+# Development Dependencies
+# ========================
+nodemon@^3.0.1
+
+# System Requirements
+# ===================
+# - MongoDB 4.4 or higher
+# - Node.js 14.0.0 or higher
+# - npm 6.0 or higher
+
+# Installation Instructions
+# =========================
+# 1. Install Node.js (https://nodejs.org/)
+# 2. Install MongoDB (https://www.mongodb.com/try/download/community)
+# 3. Run: npm install
+# 4. Set up environment variables in .env file
+# 5. Run: npm start
+
+# Environment Variables Required
+# ==============================
+# MONGODB_URI=mongodb://localhost:27017/lawhub
+# JWT_SECRET=your-secret-key-here
+# SESSION_SECRET=your-session-secret-here
+# PORT=3000
+# NODE_ENV=development
+
+# Optional Dependencies for Production
+# ====================================
+# pm2@latest (for production deployment)
+# helmet@latest (for additional security headers)
+# compression@latest (for response compression)
+# morgan@latest (for logging)
