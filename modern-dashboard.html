@@ -1230,6 +1230,94 @@
         }
 
         .progress-chart {
+            margin: 20px 0;
+        }
+
+        /* Law Section Styles */
+        .law-section-container {
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+        }
+
+        .law-header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid #e2e8f0;
+        }
+
+        .law-header h2 {
+            color: #556b2f;
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+
+        .law-header p {
+            color: #64748b;
+            font-size: 16px;
+            margin: 0;
+        }
+
+        .law-content {
+            min-height: 400px;
+        }
+
+        .loading-spinner {
+            text-align: center;
+            padding: 60px 20px;
+            color: #64748b;
+        }
+
+        .loading-spinner i {
+            font-size: 24px;
+            margin-right: 10px;
+        }
+
+        .law-text {
+            line-height: 1.8;
+            font-size: 16px;
+            color: #374151;
+            max-height: 70vh;
+            overflow-y: auto;
+            padding: 20px;
+            border: 1px solid #e2e8f0;
+            border-radius: 12px;
+            background: #f8fafc;
+        }
+
+        .law-text h3 {
+            color: #556b2f;
+            margin: 25px 0 15px 0;
+            font-size: 20px;
+            font-weight: 600;
+        }
+
+        .law-text h4 {
+            color: #6b7280;
+            margin: 20px 0 10px 0;
+            font-size: 18px;
+            font-weight: 600;
+        }
+
+        .law-text p {
+            margin-bottom: 15px;
+            text-align: justify;
+        }
+
+        .law-text ul, .law-text ol {
+            margin: 15px 0;
+            padding-left: 25px;
+        }
+
+        .law-text li {
+            margin-bottom: 8px;
+        }
+
+        .progress-chart {
             position: relative;
             height: 200px;
         }
@@ -2094,6 +2182,259 @@
             font-size: 12px;
             font-weight: 500;
         }
+
+        /* Course content modal styles */
+        .course-content-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 10000;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 12px;
+            max-width: 90vw;
+            max-height: 90vh;
+            width: 800px;
+            overflow: hidden;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+        }
+
+        .modal-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .modal-header h2 {
+            margin: 0;
+            font-size: 1.5rem;
+        }
+
+        .close-btn {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 2rem;
+            cursor: pointer;
+            padding: 0;
+            width: 30px;
+            height: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            transition: background 0.3s;
+        }
+
+        .close-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .modal-body {
+            padding: 30px;
+            overflow-y: auto;
+            max-height: calc(90vh - 80px);
+        }
+
+        .course-content-text {
+            line-height: 1.8;
+            font-size: 1.1rem;
+            color: #333;
+        }
+
+        .course-content-text p {
+            margin-bottom: 1.5rem;
+        }
+
+        /* Button loading state */
+        .btn-loading {
+            display: none;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Course card enrolled state */
+        .course-card .enroll-btn.enrolled {
+            background: linear-gradient(135deg, #4CAF50, #45a049);
+            cursor: default;
+        }
+
+        .course-card .enroll-btn.enrolled:hover {
+            transform: none;
+            box-shadow: 0 4px 8px rgba(76, 175, 80, 0.3);
+        }
+
+        /* Enrolled explore course cards */
+        .course-card.enrolled-explore {
+            border: 2px solid #22c55e;
+            box-shadow: 0 4px 12px rgba(34, 197, 94, 0.2);
+        }
+
+        .course-card.enrolled-explore:hover {
+            transform: none;
+            box-shadow: 0 4px 12px rgba(34, 197, 94, 0.3);
+        }
+
+        /* Law Search Styles */
+        .example-btn:hover {
+            background: #d1d5db !important;
+            transform: translateY(-1px);
+        }
+
+        .search-input-container textarea:focus {
+            border-color: #556b2f;
+            box-shadow: 0 0 0 3px rgba(85, 107, 47, 0.1);
+        }
+
+        #lawSearchBtn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(85, 107, 47, 0.3);
+        }
+
+        #lawSearchBtn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        /* Expert Interface Styles */
+        .experts-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .expert-card {
+            background: white;
+            border: 1px solid #e5e7eb;
+            border-radius: 12px;
+            padding: 20px;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .expert-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            border-color: #556b2f;
+        }
+
+        .expert-avatar {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, #556b2f, #6b8e23);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 24px;
+            margin-bottom: 15px;
+        }
+
+        .expert-name {
+            font-size: 18px;
+            font-weight: 600;
+            color: #1f2937;
+            margin-bottom: 5px;
+        }
+
+        .expert-specialization {
+            color: #556b2f;
+            font-size: 14px;
+            font-weight: 500;
+            margin-bottom: 8px;
+        }
+
+        .expert-details {
+            font-size: 12px;
+            color: #6b7280;
+            margin-bottom: 15px;
+        }
+
+        .connect-btn {
+            background: linear-gradient(135deg, #556b2f, #6b8e23);
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: transform 0.2s;
+            width: 100%;
+        }
+
+        .connect-btn:hover {
+            transform: translateY(-1px);
+        }
+
+        .chat-message {
+            margin-bottom: 15px;
+            max-width: 80%;
+        }
+
+        .message-sent {
+            margin-left: auto;
+            background: #556b2f;
+            color: white;
+            padding: 10px 15px;
+            border-radius: 18px 18px 5px 18px;
+        }
+
+        .message-received {
+            background: #f3f4f6;
+            color: #1f2937;
+            padding: 10px 15px;
+            border-radius: 18px 18px 18px 5px;
+        }
+
+        .search-history-item {
+            background: #f8fafc;
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            padding: 12px;
+            margin-bottom: 10px;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .search-history-item:hover {
+            background: #e5e7eb;
+        }
+
+        .history-query {
+            font-weight: 600;
+            color: #1f2937;
+            margin-bottom: 5px;
+        }
+
+        .history-response {
+            font-size: 12px;
+            color: #6b7280;
+            line-height: 1.4;
+        }
+
+        .history-date {
+            font-size: 10px;
+            color: #9ca3af;
+            margin-top: 5px;
+        }
     </style>
 </head>
 <body>
@@ -2161,43 +2502,36 @@
                     </a>
                 </li>
                 <li class="nav-item">
+                    <a href="#" class="nav-link" data-section="constitution">
+                        <i class="fas fa-landmark"></i>
+                        Constitution
+                    </a>
+                </li>
+                <li class="nav-item">
                     <a href="#" class="nav-link" data-section="courses">
                         <i class="fas fa-graduation-cap"></i>
                         My Courses
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a href="#" class="nav-link" data-section="search">
+                    <a href="#" class="nav-link" data-section="law-search">
                         <i class="fas fa-search"></i>
                         Law Search
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a href="#" class="nav-link" data-section="community">
-                        <i class="fas fa-users"></i>
-                        Community
-                    </a>
-                </li>
-                <li class="nav-item" id="findExpertsNav">
-                    <a href="#" class="nav-link" data-section="experts">
-                        <i class="fas fa-user-tie"></i>
-                        Find Experts
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a href="#" class="nav-link" data-section="resources">
-                        <i class="fas fa-book"></i>
-                        Resources
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a href="#" class="nav-link" data-section="certificates">
-                        <i class="fas fa-award"></i>
-                        Certificates
+                    <a href="#" class="nav-link" data-section="ask-expert">
+                        <i class="fas fa-comments"></i>
+                        Ask an Expert
                     </a>
                 </li>
                 <li class="nav-item">
                     <a href="#" class="nav-link" data-section="profile">
+                        <i class="fas fa-user"></i>
+                        Profile
+                    </a>
+                </li>
+            </ul>
                         <i class="fas fa-user"></i>
                         Profile
                     </a>
@@ -2274,195 +2608,40 @@
 
             <!-- Dashboard Content -->
             <div id="dashboard-section" class="section-content active">
-                <!-- Category Header -->
+                <!-- Welcome Header -->
                 <div style="margin-bottom: 30px;">
-                    <h2 style="font-size: 18px; font-weight: 600; color: #64748b; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 20px;">DASHBOARD</h2>
-                    <div style="display: flex; gap: 16px; margin-bottom: 20px;">
-                        <div style="background: #fdf2f8; border: 2px solid #ec4899; border-radius: 12px; padding: 12px 20px; color: #ec4899; font-weight: 600; font-size: 14px;">PERSONAL</div>
-                        <div style="background: #f0fdff; border: 2px solid #22d3ee; border-radius: 12px; padding: 12px 20px; color: #22d3ee; font-weight: 600; font-size: 14px;">STUDY</div>
-                        <div style="background: #fefce8; border: 2px solid #facc15; border-radius: 12px; padding: 12px 20px; color: #facc15; font-weight: 600; font-size: 14px;">LIFE</div>
-                        <div style="background: #f3f4f6; border: 2px solid #8b5cf6; border-radius: 12px; padding: 12px 20px; color: #8b5cf6; font-weight: 600; font-size: 14px;">WORK</div>
-                        <div style="background: #fef2f2; border: 2px solid #ef4444; border-radius: 12px; padding: 12px 20px; color: #ef4444; font-weight: 600; font-size: 14px;">HOME</div>
-                    </div>
+                    <h2 id="dashboard-welcome" style="font-size: 24px; font-weight: 600; color: #1f2937; margin-bottom: 10px;">Welcome to LawHub!</h2>
+                    <p style="color: #6b7280; font-size: 16px;">Continue your legal learning journey</p>
                 </div>
 
-                <!-- Stats Grid -->
-                <div class="stats-grid">
-                    <div class="stat-card personal">
-                        <div class="stat-icon">
-                            <i class="fas fa-graduation-cap"></i>
-                        </div>
-                        <div class="stat-number">0</div>
-                        <div class="stat-label">Courses Completed</div>
-                    </div>
-                    <div class="stat-card study">
-                        <div class="stat-icon">
-                            <i class="fas fa-clock"></i>
-                        </div>
-                        <div class="stat-number">0</div>
-                        <div class="stat-label">Hours Learned</div>
-                    </div>
-                    <div class="stat-card life">
-                        <div class="stat-icon">
-                            <i class="fas fa-certificate"></i>
-                        </div>
-                        <div class="stat-number">0</div>
-                        <div class="stat-label">Certificates</div>
-                    </div>
-                    <div class="stat-card work">
-                        <div class="stat-icon">
-                            <i class="fas fa-trophy"></i>
-                        </div>
-                        <div class="stat-number">0</div>
-                        <div class="stat-label">Achievements</div>
-                    </div>
-                </div>
-
-                <!-- Main Content Grid -->
-                <div class="content-grid">
-                    <div class="featured-course">
-                        <div class="featured-content">
-                            <h3>🏛️ Constitutional Law Mastery</h3>
-                            <p>Master the fundamentals of constitutional principles, rights, and government structure. Learn through interactive cases and real-world examples.</p>
-                            <button class="start-btn">Start Learning Now</button>
-                        </div>
-                    </div>
-
-                    <div class="quick-actions">
-                        <h3>Quick Actions</h3>
-                        
-                        <div class="action-item chat" onclick="openChatModal()">
-                            <div class="action-icon chat">
-                                <i class="fas fa-comments"></i>
-                            </div>
-                            <div class="action-text">
-                                <h4>Chat with Lawyer</h4>
-                                <p>Get instant legal advice</p>
-                            </div>
-                        </div>
-
-                        <div class="action-item search" onclick="openLawSearch()">
-                            <div class="action-icon search">
-                                <i class="fas fa-search"></i>
-                            </div>
-                            <div class="action-text">
-                                <h4>Search by Situation</h4>
-                                <p>Find relevant laws for your case</p>
-                            </div>
-                        </div>
-
-                        <div class="action-item expert" id="expertActionItem" onclick="openExpertModal()">
-                            <div class="action-icon expert">
-                                <i class="fas fa-user-tie"></i>
-                            </div>
-                            <div class="action-text" id="expertActionText">
-                                <h4>Become an Expert</h4>
-                                <p>Apply as a legal expert</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Courses Section -->
-                <div class="courses-section">
-                    <div class="section-header">
-                        <h3>📚 Popular Courses</h3>
-                        <a href="#" class="view-all-btn">View All</a>
+                <!-- My Enrolled Courses Section -->
+                <div class="dashboard-enrolled-courses">
+                    <div class="section-header" style="margin-bottom: 20px;">
+                        <h3 style="font-size: 20px; font-weight: 600; color: #374151; display: flex; align-items: center; gap: 10px;">
+                            <i class="fas fa-graduation-cap" style="color: #556b2f;"></i>
+                            My Enrolled Courses
+                        </h3>
                     </div>
                     
-                    <div class="course-grid">
-                        <div class="course-card">
-                            <div class="course-image" style="background-image: url('https://images.unsplash.com/photo-1589994965851-a8f479c573a9?w=400&h=200&fit=crop&crop=center');">
-                            </div>
-                            <div class="course-content">
-                                <div class="course-header">
-                                    <div class="course-icon constitutional">
-                                        <i class="fas fa-landmark"></i>
-                                    </div>
-                                    <div>
-                                        <div class="course-title">Constitutional Law</div>
-                                        <div class="course-meta">
-                                            <span class="course-level">Beginner</span>
-                                            <span class="course-duration">8 weeks</span>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="course-desc">
-                                    Learn constitutional principles, fundamental rights, and government structure.
-                                </div>
-                                <button class="enroll-btn">Enroll Now</button>
-                            </div>
-                        </div>
-
-                        <div class="course-card">
-                            <div class="course-image" style="background-image: url('https://images.unsplash.com/photo-1504384308090-c894fdcc538d?w=400&h=200&fit=crop&crop=center');">
-                            </div>
-                            <div class="course-content">
-                                <div class="course-header">
-                                    <div class="course-icon criminal">
-                                        <i class="fas fa-gavel"></i>
-                                    </div>
-                                    <div>
-                                        <div class="course-title">Criminal Law Basics</div>
-                                        <div class="course-meta">
-                                            <span class="course-level">Beginner</span>
-                                            <span class="course-duration">10 weeks</span>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="course-desc">
-                                    Understanding criminal procedures, offenses, and legal principles.
-                                </div>
-                                <button class="enroll-btn">Enroll Now</button>
-                            </div>
-                        </div>
-
-                        <div class="course-card">
-                            <div class="course-image" style="background-image: url('https://images.unsplash.com/photo-1450101499163-c8848c66ca85?w=400&h=200&fit=crop&crop=center');">
-                            </div>
-                            <div class="course-content">
-                                <div class="course-header">
-                                    <div class="course-icon contract">
-                                        <i class="fas fa-handshake"></i>
-                                    </div>
-                                    <div>
-                                        <div class="course-title">Contract Law</div>
-                                        <div class="course-meta">
-                                            <span class="course-level">Intermediate</span>
-                                            <span class="course-duration">6 weeks</span>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="course-desc">
-                                    Master contract formation, interpretation, and enforcement.
-                                </div>
-                                <button class="enroll-btn">Enroll Now</button>
-                            </div>
-                        </div>
-
-                        <div class="course-card">
-                            <div class="course-image" style="background-image: url('https://images.unsplash.com/photo-1481627834876-b7833e8f5570?w=400&h=200&fit=crop&crop=center');">
-                            </div>
-                            <div class="course-content">
-                                <div class="course-header">
-                                    <div class="course-icon research">
-                                        <i class="fas fa-book-open"></i>
-                                    </div>
-                                    <div>
-                                        <div class="course-title">Legal Research</div>
-                                        <div class="course-meta">
-                                            <span class="course-level">Beginner</span>
-                                            <span class="course-duration">4 weeks</span>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="course-desc">
-                                    Essential skills for legal research and professional writing.
-                                </div>
-                                <button class="enroll-btn">Enroll Now</button>
-                            </div>
+                    <div id="dashboard-courses-content">
+                        <div style="text-align: center; padding: 40px; color: #6b7280;">
+                            <i class="fas fa-spinner fa-spin" style="font-size: 24px; margin-bottom: 10px;"></i>
+                            <p>Loading your courses...</p>
                         </div>
                     </div>
+                </div>
+
+                <!-- Quick Start Section -->
+                <div style="margin-top: 40px; padding: 20px; background: linear-gradient(135deg, #f8fafc, #e2e8f0); border-radius: 12px;">
+                    <h4 style="font-size: 18px; font-weight: 600; color: #374151; margin-bottom: 15px;">
+                        <i class="fas fa-rocket" style="color: #556b2f; margin-right: 8px;"></i>
+                        Quick Start
+                    </h4>
+                    <p style="color: #6b7280; margin-bottom: 20px;">Ready to begin your legal education? Explore our comprehensive constitution courses.</p>
+                    <button onclick="showSection('constitution')" style="background: linear-gradient(135deg, #556b2f, #8b9635); color: white; border: none; padding: 12px 24px; border-radius: 8px; font-weight: 600; cursor: pointer; transition: transform 0.2s;">
+                        <i class="fas fa-book-open" style="margin-right: 8px;"></i>
+                        Browse Constitution Courses
+                    </button>
                 </div>
             </div>
 
@@ -2472,10 +2651,14 @@
                     <div class="section-header">
                         <h3>📚 My Courses</h3>
                     </div>
-                    <div class="empty-state">
-                        <i class="fas fa-graduation-cap"></i>
-                        <h3>No courses enrolled yet</h3>
-                        <p>Start your legal learning journey by enrolling in a course from the dashboard.</p>
+                    <div id="my-courses-content">
+                        <div class="empty-state">
+                            <i class="fas fa-graduation-cap"></i>
+                            <h3>No courses enrolled yet</h3>
+                            <p>Start your legal learning journey by enrolling in a course from the Constitution section.</p>
+                            <button onclick="loadMyCourses(); console.log('Manually loading courses')" style="background:#556b2f;color:#fff;border:none;padding:10px 20px;border-radius:8px;cursor:pointer;margin-top:10px;">Refresh My Courses</button>
+                            <button onclick="testEnrollmentAPI()" style="background:#2c3e50;color:#fff;border:none;padding:10px 20px;border-radius:8px;cursor:pointer;margin-top:10px;margin-left:10px;">Test API</button>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -2722,6 +2905,437 @@
                             <button class="action-btn" onclick="showProfileSetupModal()">
                                 <i class="fas fa-plus"></i> Setup Profile
                             </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Law Search Section -->
+            <div id="law-search-section" class="section-content">
+                <div class="section-card">
+                    <div class="section-header">
+                        <h3>🔍 AI-Powered Law Search</h3>
+                        <p>Get instant legal answers using Mistral-7B AI model</p>
+                        <div style="background: #ede9fe; padding: 8px 12px; border-radius: 6px; margin-top: 10px; display: inline-block;">
+                            <i class="fas fa-robot" style="color: #7c3aed;"></i>
+                            <span style="font-size: 12px; color: #7c3aed; font-weight: 600;">Powered by Mistral-7B AI</span>
+                        </div>
+                    </div>
+                    
+                    <div class="law-search-container">
+                        <div class="search-input-container">
+                            <label for="lawSearchInput" style="display: block; font-weight: 600; margin-bottom: 8px; color: #374151;">
+                                Ask your legal question:
+                            </label>
+                            <textarea id="lawSearchInput" placeholder="e.g., What are my rights if my employer doesn't pay salary on time?" 
+                                      style="width: 100%; height: 120px; padding: 15px; border: 2px solid #e5e7eb; border-radius: 12px; font-size: 16px; resize: vertical; outline: none; transition: border-color 0.3s; font-family: inherit;">
+                            </textarea>
+                            <button id="lawSearchBtn" onclick="performLawSearch()" 
+                                    style="margin-top: 15px; background: linear-gradient(135deg, #556b2f, #6b8e23); color: white; border: none; padding: 12px 24px; border-radius: 8px; font-weight: 600; cursor: pointer; transition: transform 0.2s;">
+                                <i class="fas fa-robot"></i> Ask Mistral AI
+                            </button>
+                        </div>
+                        
+                        <div id="lawSearchResults" style="margin-top: 30px; display: none;">
+                            <div class="search-results-header">
+                                <h4>🤖 AI Response</h4>
+                                <span style="font-size: 12px; color: #6b7280;">Powered by Mistral-7B</span>
+                            </div>
+                            <div id="lawSearchContent" style="background: #f8fafc; padding: 20px; border-radius: 12px; border-left: 4px solid #556b2f;">
+                                <!-- Results will be displayed here -->
+                            </div>
+                        </div>
+                        
+                        <div id="lawSearchLoading" style="display: none; text-align: center; margin-top: 30px;">
+                            <i class="fas fa-spinner fa-spin" style="font-size: 24px; color: #556b2f; margin-bottom: 10px;"></i>
+                            <p>Mistral AI is analyzing your legal question...</p>
+                        </div>
+                        
+                        <div class="search-examples" style="margin-top: 30px;">
+                            <h4>Example Legal Questions:</h4>
+                            <div class="example-questions" style="display: grid; gap: 10px; margin-top: 15px;">
+                                <button class="example-btn" onclick="setSearchQuery('What are my fundamental rights under Indian Constitution?')" 
+                                        style="text-align: left; background: #f3f4f6; border: none; padding: 12px 15px; border-radius: 8px; cursor: pointer; transition: background 0.2s; border-left: 3px solid #556b2f;">
+                                    What are my fundamental rights under Indian Constitution?
+                                </button>
+                                <button class="example-btn" onclick="setSearchQuery('How to file a complaint for workplace harassment in India?')" 
+                                        style="text-align: left; background: #f3f4f6; border: none; padding: 12px 15px; border-radius: 8px; cursor: pointer; transition: background 0.2s; border-left: 3px solid #556b2f;">
+                                    How to file a complaint for workplace harassment in India?
+                                </button>
+                                <button class="example-btn" onclick="setSearchQuery('What is the process for property registration in India?')" 
+                                        style="text-align: left; background: #f3f4f6; border: none; padding: 12px 15px; border-radius: 8px; cursor: pointer; transition: background 0.2s; border-left: 3px solid #556b2f;">
+                                    What is the process for property registration in India?
+                                </button>
+                                <button class="example-btn" onclick="setSearchQuery('What are the penalties for cyber crime under IT Act 2000?')" 
+                                        style="text-align: left; background: #f3f4f6; border: none; padding: 12px 15px; border-radius: 8px; cursor: pointer; transition: background 0.2s; border-left: 3px solid #556b2f;">
+                                    What are the penalties for cyber crime under IT Act 2000?
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- AI Features Info -->
+                        <div class="ai-features-info" style="margin-top: 30px; background: linear-gradient(135deg, #ede9fe, #f3f4f6); padding: 20px; border-radius: 12px;">
+                            <h4 style="color: #7c3aed; margin-bottom: 10px;">
+                                <i class="fas fa-magic"></i> AI Features
+                            </h4>
+                            <ul style="margin: 0; padding-left: 20px; color: #374151; line-height: 1.6;">
+                                <li><strong>Indian Law Specialist:</strong> Trained specifically on Indian legal system</li>
+                                <li><strong>Constitutional Knowledge:</strong> Deep understanding of Indian Constitution</li>
+                                <li><strong>Act-Specific Guidance:</strong> Covers major Indian acts and procedures</li>
+                                <li><strong>Real-time Responses:</strong> Instant AI-powered legal analysis</li>
+                                <li><strong>Contextual Understanding:</strong> Understands complex legal scenarios</li>
+                            </ul>
+                        </div>
+                        
+                        <!-- Search History Section -->
+                        <div id="searchHistorySection" style="margin-top: 30px; display: none;">
+                            <h4>📚 Recent AI Conversations</h4>
+                            <div id="searchHistoryContent" style="max-height: 300px; overflow-y: auto;">
+                                <!-- Search history will be loaded here -->
+                            </div>
+                            <button onclick="clearSearchHistory()" style="margin-top: 10px; background: #ef4444; color: white; border: none; padding: 8px 16px; border-radius: 6px; cursor: pointer; font-size: 12px;">
+                                <i class="fas fa-trash"></i> Clear History
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Ask an Expert Section -->
+            <div id="ask-expert-section" class="section-content">
+                <div class="section-card">
+                    <div class="section-header">
+                        <h3>👨‍⚖️ Ask an Expert</h3>
+                        <p>Connect with verified legal professionals for personalized assistance</p>
+                    </div>
+                    
+                    <div class="expert-interface">
+                        <!-- Expert List View -->
+                        <div id="expertListView" class="expert-list-container">
+                            <div class="experts-header" style="margin-bottom: 20px;">
+                                <h4>Available Legal Experts</h4>
+                                <p style="color: #6b7280; font-size: 14px;">Choose an expert to connect with for legal consultation</p>
+                            </div>
+                            
+                            <div id="expertsGrid" class="experts-grid">
+                                <!-- Experts will be loaded here -->
+                                <div style="text-align: center; padding: 40px; color: #6b7280;">
+                                    <i class="fas fa-spinner fa-spin" style="font-size: 24px; margin-bottom: 10px;"></i>
+                                    <p>Loading experts...</p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Chat View -->
+                        <div id="expertChatView" style="display: none;">
+                            <div class="chat-header" style="display: flex; align-items: center; gap: 15px; padding: 15px; border-bottom: 1px solid #e5e7eb; margin-bottom: 20px;">
+                                <button onclick="backToExpertList()" style="background: #f3f4f6; border: none; padding: 8px; border-radius: 6px; cursor: pointer;">
+                                    <i class="fas fa-arrow-left"></i>
+                                </button>
+                                <div class="expert-info">
+                                    <h4 id="chatExpertName">Expert Name</h4>
+                                    <p id="chatExpertSpecialization" style="color: #6b7280; font-size: 12px; margin: 0;">Specialization</p>
+                                </div>
+                            </div>
+                            
+                            <div id="expertChatMessages" style="height: 400px; overflow-y: auto; padding: 15px; background: #f8fafc; border-radius: 12px; margin-bottom: 15px;">
+                                <!-- Chat messages will appear here -->
+                            </div>
+                            
+                            <div class="chat-input-container" style="display: flex; gap: 10px;">
+                                <textarea id="expertChatInput" placeholder="Type your legal question..." 
+                                          style="flex: 1; padding: 12px; border: 2px solid #e5e7eb; border-radius: 8px; resize: vertical; min-height: 80px; outline: none;">
+                                </textarea>
+                                <button onclick="sendExpertMessage()" style="background: linear-gradient(135deg, #556b2f, #6b8e23); color: white; border: none; padding: 12px 20px; border-radius: 8px; cursor: pointer; height: fit-content;">
+                                    <i class="fas fa-paper-plane"></i>
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <!-- Connection Status -->
+                        <div id="connectionStatus" style="display: none; text-align: center; padding: 40px;">
+                            <i class="fas fa-clock" style="font-size: 48px; color: #f59e0b; margin-bottom: 15px;"></i>
+                            <h4>Connection Request Sent</h4>
+                            <p>The expert has been notified of your request. Please wait for them to accept the connection.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Constitution Section with Course Enrollment -->
+            <div id="constitution-section" class="section-content">
+                <div class="law-section-container">
+                    <div class="law-header">
+                        <h2><i class="fas fa-landmark"></i> Constitution Courses</h2>
+                        <p>Enroll in different areas of Indian Constitutional Law</p>
+                    </div>
+                    
+                    <!-- Course Enrollment Grid -->
+                    <div class="course-grid">
+                        <div class="course-card" data-course="constitutional">
+                            <div class="course-image" style="background-image: url('https://images.unsplash.com/photo-1589994965851-a8f479c573a9?w=400&h=200&fit=crop&crop=center');">
+                            </div>
+                            <div class="course-content">
+                                <div class="course-header">
+                                    <div class="course-icon constitutional">
+                                        <i class="fas fa-landmark"></i>
+                                    </div>
+                                    <div>
+                                        <div class="course-title">Constitutional Law</div>
+                                        <div class="course-meta">
+                                            <span class="course-level">Beginner</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="course-desc">
+                                    Fundamental rights, directive principles, and constitutional provisions
+                                </div>
+                                <button class="enroll-btn" onclick="enrollInCourse('constitutional')">
+                                    <span class="btn-text">Enroll Now</span>
+                                    <span class="btn-loading" style="display: none;">Enrolling...</span>
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="course-card" data-course="criminal">
+                            <div class="course-image" style="background-image: url('https://images.unsplash.com/photo-1504384308090-c894fdcc538d?w=400&h=200&fit=crop&crop=center');">
+                            </div>
+                            <div class="course-content">
+                                <div class="course-header">
+                                    <div class="course-icon criminal">
+                                        <i class="fas fa-gavel"></i>
+                                    </div>
+                                    <div>
+                                        <div class="course-title">Criminal Law</div>
+                                        <div class="course-meta">
+                                            <span class="course-level">Intermediate</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="course-desc">
+                                    Criminal procedures, offenses, and legal frameworks
+                                </div>
+                                <button class="enroll-btn" onclick="enrollInCourse('criminal')">
+                                    <span class="btn-text">Enroll Now</span>
+                                    <span class="btn-loading" style="display: none;">Enrolling...</span>
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="course-card" data-course="civil">
+                            <div class="course-image" style="background-image: url('https://images.unsplash.com/photo-1450101499163-c8848c66ca85?w=400&h=200&fit=crop&crop=center');">
+                            </div>
+                            <div class="course-content">
+                                <div class="course-header">
+                                    <div class="course-icon civil">
+                                        <i class="fas fa-handshake"></i>
+                                    </div>
+                                    <div>
+                                        <div class="course-title">Civil Law</div>
+                                        <div class="course-meta">
+                                            <span class="course-level">Intermediate</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="course-desc">
+                                    Civil procedures, contracts, and dispute resolution
+                                </div>
+                                <button class="enroll-btn" onclick="enrollInCourse('civil')">
+                                    <span class="btn-text">Enroll Now</span>
+                                    <span class="btn-loading" style="display: none;">Enrolling...</span>
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="course-card" data-course="commercial">
+                            <div class="course-image" style="background-image: url('https://images.unsplash.com/photo-1554224155-6726b3ff858f?w=400&h=200&fit=crop&crop=center');">
+                            </div>
+                            <div class="course-content">
+                                <div class="course-header">
+                                    <div class="course-icon commercial">
+                                        <i class="fas fa-briefcase"></i>
+                                    </div>
+                                    <div>
+                                        <div class="course-title">Commercial Law</div>
+                                        <div class="course-meta">
+                                            <span class="course-level">Advanced</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="course-desc">
+                                    Business law, corporate regulations, and commercial transactions
+                                </div>
+                                <button class="enroll-btn" onclick="enrollInCourse('commercial')">
+                                    <span class="btn-text">Enroll Now</span>
+                                    <span class="btn-loading" style="display: none;">Enrolling...</span>
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="course-card" data-course="family">
+                            <div class="course-image" style="background-image: url('https://images.unsplash.com/photo-1511895426328-dc8714191300?w=400&h=200&fit=crop&crop=center');">
+                            </div>
+                            <div class="course-content">
+                                <div class="course-header">
+                                    <div class="course-icon family">
+                                        <i class="fas fa-users"></i>
+                                    </div>
+                                    <div>
+                                        <div class="course-title">Family Law</div>
+                                        <div class="course-meta">
+                                            <span class="course-level">Beginner</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="course-desc">
+                                    Marriage, divorce, child custody, and family relations
+                                </div>
+                                <button class="enroll-btn" onclick="enrollInCourse('family')">
+                                    <span class="btn-text">Enroll Now</span>
+                                    <span class="btn-loading" style="display: none;">Enrolling...</span>
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="course-card" data-course="environmental">
+                            <div class="course-image" style="background-image: url('https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=400&h=200&fit=crop&crop=center');">
+                            </div>
+                            <div class="course-content">
+                                <div class="course-header">
+                                    <div class="course-icon environmental">
+                                        <i class="fas fa-leaf"></i>
+                                    </div>
+                                    <div>
+                                        <div class="course-title">Environmental Law</div>
+                                        <div class="course-meta">
+                                            <span class="course-level">Intermediate</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="course-desc">
+                                    Environmental protection, pollution control, and sustainability
+                                </div>
+                                <button class="enroll-btn" onclick="enrollInCourse('environmental')">
+                                    <span class="btn-text">Enroll Now</span>
+                                    <span class="btn-loading" style="display: none;">Enrolling...</span>
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="course-card" data-course="cyber">
+                            <div class="course-image" style="background-image: url('https://images.unsplash.com/photo-1550751827-4bd374c3f58b?w=400&h=200&fit=crop&crop=center');">
+                            </div>
+                            <div class="course-content">
+                                <div class="course-header">
+                                    <div class="course-icon cyber">
+                                        <i class="fas fa-shield-alt"></i>
+                                    </div>
+                                    <div>
+                                        <div class="course-title">Cyber Law</div>
+                                        <div class="course-meta">
+                                            <span class="course-level">Advanced</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="course-desc">
+                                    Digital rights, cybersecurity, and internet regulations
+                                </div>
+                                <button class="enroll-btn" onclick="enrollInCourse('cyber')">
+                                    <span class="btn-text">Enroll Now</span>
+                                    <span class="btn-loading" style="display: none;">Enrolling...</span>
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="course-card" data-course="consumer">
+                            <div class="course-image" style="background-image: url('https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?w=400&h=200&fit=crop&crop=center');">
+                            </div>
+                            <div class="course-content">
+                                <div class="course-header">
+                                    <div class="course-icon consumer">
+                                        <i class="fas fa-shopping-cart"></i>
+                                    </div>
+                                    <div>
+                                        <div class="course-title">Consumer Protection</div>
+                                        <div class="course-meta">
+                                            <span class="course-level">Beginner</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="course-desc">
+                                    Consumer rights, grievances, and protection mechanisms
+                                </div>
+                                <button class="enroll-btn" onclick="enrollInCourse('consumer')">
+                                    <span class="btn-text">Enroll Now</span>
+                                    <span class="btn-loading" style="display: none;">Enrolling...</span>
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="course-card" data-course="labour">
+                            <div class="course-image" style="background-image: url('https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=200&fit=crop&crop=center');">
+                            </div>
+                            <div class="course-content">
+                                <div class="course-header">
+                                    <div class="course-icon labour">
+                                        <i class="fas fa-hard-hat"></i>
+                                    </div>
+                                    <div>
+                                        <div class="course-title">Labour Law</div>
+                                        <div class="course-meta">
+                                            <span class="course-level">Intermediate</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="course-desc">
+                                    Worker rights, employment law, and industrial relations
+                                </div>
+                                <button class="enroll-btn" onclick="enrollInCourse('labour')">
+                                    <span class="btn-text">Enroll Now</span>
+                                    <span class="btn-loading" style="display: none;">Enrolling...</span>
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="course-card" data-course="administrative">
+                            <div class="course-image" style="background-image: url('https://images.unsplash.com/photo-1589829545856-d10d557cf95f?w=400&h=200&fit=crop&crop=center');">
+                            </div>
+                            <div class="course-content">
+                                <div class="course-header">
+                                    <div class="course-icon administrative">
+                                        <i class="fas fa-university"></i>
+                                    </div>
+                                    <div>
+                                        <div class="course-title">Administrative Law</div>
+                                        <div class="course-meta">
+                                            <span class="course-level">Advanced</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="course-desc">
+                                    Government administration, public services, and procedures
+                                </div>
+                                <button class="enroll-btn" onclick="enrollInCourse('administrative')">
+                                    <span class="btn-text">Enroll Now</span>
+                                    <span class="btn-loading" style="display: none;">Enrolling...</span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Explore All Courses Section -->
+                    <div style="margin-top: 40px;">
+                        <div class="law-header">
+                            <h3><i class="fas fa-search"></i> Explore All Courses</h3>
+                            <p>View all constitution courses and your enrollment status</p>
+                        </div>
+                        
+                        <div class="course-grid" id="explore-all-courses-grid">
+                            <!-- All courses will be loaded here dynamically -->
+                            <div style="text-align: center; padding: 40px; color: #6b7280;">
+                                <i class="fas fa-spinner fa-spin" style="font-size: 24px; margin-bottom: 10px;"></i>
+                                <p>Loading all courses...</p>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -3092,10 +3706,150 @@
     </div>
 
     <script>
+        // Global API Configuration - Change this to switch between local and remote
+        const API_BASE_URL = ''; // Empty string for relative URLs to use current domain
+        // const API_BASE_URL = 'https://lawhub-1.onrender.com'; // Uncomment for remote server
+        
+        // API Keys for Constitution Sections
+        const CONSTITUTION_API_KEYS = {
+            'constitutional': 'const_law_2025_api_key_001',
+            'criminal': 'crim_law_2025_api_key_002',
+            'civil': 'civil_law_2025_api_key_003',
+            'commercial': 'comm_law_2025_api_key_004',
+            'administrative': 'admin_law_2025_api_key_005',
+            'family': 'family_law_2025_api_key_006',
+            'environmental': 'env_law_2025_api_key_007',
+            'cyber': 'cyber_law_2025_api_key_008',
+            'consumer': 'consumer_law_2025_api_key_009',
+            'labour': 'labour_law_2025_api_key_010'
+        };
+
+        // Load Constitution Section Content
+        async function loadConstitutionSection(sectionId) {
+            const loadingElement = document.getElementById(`${sectionId}-loading`);
+            const contentElement = document.getElementById(`${sectionId}-content`);
+            
+            if (!loadingElement || !contentElement) {
+                console.error(`Elements not found for section: ${sectionId}`);
+                return;
+            }
+
+            try {
+                loadingElement.style.display = 'block';
+                contentElement.style.display = 'none';
+
+                const apiKey = CONSTITUTION_API_KEYS[sectionId];
+                if (!apiKey) {
+                    throw new Error(`No API key found for section: ${sectionId}`);
+                }
+
+                const response = await fetch(`/api/constitution/section/${sectionId}`, {
+                    headers: {
+                        'apikey': apiKey,
+                        'Content-Type': 'application/json'
+                    }
+                });
+
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+
+                const data = await response.json();
+                
+                if (data.success) {
+                    // Format the content for better reading
+                    let formattedContent = data.section.content;
+                    
+                    // Add search functionality
+                    const searchBox = `
+                        <div class="law-search-box">
+                            <input type="text" class="law-search-input" placeholder="Search within this section..." 
+                                   onkeyup="searchInSection('${sectionId}', this.value)">
+                        </div>
+                    `;
+                    
+                    // Format paragraphs
+                    formattedContent = formattedContent
+                        .replace(/\n\n/g, '</p><p>')
+                        .replace(/^/, '<p>')
+                        .replace(/$/, '</p>');
+                    
+                    contentElement.innerHTML = searchBox + '<div class="law-text">' + formattedContent + '</div>';
+                    
+                    loadingElement.style.display = 'none';
+                    contentElement.style.display = 'block';
+                } else {
+                    throw new Error(data.message || 'Failed to load section content');
+                }
+                
+            } catch (error) {
+                console.error('Error loading constitution section:', error);
+                loadingElement.innerHTML = `
+                    <div style="color: #ef4444; text-align: center; padding: 40px;">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        <p>Failed to load ${sectionId} content</p>
+                        <p style="font-size: 14px; opacity: 0.8;">${error.message}</p>
+                        <button onclick="loadConstitutionSection('${sectionId}')" 
+                                style="background: #556b2f; color: white; border: none; padding: 8px 16px; border-radius: 4px; cursor: pointer; margin-top: 10px;">
+                            Try Again
+                        </button>
+                    </div>
+                `;
+            }
+        }
+
+        // Search within a section
+        async function searchInSection(sectionId, query) {
+            if (!query || query.length < 3) return;
+            
+            try {
+                const apiKey = CONSTITUTION_API_KEYS[sectionId];
+                const response = await fetch(`/api/constitution/section/${sectionId}/search?query=${encodeURIComponent(query)}&apikey=${apiKey}`);
+                const data = await response.json();
+                
+                if (data.success && data.matches.length > 0) {
+                    // Highlight search results
+                    highlightSearchResults(sectionId, query, data.matches);
+                }
+            } catch (error) {
+                console.error('Search error:', error);
+            }
+        }
+
+        // Highlight search results
+        function highlightSearchResults(sectionId, query, matches) {
+            const contentElement = document.getElementById(`${sectionId}-content`);
+            const lawTextElement = contentElement.querySelector('.law-text');
+            
+            if (lawTextElement) {
+                let content = lawTextElement.innerHTML;
+                
+                // Remove previous highlights
+                content = content.replace(/<mark[^>]*>(.*?)<\/mark>/gi, '$1');
+                
+                // Add new highlights
+                const regex = new RegExp(`(${query})`, 'gi');
+                content = content.replace(regex, '<mark style="background: #fff3cd; padding: 2px 4px; border-radius: 3px;">$1</mark>');
+                
+                lawTextElement.innerHTML = content;
+                
+                // Show search results count
+                const searchBox = contentElement.querySelector('.law-search-input');
+                if (searchBox) {
+                    const existingResults = contentElement.querySelector('.search-results');
+                    if (existingResults) existingResults.remove();
+                    
+                    const resultsDiv = document.createElement('div');
+                    resultsDiv.className = 'search-results';
+                    resultsDiv.innerHTML = `Found ${matches.length} matches for "${query}"`;
+                    searchBox.parentNode.appendChild(resultsDiv);
+                }
+            }
+        }
+
         // Navigation functionality
         document.addEventListener('DOMContentLoaded', function() {
             const navLinks = document.querySelectorAll('.nav-link');
-            const sections = document.querySelectorAll('.section-content');
             
             // Animate command lines
             animateCommandLines();
@@ -3109,21 +3863,17 @@
                 link.addEventListener('click', function(e) {
                     e.preventDefault();
                     
-                    // Remove active class from all links
+                    // Get the section name from data-section attribute
+                    const sectionName = this.getAttribute('data-section');
+                    
+                    // Remove active class from all nav links
                     navLinks.forEach(l => l.classList.remove('active'));
                     
                     // Add active class to clicked link
                     this.classList.add('active');
                     
-                    // Hide all sections
-                    sections.forEach(section => section.classList.remove('active'));
-                    
-                    // Show selected section
-                    const sectionId = this.getAttribute('data-section') + '-section';
-                    const targetSection = document.getElementById(sectionId);
-                    if (targetSection) {
-                        targetSection.classList.add('active');
-                    }
+                    // Use the showSection function for consistent navigation
+                    showSection(sectionName);
                     
                     // Add command log
                     addCommandLog(`Navigation: Switched to ${this.textContent.trim()}`);
@@ -3131,7 +3881,7 @@
                     // Track navigation activity
                     trackActivity('navigation', 'User navigated to section', { 
                         section: this.textContent.trim(),
-                        sectionId: sectionId,
+                        sectionId: sectionName + '-section',
                         timestamp: new Date()
                     });
                 });
@@ -4090,7 +4840,7 @@
           }
           
           try {
-            const response = await fetch('https://lawhub-1.onrender.com/api/auth/verify', {
+            const response = await fetch(`${API_BASE_URL}/api/auth/verify`, {
               headers: {
                 'Authorization': `Bearer ${token}`
               }
@@ -4134,7 +4884,7 @@
                 
                 if (!token) return;
                 
-                await fetch('https://lawhub-1.onrender.com/api/activity/logout', {
+                await fetch(`${API_BASE_URL}/api/activity/logout`, {
                     method: 'POST',
                     headers: {
                         'Authorization': `Bearer ${token}`,
@@ -4175,7 +4925,7 @@
                 }
                 
                 // Simple check if profile exists
-                const response = await fetch('https://lawhub-1.onrender.com/api/auth/profile-check', {
+                const response = await fetch(`${API_BASE_URL}/api/auth/profile-check`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json'
@@ -4210,7 +4960,7 @@
                     return;
                 }
                 
-                const response = await fetch(`https://lawhub-1.onrender.com/api/profile/${userData.id}`, {
+                const response = await fetch(`${API_BASE_URL}/api/profile/${userData.id}`, {
                     headers: {
                         'Authorization': `Bearer ${token}`
                     }
@@ -4241,7 +4991,7 @@
                 
                 if (!token) return;
                 
-                await fetch('https://lawhub-1.onrender.com/api/activity/login', {
+                await fetch(`${API_BASE_URL}/api/activity/login`, {
                     method: 'POST',
                     headers: {
                         'Authorization': `Bearer ${token}`,
@@ -4427,7 +5177,7 @@
                 
                 if (!token) return;
                 
-                await fetch('https://lawhub-1.onrender.com/api/activity/track', {
+                await fetch(`${API_BASE_URL}/api/activity/track`, {
                     method: 'POST',
                     headers: {
                         'Authorization': `Bearer ${token}`,
@@ -5067,12 +5817,133 @@
             const panel = document.getElementById('notificationPanel');
             if (panel.style.display === 'none' || !panel.style.display) {
                 panel.style.display = 'block';
-                // Check for status updates from server before loading notifications
-                await checkApplicationStatus();
-                loadNotifications();
+                await loadNotifications();
             } else {
                 panel.style.display = 'none';
             }
+        }
+
+        async function loadNotifications() {
+            try {
+                const token = localStorage.getItem('lawhub_token');
+                if (!token) {
+                    document.getElementById('notificationList').innerHTML = `
+                        <div class="notification-empty">
+                            <i class="fas fa-sign-in-alt"></i>
+                            <p>Please log in to view notifications</p>
+                        </div>
+                    `;
+                    return;
+                }
+
+                const response = await fetch('/api/notifications', {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    const notifications = data.notifications || [];
+                    
+                    if (notifications.length > 0) {
+                        document.getElementById('notificationList').innerHTML = notifications.map(notification => `
+                            <div class="notification-item ${!notification.read ? 'unread' : ''}" onclick="markNotificationAsRead('${notification._id}')">
+                                <div class="notification-title">${notification.title}</div>
+                                <div class="notification-message">${notification.message}</div>
+                                <div class="notification-time">${timeAgo(new Date(notification.createdAt))}</div>
+                            </div>
+                        `).join('');
+                    } else {
+                        document.getElementById('notificationList').innerHTML = `
+                            <div class="notification-empty">
+                                <i class="fas fa-bell-slash"></i>
+                                <p>No notifications yet</p>
+                            </div>
+                        `;
+                    }
+
+                    // Update notification dot
+                    updateNotificationDot(data.unreadCount || 0);
+                } else {
+                    throw new Error('Failed to load notifications');
+                }
+            } catch (error) {
+                console.error('Error loading notifications:', error);
+                document.getElementById('notificationList').innerHTML = `
+                    <div class="notification-empty">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        <p>Failed to load notifications</p>
+                    </div>
+                `;
+            }
+        }
+
+        async function markNotificationAsRead(notificationId) {
+            try {
+                const token = localStorage.getItem('lawhub_token');
+                if (!token) return;
+
+                await fetch('/api/notifications/mark-read', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify({ notificationIds: [notificationId] })
+                });
+
+                // Reload notifications to update UI
+                await loadNotifications();
+            } catch (error) {
+                console.error('Error marking notification as read:', error);
+            }
+        }
+
+        function updateNotificationDot(unreadCount = null) {
+            const notificationDot = document.getElementById('notificationDot');
+            if (unreadCount === null) {
+                // Fetch unread count from server
+                loadUnreadCount();
+            } else {
+                notificationDot.style.display = unreadCount > 0 ? 'block' : 'none';
+            }
+        }
+
+        async function loadUnreadCount() {
+            try {
+                const token = localStorage.getItem('lawhub_token');
+                if (!token) return;
+
+                const response = await fetch('/api/notifications/unread-count', {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    updateNotificationDot(data.unreadCount || 0);
+                }
+            } catch (error) {
+                console.error('Error loading unread count:', error);
+            }
+        }
+
+        function timeAgo(date) {
+            const seconds = Math.floor((new Date() - date) / 1000);
+            const intervals = {
+                year: 31536000,
+                month: 2592000,
+                week: 604800,
+                day: 86400,
+                hour: 3600,
+                minute: 60
+            };
+
+            for (const [unit, secondsInUnit] of Object.entries(intervals)) {
+                const interval = Math.floor(seconds / secondsInUnit);
+                if (interval >= 1) {
+                    return `${interval} ${unit}${interval !== 1 ? 's' : ''} ago`;
+                }
+            }
+            return 'Just now';
         }
 
         function addNotification(title, message, type = 'info') {
@@ -5228,27 +6099,76 @@
         }
 
         function loadNotifications() {
-            const notifications = JSON.parse(getUserSpecificItem('notifications') || '[]');
+            const token = localStorage.getItem('lawhub_token');
             const notificationList = document.getElementById('notificationList');
             
-            if (notifications.length === 0) {
+            if (!token) {
                 notificationList.innerHTML = `
                     <div class="notification-empty">
                         <i class="far fa-bell"></i>
-                        <div style="font-weight: 500; margin-bottom: 4px;">No notifications</div>
-                        <div style="font-size: 11px;">You're all caught up!</div>
+                        <div style="font-weight: 500; margin-bottom: 4px;">Please log in</div>
+                        <div style="font-size: 11px;">Log in to view notifications</div>
                     </div>
                 `;
                 return;
             }
-            
-            notificationList.innerHTML = notifications.map(notification => `
-                <div class="notification-item ${!notification.read ? 'unread' : ''}" onclick="markAsRead(${notification.id})">
-                    <div class="notification-title">${notification.title}</div>
-                    <div class="notification-message">${notification.message}</div>
-                    <div class="notification-time">${formatNotificationTime(notification.timestamp)}</div>
-                </div>
-            `).join('');
+
+            // Load from server first, then merge with localStorage
+            fetch('/api/constitution/notifications', {
+                headers: { 'Authorization': `Bearer ${token}` }
+            })
+            .then(res => res.json())
+            .then(data => {
+                const serverNotifications = data.success ? data.notifications : [];
+                const localNotifications = JSON.parse(getUserSpecificItem('notifications') || '[]');
+                
+                // Merge server and local notifications, prioritizing server
+                const allNotifications = [...serverNotifications, ...localNotifications]
+                    .sort((a, b) => new Date(b.createdAt || b.timestamp) - new Date(a.createdAt || a.timestamp));
+                
+                if (allNotifications.length === 0) {
+                    notificationList.innerHTML = `
+                        <div class="notification-empty">
+                            <i class="far fa-bell"></i>
+                            <div style="font-weight: 500; margin-bottom: 4px;">No notifications</div>
+                            <div style="font-size: 11px;">You're all caught up!</div>
+                        </div>
+                    `;
+                    return;
+                }
+                
+                notificationList.innerHTML = allNotifications.map(notification => `
+                    <div class="notification-item ${!notification.read ? 'unread' : ''}" onclick="markAsRead(${notification.id || notification._id})">
+                        <div class="notification-title">${notification.title}</div>
+                        <div class="notification-message">${notification.message}</div>
+                        <div class="notification-time">${formatNotificationTime(notification.createdAt || notification.timestamp)}</div>
+                    </div>
+                `).join('');
+            })
+            .catch(error => {
+                console.error('Error loading notifications:', error);
+                // Fallback to localStorage only
+                const notifications = JSON.parse(getUserSpecificItem('notifications') || '[]');
+                
+                if (notifications.length === 0) {
+                    notificationList.innerHTML = `
+                        <div class="notification-empty">
+                            <i class="far fa-bell"></i>
+                            <div style="font-weight: 500; margin-bottom: 4px;">No notifications</div>
+                            <div style="font-size: 11px;">You're all caught up!</div>
+                        </div>
+                    `;
+                    return;
+                }
+                
+                notificationList.innerHTML = notifications.map(notification => `
+                    <div class="notification-item ${!notification.read ? 'unread' : ''}" onclick="markAsRead(${notification.id})">
+                        <div class="notification-title">${notification.title}</div>
+                        <div class="notification-message">${notification.message}</div>
+                        <div class="notification-time">${formatNotificationTime(notification.timestamp)}</div>
+                    </div>
+                `).join('');
+            });
         }
 
         function markAsRead(notificationId) {
@@ -5455,6 +6375,1235 @@
                 }
             }
         }
+
+        // Law Module Functions for Constitution Section
+        function openLawModule(moduleType) {
+            const modal = document.getElementById('lawModuleModal');
+            const modalTitle = document.getElementById('modalTitle');
+            const modalLoading = document.getElementById('modalLoading');
+            const modalContent = document.getElementById('modalContent');
+
+            const moduleTitles = {
+                'constitutional': 'Constitutional Law',
+                'criminal': 'Criminal Law',
+                'civil': 'Civil Law',
+                'commercial': 'Commercial Law',
+                'family': 'Family Law',
+                'environmental': 'Environmental Law',
+                'cyber': 'Cyber Law',
+                'consumer': 'Consumer Protection Law',
+                'labour': 'Labour and Industrial Law',
+                'administrative': 'Administrative Law'
+            };
+
+            modalTitle.textContent = moduleTitles[moduleType] || 'Law Module';
+            modal.style.display = 'block';
+            modalLoading.style.display = 'block';
+            modalContent.style.display = 'none';
+
+            // Check if user is logged in (token stored in localStorage)
+            const token = localStorage.getItem('lawhub_token');
+
+            async function loadContentWithAuth() {
+                try {
+                    const res = await fetch(`/api/constitution/section/${moduleType}`, {
+                        headers: {
+                            'Authorization': token ? `Bearer ${token}` : ''
+                        }
+                    });
+
+                    if (!res.ok) {
+                        const err = await res.json().catch(() => ({}));
+                        throw new Error(err.message || `HTTP ${res.status}`);
+                    }
+
+                    const data = await res.json();
+                    modalLoading.style.display = 'none';
+                    modalContent.style.display = 'block';
+
+                    if (data.success && data.section) {
+                        let formattedContent = data.section.content
+                            .replace(/\n\n/g, '</p><p>')
+                            .replace(/^/, '<p>')
+                            .replace(/$/, '</p>');
+
+                        modalContent.innerHTML = `
+                            <div class="law-content">
+                                <div class="law-section-info">
+                                    <h3>${data.section.title}</h3>
+                                    <div class="section-divider"></div>
+                                </div>
+                                <div class="law-text">
+                                    ${formattedContent}
+                                </div>
+                            </div>
+                        `;
+                    } else {
+                        modalContent.innerHTML = '<p>Content not available for this module.</p>';
+                    }
+                } catch (err) {
+                    modalLoading.style.display = 'none';
+                    modalContent.style.display = 'block';
+                    modalContent.innerHTML = `<div style="text-align:center;color:#ef4444;"><i class="fas fa-exclamation-triangle"></i><p>${err.message}</p></div>`;
+                }
+            }
+
+            // If there's a token, check enrollment first
+            if (token) {
+                fetch(`/api/constitution/enrolled/${moduleType}`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                }).then(r => r.json()).then(info => {
+                    if (info && info.enrolled) {
+                        // Load content for enrolled user
+                        loadContentWithAuth();
+                    } else {
+                        // Not enrolled - show enroll CTA
+                        modalLoading.style.display = 'none';
+                        modalContent.style.display = 'block';
+                        modalContent.innerHTML = `
+                            <div style="text-align:center; padding: 30px;">
+                                <p style="font-weight:600; font-size:16px;">You are not enrolled in this course</p>
+                                <p style="color:#64748b; margin-bottom:18px;">Enroll to unlock the full content for <strong>${moduleTitles[moduleType]}</strong>.</p>
+                                <button id="enrollNowBtn" style="background:#556b2f;color:#fff;border:none;padding:10px 18px;border-radius:8px;cursor:pointer;">Enroll Now</button>
+                            </div>
+                        `;
+
+                        document.getElementById('enrollNowBtn').addEventListener('click', async () => {
+                            const btn = document.getElementById('enrollNowBtn');
+                            btn.disabled = true;
+                            btn.textContent = 'Enrolling...';
+                            try {
+                                const enrollRes = await fetch(`/api/constitution/enroll/${moduleType}`, {
+                                    method: 'POST',
+                                    headers: { 'Authorization': `Bearer ${token}` }
+                                });
+                                const enrollData = await enrollRes.json();
+                                if (enrollData.success) {
+                                    btn.textContent = 'Enrolled';
+                                    // show a brief success message then load content
+                                    setTimeout(() => loadContentWithAuth(), 700);
+                                } else {
+                                    btn.disabled = false;
+                                    btn.textContent = 'Enroll Now';
+                                    modalContent.innerHTML = `<p style="color:#ef4444;">${enrollData.message || 'Failed to enroll'}</p>`;
+                                }
+                            } catch (err) {
+                                console.error('Enroll error', err);
+                                btn.disabled = false;
+                                btn.textContent = 'Enroll Now';
+                                modalContent.innerHTML = `<p style="color:#ef4444;">Error enrolling. Please try again later.</p>`;
+                            }
+                        });
+                    }
+                }).catch(err => {
+                    modalLoading.style.display = 'none';
+                    modalContent.style.display = 'block';
+                    modalContent.innerHTML = `<p style="color:#ef4444;">Error checking enrollment: ${err.message || err}</p>`;
+                });
+            } else {
+                // No token - require login
+                modalLoading.style.display = 'none';
+                modalContent.style.display = 'block';
+                modalContent.innerHTML = `
+                    <div style="text-align:center; padding: 30px;">
+                        <p style="font-weight:600;">Please log in to enroll or access course content.</p>
+                        <div style="margin-top:12px;">
+                            <button onclick="window.location.href='/login'" style="background:#556b2f;color:#fff;border:none;padding:10px 18px;border-radius:8px;cursor:pointer;margin-right:8px;">Login</button>
+                            <button onclick="window.location.href='/signup'" style="background:#64748b;color:#fff;border:none;padding:10px 18px;border-radius:8px;cursor:pointer;">Sign Up</button>
+                        </div>
+                    </div>
+                `;
+            }
+        }
+
+        function closeLawModule() {
+            const modal = document.getElementById('lawModuleModal');
+            modal.style.display = 'none';
+        }
+
+        // Close modal when clicking outside
+        window.addEventListener('click', function(event) {
+            const modal = document.getElementById('lawModuleModal');
+            if (event.target === modal) {
+                closeLawModule();
+            }
+        });
+
+        // Override showSection function to handle new Constitution section
+        function showSection(sectionId) {
+            console.log(`Attempting to show section: ${sectionId}`);
+            
+            // Hide all sections
+            document.querySelectorAll('.section-content').forEach(section => {
+                section.style.display = 'none';
+                section.classList.remove('active');
+            });
+            
+            // Show the selected section
+            const targetSection = document.getElementById(sectionId + '-section');
+            if (targetSection) {
+                targetSection.style.display = 'block';
+                targetSection.classList.add('active');
+                console.log(`Successfully showed section: ${sectionId}-section`);
+            } else {
+                console.error(`Section not found: ${sectionId}-section`);
+            }
+            
+            // Update active nav item
+            document.querySelectorAll('.nav-link').forEach(link => {
+                link.classList.remove('active');
+            });
+            
+            // Find the nav link for this section and mark as active
+            const activeNavLink = document.querySelector(`[data-section="${sectionId}"]`);
+            if (activeNavLink) {
+                activeNavLink.classList.add('active');
+            }
+            
+            // Load dynamic content for specific sections
+            if (sectionId === 'courses') {
+                loadMyCourses();
+            } else if (sectionId === 'constitution') {
+                loadEnrollmentStatus();
+            } else if (sectionId === 'dashboard') {
+                loadDashboard();
+            } else if (sectionId === 'law-search') {
+                // Initialize law search if needed
+                initializeLawSearch();
+            } else if (sectionId === 'ask-expert') {
+                // Load experts when opening ask-expert section
+                loadAvailableExperts();
+            }
+            
+            console.log(`Navigation completed for section: ${sectionId}`);
+        }
+
+        // Function to load user's enrolled courses
+        async function loadMyCourses() {
+            const token = localStorage.getItem('lawhub_token');
+            const coursesContent = document.getElementById('my-courses-content');
+            
+            console.log('Loading My Courses, token exists:', !!token);
+            
+            if (!token) {
+                coursesContent.innerHTML = `
+                    <div class="empty-state">
+                        <i class="fas fa-sign-in-alt"></i>
+                        <h3>Please log in</h3>
+                        <p>Log in to view your enrolled courses.</p>
+                        <button onclick="window.location.href='/login'" style="background:#556b2f;color:#fff;border:none;padding:10px 20px;border-radius:8px;cursor:pointer;">Login</button>
+                    </div>
+                `;
+                return;
+            }
+
+            // Show loading state
+            coursesContent.innerHTML = `
+                <div style="text-align: center; padding: 40px;">
+                    <i class="fas fa-spinner fa-spin" style="font-size: 24px; color: #556b2f; margin-bottom: 10px;"></i>
+                    <p>Loading your courses...</p>
+                </div>
+            `;
+
+            try {
+                const res = await fetch('/api/constitution/my-enrollments', {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+
+                console.log('API Response status:', res.status);
+                console.log('API Response headers:', [...res.headers.entries()]);
+
+                if (!res.ok) {
+                    const errorText = await res.text();
+                    console.error('API Error:', errorText);
+                    throw new Error(`HTTP ${res.status}: ${errorText}`);
+                }
+
+                const data = await res.json();
+                console.log('Enrollments data:', data); // Debug log
+                
+                if (!data.success) {
+                    throw new Error(data.message || 'Failed to fetch enrollments');
+                }
+
+                const enrollments = data.enrollments || [];
+
+                if (enrollments.length === 0) {
+                    coursesContent.innerHTML = `
+                        <div class="empty-state">
+                            <i class="fas fa-graduation-cap"></i>
+                            <h3>No courses enrolled yet</h3>
+                            <p>Start your legal learning journey by enrolling in courses from the Constitution section.</p>
+                            <button onclick="showSection('constitution')" style="background:#556b2f;color:#fff;border:none;padding:10px 20px;border-radius:8px;cursor:pointer;margin-top:10px;">Browse Courses</button>
+                        </div>
+                    `;
+                    return;
+                }
+
+                // Map section IDs to course details
+                const courseDetails = {
+                    'constitutional': { title: 'Constitutional Law', icon: 'landmark', level: 'Beginner', duration: '8 weeks' },
+                    'criminal': { title: 'Criminal Law', icon: 'gavel', level: 'Intermediate', duration: '10 weeks' },
+                    'civil': { title: 'Civil Law', icon: 'handshake', level: 'Intermediate', duration: '6 weeks' },
+                    'commercial': { title: 'Commercial Law', icon: 'briefcase', level: 'Advanced', duration: '12 weeks' },
+                    'family': { title: 'Family Law', icon: 'users', level: 'Beginner', duration: '4 weeks' },
+                    'environmental': { title: 'Environmental Law', icon: 'leaf', level: 'Intermediate', duration: '8 weeks' },
+                    'cyber': { title: 'Cyber Law', icon: 'shield-alt', level: 'Advanced', duration: '6 weeks' },
+                    'consumer': { title: 'Consumer Protection', icon: 'shopping-cart', level: 'Beginner', duration: '4 weeks' },
+                    'labour': { title: 'Labour Law', icon: 'hard-hat', level: 'Intermediate', duration: '10 weeks' },
+                    'administrative': { title: 'Administrative Law', icon: 'university', level: 'Advanced', duration: '8 weeks' }
+                };
+
+                // Create course cards for enrolled courses
+                const courseCards = enrollments.map(enrollment => {
+                    const details = courseDetails[enrollment.sectionId] || { 
+                        title: enrollment.sectionId, 
+                        icon: 'book', 
+                        level: 'Unknown', 
+                        duration: 'N/A' 
+                    };
+                    
+                    const enrolledDate = new Date(enrollment.enrolledAt || enrollment.createdAt).toLocaleDateString();
+                    
+                    return `
+                        <div class="course-card enrolled-course" data-course="${enrollment.sectionId}">
+                            <div class="course-content">
+                                <div class="course-header">
+                                    <div class="course-icon ${enrollment.sectionId}">
+                                        <i class="fas fa-${details.icon}"></i>
+                                    </div>
+                                    <div>
+                                        <div class="course-title">${details.title}</div>
+                                        <div class="course-meta">
+                                            <span class="course-level">${details.level}</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="course-desc">
+                                    Enrolled on ${enrolledDate}
+                                </div>
+                                <div class="enrolled-actions">
+                                    <button class="access-course-btn" onclick="accessEnrolledCourse('${enrollment.sectionId}')">
+                                        <i class="fas fa-play"></i> Access Course
+                                    </button>
+                                    <span class="enrollment-status">
+                                        <i class="fas fa-check-circle"></i> Enrolled
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+
+                coursesContent.innerHTML = `
+                    <div class="course-grid">
+                        ${courseCards}
+                    </div>
+                `;
+
+            } catch (error) {
+                console.error('Error loading courses:', error);
+                coursesContent.innerHTML = `
+                    <div class="empty-state">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        <h3>Error loading courses</h3>
+                        <p>Unable to load your enrolled courses: ${error.message}</p>
+                        <button onclick="loadMyCourses()" style="background:#556b2f;color:#fff;border:none;padding:10px 20px;border-radius:8px;cursor:pointer;margin-top:10px;">Try Again</button>
+                    </div>
+                `;
+            }
+        }
+
+        // Function to enroll in a course
+        async function enrollInCourse(sectionId) {
+            const token = localStorage.getItem('lawhub_token');
+            
+            if (!token) {
+                showCustomAlert('🔐 LOGIN REQUIRED', 'Please log in to enroll in courses.', 'info');
+                return;
+            }
+
+            const courseCard = document.querySelector(`[data-course="${sectionId}"]`);
+            const enrollBtn = courseCard.querySelector('.enroll-btn');
+            const btnText = enrollBtn.querySelector('.btn-text');
+            const btnLoading = enrollBtn.querySelector('.btn-loading');
+            
+            // Show loading state
+            btnText.style.display = 'none';
+            btnLoading.style.display = 'inline';
+            enrollBtn.disabled = true;
+
+            try {
+                const res = await fetch(`/api/constitution/enroll/${sectionId}`, {
+                    method: 'POST',
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+
+                const data = await res.json();
+                
+                if (data.success) {
+                    showCustomAlert('🎓 ENROLLMENT SUCCESS', `Successfully enrolled in ${getSectionTitle(sectionId)}!`, 'success');
+                    
+                    // Add notification
+                    addNotification('Course Enrolled', `You have successfully enrolled in ${getSectionTitle(sectionId)}.`, 'success');
+                    
+                    // Track activity
+                    trackActivity('course_enroll', `Enrolled in ${sectionId}`, { sectionId, timestamp: new Date() });
+                    
+                    // Hide the enrolled course from Constitution section
+                    const courseCard = document.querySelector(`[data-course="${sectionId}"]`);
+                    if (courseCard) {
+                        courseCard.style.display = 'none';
+                    }
+                    
+                    // Check if all courses are now hidden in main section
+                    const visibleCourses = document.querySelectorAll('#constitution-section .course-card[data-course]:not([style*="display: none"])');
+                    if (visibleCourses.length === 0) {
+                        const constitutionGrid = document.querySelector('#constitution-section .course-grid');
+                        if (constitutionGrid && !constitutionGrid.querySelector('.empty-state')) {
+                            constitutionGrid.innerHTML = `
+                                <div class="empty-state">
+                                    <i class="fas fa-graduation-cap"></i>
+                                    <h3>All Courses Enrolled!</h3>
+                                    <p>You have successfully enrolled in all available constitution courses. View them in "My Courses" section.</p>
+                                    <button onclick="showSection('courses')" style="background:#556b2f;color:#fff;border:none;padding:10px 20px;border-radius:8px;cursor:pointer;margin-top:10px;">View My Courses</button>
+                                </div>
+                            `;
+                        }
+                    }
+                    
+                    // Refresh the explore section to show new enrollment status
+                    setTimeout(() => {
+                        loadEnrollmentStatus();
+                    }, 500);
+                    
+                    // Refresh My Courses if that section is currently visible
+                    if (document.getElementById('courses-section').style.display === 'block') {
+                        loadMyCourses();
+                    }
+                } else {
+                    throw new Error(data.message || 'Enrollment failed');
+                }
+                
+            } catch (error) {
+                console.error('Enrollment error:', error);
+                showCustomAlert('❌ ENROLLMENT FAILED', error.message || 'Failed to enroll. Please try again.', 'error');
+                
+                // Reset button state
+                btnText.style.display = 'inline';
+                btnLoading.style.display = 'none';
+                enrollBtn.disabled = false;
+            }
+        }
+
+        // Function to access enrolled course content
+        async function accessEnrolledCourse(sectionId) {
+            const token = localStorage.getItem('lawhub_token');
+            
+            if (!token) {
+                showCustomAlert('🔐 LOGIN REQUIRED', 'Please log in to access course content.', 'info');
+                return;
+            }
+
+            try {
+                const res = await fetch(`/api/constitution/section/${sectionId}`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+
+                if (!res.ok) {
+                    throw new Error(`HTTP ${res.status}`);
+                }
+
+                const data = await res.json();
+                
+                if (data.success && data.section) {
+                    // Show content in a modal or new page
+                    showCourseContentModal(data.section, sectionId);
+                } else {
+                    throw new Error(data.message || 'Failed to load content');
+                }
+                
+            } catch (error) {
+                console.error('Error accessing course:', error);
+                showCustomAlert('❌ ACCESS FAILED', error.message || 'Failed to access course content.', 'error');
+            }
+        }
+
+        // Function to show course content in modal
+        function showCourseContentModal(section, sectionId) {
+            const modal = document.createElement('div');
+            modal.className = 'course-content-modal';
+            modal.innerHTML = `
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h2>${section.title || getSectionTitle(sectionId)}</h2>
+                        <button class="close-btn" onclick="this.closest('.course-content-modal').remove()">&times;</button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="course-content-text">
+                            ${section.content.replace(/\n\n/g, '</p><p>').replace(/^/, '<p>').replace(/$/, '</p>')}
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            document.body.appendChild(modal);
+            
+            // Add click outside to close
+            modal.addEventListener('click', function(e) {
+                if (e.target === modal) {
+                    modal.remove();
+                }
+            });
+        }
+
+        // Helper function to get section title
+        function getSectionTitle(sectionId) {
+            const titles = {
+                'constitutional': 'Constitutional Law',
+                'criminal': 'Criminal Law',
+                'civil': 'Civil Law',
+                'commercial': 'Commercial Law',
+                'family': 'Family Law',
+                'environmental': 'Environmental Law',
+                'cyber': 'Cyber Law',
+                'consumer': 'Consumer Protection',
+                'labour': 'Labour Law',
+                'administrative': 'Administrative Law'
+            };
+            return titles[sectionId] || sectionId;
+        }
+
+        // Function to load dashboard data
+        async function loadDashboard() {
+            const token = localStorage.getItem('lawhub_token');
+            
+            if (token) {
+                // Load user profile for welcome message
+                try {
+                    const response = await fetch(`${API_BASE_URL}/api/auth/profile`, {
+                        headers: { 'Authorization': `Bearer ${token}` }
+                    });
+                    
+                    if (response.ok) {
+                        const userData = await response.json();
+                        const welcomeEl = document.getElementById('dashboard-welcome');
+                        if (welcomeEl && userData.name) {
+                            welcomeEl.textContent = `Welcome back, ${userData.name}!`;
+                        }
+                    }
+                } catch (error) {
+                    console.log('Could not load user profile for welcome message');
+                }
+                
+                // Load enrolled courses for dashboard
+                loadDashboardCourses();
+            }
+        }
+
+        // Function to load enrolled courses in dashboard
+        async function loadDashboardCourses() {
+            const token = localStorage.getItem('lawhub_token');
+            const dashboardCoursesContent = document.getElementById('dashboard-courses-content');
+            
+            if (!token) {
+                dashboardCoursesContent.innerHTML = `
+                    <div style="text-align: center; padding: 40px; color: #6b7280;">
+                        <i class="fas fa-sign-in-alt" style="font-size: 24px; margin-bottom: 10px;"></i>
+                        <p>Please log in to view your enrolled courses</p>
+                    </div>
+                `;
+                return;
+            }
+
+            try {
+                const res = await fetch('/api/constitution/my-enrollments', {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+
+                if (!res.ok) {
+                    throw new Error(`HTTP ${res.status}`);
+                }
+
+                const data = await res.json();
+                const enrollments = data.enrollments || [];
+
+                if (enrollments.length === 0) {
+                    dashboardCoursesContent.innerHTML = `
+                        <div style="text-align: center; padding: 40px; color: #6b7280;">
+                            <i class="fas fa-book-open" style="font-size: 24px; margin-bottom: 10px;"></i>
+                            <p>You haven't enrolled in any courses yet.</p>
+                            <button onclick="showSection('constitution')" style="background: #556b2f; color: white; border: none; padding: 10px 20px; border-radius: 8px; margin-top: 10px; cursor: pointer;">
+                                Browse Courses
+                            </button>
+                        </div>
+                    `;
+                    return;
+                }
+
+                // Course details mapping
+                const courseDetails = {
+                    'constitutional': { title: 'Constitutional Law', icon: 'landmark', level: 'Beginner', duration: '8 weeks' },
+                    'criminal': { title: 'Criminal Law', icon: 'gavel', level: 'Intermediate', duration: '10 weeks' },
+                    'civil': { title: 'Civil Law', icon: 'handshake', level: 'Intermediate', duration: '6 weeks' },
+                    'commercial': { title: 'Commercial Law', icon: 'briefcase', level: 'Advanced', duration: '12 weeks' },
+                    'family': { title: 'Family Law', icon: 'users', level: 'Beginner', duration: '4 weeks' },
+                    'environmental': { title: 'Environmental Law', icon: 'leaf', level: 'Intermediate', duration: '8 weeks' },
+                    'cyber': { title: 'Cyber Law', icon: 'shield-alt', level: 'Advanced', duration: '6 weeks' },
+                    'consumer': { title: 'Consumer Protection', icon: 'shopping-cart', level: 'Beginner', duration: '4 weeks' },
+                    'labour': { title: 'Labour Law', icon: 'hard-hat', level: 'Intermediate', duration: '10 weeks' },
+                    'administrative': { title: 'Administrative Law', icon: 'university', level: 'Advanced', duration: '8 weeks' }
+                };
+
+                // Create course cards for dashboard
+                const courseCards = enrollments.map(enrollment => {
+                    const details = courseDetails[enrollment.sectionId] || { 
+                        title: enrollment.sectionId, 
+                        icon: 'book', 
+                        level: 'Unknown', 
+                        duration: 'N/A' 
+                    };
+                    
+                    const enrolledDate = new Date(enrollment.enrolledAt || enrollment.createdAt).toLocaleDateString();
+                    
+                    return `
+                        <div class="dashboard-course-card" onclick="accessEnrolledCourse('${enrollment.sectionId}')" style="cursor: pointer;">
+                            <div style="display: flex; align-items: center; gap: 15px; padding: 15px; background: white; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); transition: transform 0.2s, box-shadow 0.2s; margin-bottom: 15px;">
+                                <div style="width: 50px; height: 50px; background: linear-gradient(135deg, #556b2f, #8b9635); border-radius: 12px; display: flex; align-items: center; justify-content: center; color: white; font-size: 20px;">
+                                    <i class="fas fa-${details.icon}"></i>
+                                </div>
+                                <div style="flex: 1;">
+                                    <h4 style="margin: 0 0 5px 0; color: #374151; font-size: 16px; font-weight: 600;">${details.title}</h4>
+                                    <p style="margin: 0; color: #6b7280; font-size: 14px;">Enrolled on ${enrolledDate}</p>
+                                </div>
+                                <div style="display: flex; align-items: center; gap: 10px;">
+                                    <span style="background: #dcfce7; color: #166534; padding: 4px 8px; border-radius: 6px; font-size: 12px; font-weight: 500;">${details.level}</span>
+                                    <i class="fas fa-arrow-right" style="color: #556b2f;"></i>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+
+                dashboardCoursesContent.innerHTML = `
+                    <div style="max-height: 400px; overflow-y: auto;">
+                        ${courseCards}
+                    </div>
+                `;
+
+                // Add hover effects
+                const cards = dashboardCoursesContent.querySelectorAll('.dashboard-course-card > div');
+                cards.forEach(card => {
+                    card.addEventListener('mouseenter', function() {
+                        this.style.transform = 'translateY(-2px)';
+                        this.style.boxShadow = '0 4px 12px rgba(0,0,0,0.15)';
+                    });
+                    card.addEventListener('mouseleave', function() {
+                        this.style.transform = 'translateY(0)';
+                        this.style.boxShadow = '0 2px 8px rgba(0,0,0,0.1)';
+                    });
+                });
+
+            } catch (error) {
+                console.error('Error loading dashboard courses:', error);
+                dashboardCoursesContent.innerHTML = `
+                    <div style="text-align: center; padding: 40px; color: #ef4444;">
+                        <i class="fas fa-exclamation-triangle" style="font-size: 24px; margin-bottom: 10px;"></i>
+                        <p>Error loading courses: ${error.message}</p>
+                    </div>
+                `;
+            }
+        }
+
+        // Test function to debug API calls
+        async function testEnrollmentAPI() {
+            const token = localStorage.getItem('lawhub_token');
+            console.log('=== API TEST START ===');
+            console.log('Token:', token ? 'EXISTS' : 'MISSING');
+            console.log('Token length:', token ? token.length : 0);
+            
+            if (!token) {
+                alert('No token found! Please log in first.');
+                return;
+            }
+            
+            try {
+                console.log('Testing my-enrollments API...');
+                const res = await fetch('/api/constitution/my-enrollments', {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                
+                console.log('Response status:', res.status);
+                console.log('Response ok:', res.ok);
+                
+                const data = await res.json();
+                console.log('Response data:', data);
+                
+                alert(`API Response: ${JSON.stringify(data, null, 2)}`);
+                
+            } catch (error) {
+                console.error('API Test Error:', error);
+                alert(`API Error: ${error.message}`);
+            }
+            console.log('=== API TEST END ===');
+        }
+
+        // Load enrollment status when Constitution section is shown
+        async function loadEnrollmentStatus() {
+            const token = localStorage.getItem('lawhub_token');
+            
+            if (!token) {
+                loadExploreAllCourses([]);
+                return;
+            }
+
+            try {
+                const res = await fetch('/api/constitution/my-enrollments', {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+
+                if (res.ok) {
+                    const data = await res.json();
+                    const enrollments = data.enrollments || [];
+                    const enrolledSectionIds = enrollments.map(e => e.sectionId);
+                    
+                    // Hide enrolled courses from main Constitution section
+                    enrollments.forEach(enrollment => {
+                        const courseCard = document.querySelector(`[data-course="${enrollment.sectionId}"]`);
+                        if (courseCard) {
+                            // Hide the entire course card since user is already enrolled
+                            courseCard.style.display = 'none';
+                        }
+                    });
+                    
+                    // Show message if all courses are enrolled
+                    const visibleCourses = document.querySelectorAll('.course-card[data-course]:not([style*="display: none"])');
+                    if (visibleCourses.length === 0) {
+                        const constitutionGrid = document.querySelector('#constitution-section .course-grid');
+                        if (constitutionGrid) {
+                            constitutionGrid.innerHTML = `
+                                <div class="empty-state">
+                                    <i class="fas fa-graduation-cap"></i>
+                                    <h3>All Courses Enrolled!</h3>
+                                    <p>You have successfully enrolled in all available constitution courses. View them in "My Courses" section.</p>
+                                    <button onclick="showSection('courses')" style="background:#556b2f;color:#fff;border:none;padding:10px 20px;border-radius:8px;cursor:pointer;margin-top:10px;">View My Courses</button>
+                                </div>
+                            `;
+                        }
+                    }
+                    
+                    // Load Explore All Courses section with enrollment status
+                    loadExploreAllCourses(enrolledSectionIds);
+                } else {
+                    loadExploreAllCourses([]);
+                }
+            } catch (error) {
+                console.error('Error loading enrollment status:', error);
+                loadExploreAllCourses([]);
+            }
+        }
+
+        // Load "Explore All Courses" section with enrollment status
+        function loadExploreAllCourses(enrolledSectionIds) {
+            const exploreGrid = document.getElementById('explore-all-courses-grid');
+            if (!exploreGrid) return;
+            
+            const allCourses = [
+                { id: 'constitutional', title: 'Constitutional Law', icon: 'landmark', level: 'Beginner', duration: '8 weeks', desc: 'Learn constitutional principles, fundamental rights, and government structure.' },
+                { id: 'criminal', title: 'Criminal Law', icon: 'gavel', level: 'Intermediate', duration: '10 weeks', desc: 'Understanding criminal procedures, offenses, and legal principles.' },
+                { id: 'civil', title: 'Civil Law', icon: 'handshake', level: 'Intermediate', duration: '6 weeks', desc: 'Master civil procedures, contracts, and dispute resolution.' },
+                { id: 'commercial', title: 'Commercial Law', icon: 'briefcase', level: 'Advanced', duration: '12 weeks', desc: 'Business law, corporate governance, and commercial transactions.' },
+                { id: 'family', title: 'Family Law', icon: 'users', level: 'Beginner', duration: '4 weeks', desc: 'Marriage, divorce, custody, and family legal matters.' },
+                { id: 'environmental', title: 'Environmental Law', icon: 'leaf', level: 'Intermediate', duration: '8 weeks', desc: 'Environmental protection, pollution control, and sustainability law.' },
+                { id: 'cyber', title: 'Cyber Law', icon: 'shield-alt', level: 'Advanced', duration: '6 weeks', desc: 'Internet law, cybercrime, data protection, and digital rights.' },
+                { id: 'consumer', title: 'Consumer Protection', icon: 'shopping-cart', level: 'Beginner', duration: '4 weeks', desc: 'Consumer rights, product liability, and marketplace regulation.' },
+                { id: 'labour', title: 'Labour Law', icon: 'hard-hat', level: 'Intermediate', duration: '10 weeks', desc: 'Employment rights, workplace safety, and industrial relations.' },
+                { id: 'administrative', title: 'Administrative Law', icon: 'university', level: 'Advanced', duration: '8 weeks', desc: 'Government administration, public services, and procedures.' }
+            ];
+            
+            const courseCards = allCourses.map(course => {
+                const isEnrolled = enrolledSectionIds.includes(course.id);
+                
+                if (isEnrolled) {
+                    // Enrolled course - green status, non-clickable
+                    return `
+                        <div class="course-card enrolled-explore" data-course="${course.id}">
+                            <div class="course-image" style="background-image: url('https://images.unsplash.com/photo-1589994965851-a8f479c573a9?w=400&h=200&fit=crop&crop=center'); position: relative;">
+                                <div style="position: absolute; top: 10px; right: 10px; background: #22c55e; color: white; padding: 4px 8px; border-radius: 6px; font-size: 12px; font-weight: 600;">
+                                    <i class="fas fa-check"></i> Enrolled
+                                </div>
+                            </div>
+                            <div class="course-content">
+                                <div class="course-header">
+                                    <div class="course-icon ${course.id}">
+                                        <i class="fas fa-${course.icon}"></i>
+                                    </div>
+                                    <div>
+                                        <div class="course-title">${course.title}</div>
+                                        <div class="course-meta">
+                                            <span class="course-level">${course.level}</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="course-desc">${course.desc}</div>
+                                <button class="enroll-btn enrolled" disabled style="background: #22c55e; cursor: default;">
+                                    <i class="fas fa-check-circle"></i> Enrolled
+                                </button>
+                            </div>
+                        </div>
+                    `;
+                } else {
+                    // Available course - normal enrollment button
+                    return `
+                        <div class="course-card" data-course="${course.id}">
+                            <div class="course-image" style="background-image: url('https://images.unsplash.com/photo-1589994965851-a8f479c573a9?w=400&h=200&fit=crop&crop=center');">
+                            </div>
+                            <div class="course-content">
+                                <div class="course-header">
+                                    <div class="course-icon ${course.id}">
+                                        <i class="fas fa-${course.icon}"></i>
+                                    </div>
+                                    <div>
+                                        <div class="course-title">${course.title}</div>
+                                        <div class="course-meta">
+                                            <span class="course-level">${course.level}</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="course-desc">${course.desc}</div>
+                                <button class="enroll-btn" onclick="enrollInCourse('${course.id}')">
+                                    <span class="btn-text">Enroll Now</span>
+                                    <span class="btn-loading" style="display: none;">Enrolling...</span>
+                                </button>
+                            </div>
+                        </div>
+                    `;
+                }
+            }).join('');
+            
+            exploreGrid.innerHTML = courseCards;
+        }
+
+        // Law Search Functionality
+        function initializeLawSearch() {
+            console.log('Law Search initialized');
+            loadSearchHistory();
+        }
+
+        async function loadSearchHistory() {
+            const token = localStorage.getItem('lawhub_token');
+            if (!token) return;
+
+            try {
+                const response = await fetch(`${API_BASE_URL}/api/law-search/history`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    if (data.success && data.history.length > 0) {
+                        displaySearchHistory(data.history);
+                    }
+                }
+            } catch (error) {
+                console.error('Error loading search history:', error);
+            }
+        }
+
+        function displaySearchHistory(history) {
+            const historySection = document.getElementById('searchHistorySection');
+            const historyContent = document.getElementById('searchHistoryContent');
+            
+            if (history.length === 0) {
+                historySection.style.display = 'none';
+                return;
+            }
+
+            historySection.style.display = 'block';
+            historyContent.innerHTML = history.map(item => `
+                <div class="search-history-item" onclick="setSearchQuery('${item.query}')">
+                    <div class="history-query">${item.query}</div>
+                    <div class="history-response">${item.response.substring(0, 150)}${item.response.length > 150 ? '...' : ''}</div>
+                    <div class="history-date">${new Date(item.searchedAt).toLocaleDateString()}</div>
+                </div>
+            `).join('');
+        }
+
+        async function clearSearchHistory() {
+            const token = localStorage.getItem('lawhub_token');
+            if (!token) return;
+
+            if (!confirm('Are you sure you want to clear your search history?')) return;
+
+            try {
+                const response = await fetch(`${API_BASE_URL}/api/law-search/history`, {
+                    method: 'DELETE',
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+
+                if (response.ok) {
+                    document.getElementById('searchHistorySection').style.display = 'none';
+                    showCustomAlert('Success', 'Search history cleared', 'success');
+                }
+            } catch (error) {
+                console.error('Error clearing search history:', error);
+                showCustomAlert('Error', 'Failed to clear search history', 'error');
+            }
+        }
+
+        function setSearchQuery(query) {
+            document.getElementById('lawSearchInput').value = query;
+            document.getElementById('lawSearchInput').focus();
+        }
+
+        async function performLawSearch() {
+            const query = document.getElementById('lawSearchInput').value.trim();
+            const resultsDiv = document.getElementById('lawSearchResults');
+            const contentDiv = document.getElementById('lawSearchContent');
+            const loadingDiv = document.getElementById('lawSearchLoading');
+            const searchBtn = document.getElementById('lawSearchBtn');
+
+            if (!query) {
+                showCustomAlert('⚠️ Search Required', 'Please enter a law-related question.', 'error');
+                return;
+            }
+
+            // Show loading state
+            loadingDiv.style.display = 'block';
+            resultsDiv.style.display = 'none';
+            searchBtn.disabled = true;
+            searchBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Searching...';
+
+            try {
+                // Call our backend API which handles Hugging Face integration
+                const response = await fetch(`${API_BASE_URL}/api/law-search/query`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${localStorage.getItem('lawhub_token')}`
+                    },
+                    body: JSON.stringify({ query: query })
+                });
+
+                const data = await response.json();
+
+                if (!response.ok) {
+                    throw new Error(data.error || `Server error: ${response.status}`);
+                }
+
+                if (!data.success) {
+                    throw new Error(data.error || 'Search failed');
+                }
+
+                // Display results
+                contentDiv.innerHTML = `
+                    <div style="margin-bottom: 15px;">
+                        <strong style="color: #556b2f;">Question:</strong> ${query}
+                    </div>
+                    <div style="line-height: 1.6; white-space: pre-wrap;">${data.response}</div>
+                    <div style="margin-top: 20px; padding-top: 15px; border-top: 1px solid #e5e7eb; font-size: 12px; color: #6b7280;">
+                        <i class="fas fa-robot"></i> Powered by AI Assistant | 
+                        <i class="fas fa-exclamation-triangle"></i> This is AI-generated information. Please consult a legal professional for specific legal advice.
+                    </div>
+                `;
+
+                resultsDiv.style.display = 'block';
+                
+                // Refresh search history
+                loadSearchHistory();
+                
+                // Log the search activity
+                addCommandLog(`Law Search: "${query}"`);
+                trackActivity('law_search', 'User performed law search', { 
+                    query: query, 
+                    timestamp: new Date() 
+                });
+
+            } catch (error) {
+                console.error('Law search error:', error);
+                
+                // Show error message with fallback
+                const fallbackContent = error.message.includes('fallback') ? 
+                    error.message : 
+                    `Unable to process your search request right now. This might be due to:
+
+• AI service temporarily unavailable
+• Network connectivity issues  
+• API rate limits
+
+**Alternative options:**
+• Browse our Constitution courses for fundamental law concepts
+• Connect with legal experts for personalized assistance
+• Try rephrasing your question and search again
+
+Your question: "${query}"`;
+
+                contentDiv.innerHTML = `
+                    <div style="color: #ef4444; padding: 20px;">
+                        <div style="text-align: center; margin-bottom: 20px;">
+                            <i class="fas fa-exclamation-triangle" style="font-size: 24px; margin-bottom: 10px;"></i>
+                            <h4>Search Temporarily Unavailable</h4>
+                        </div>
+                        <div style="line-height: 1.6; white-space: pre-wrap;">${fallbackContent}</div>
+                        <div style="display: flex; gap: 10px; justify-content: center; margin-top: 20px;">
+                            <button onclick="showSection('constitution')" style="background: #556b2f; color: white; border: none; padding: 10px 20px; border-radius: 8px; cursor: pointer;">
+                                <i class="fas fa-book"></i> Browse Courses
+                            </button>
+                            <button onclick="showSection('ask-expert')" style="background: #2563eb; color: white; border: none; padding: 10px 20px; border-radius: 8px; cursor: pointer;">
+                                <i class="fas fa-comments"></i> Ask Expert
+                            </button>
+                        </div>
+                    </div>
+                `;
+                
+                resultsDiv.style.display = 'block';
+                addCommandLog('Law search failed: ' + error.message);
+            } finally {
+                // Hide loading and restore button
+                loadingDiv.style.display = 'none';
+                searchBtn.disabled = false;
+                searchBtn.innerHTML = '<i class="fas fa-search"></i> Search Law Database';
+            }
+        }
+
+        // Expert Chat Functionality
+        let currentExpert = null;
+
+        async function loadAvailableExperts() {
+            const expertsGrid = document.getElementById('expertsGrid');
+            
+            // Show loading state
+            expertsGrid.innerHTML = `
+                <div style="text-align: center; padding: 40px; color: #6b7280; grid-column: 1 / -1;">
+                    <i class="fas fa-spinner fa-spin" style="font-size: 48px; margin-bottom: 15px; opacity: 0.6;"></i>
+                    <h4>Loading Experts...</h4>
+                    <p>Please wait while we fetch available experts.</p>
+                </div>
+            `;
+            
+            try {
+                console.log('Fetching experts from API...');
+                const response = await fetch('/api/experts');
+
+                console.log('Response status:', response.status);
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    console.log('API Response:', data);
+                    const experts = data.experts || [];
+                    
+                    if (experts.length > 0) {
+                        expertsGrid.innerHTML = experts.map(expert => `
+                            <div class="expert-card" onclick="connectToExpert('${expert.id}', '${expert.name}', '${expert.specialization}')">
+                                <div class="expert-avatar">
+                                    <i class="fas fa-user-tie"></i>
+                                </div>
+                                <div class="expert-name">${expert.name}</div>
+                                <div class="expert-specialization">${expert.specialization}</div>
+                                <div class="expert-details">
+                                    Experience: ${expert.experience} years<br>
+                                    Location: ${expert.location}<br>
+                                    <span style="color: #10b981;"><i class="fas fa-circle" style="font-size: 8px;"></i> Available</span>
+                                </div>
+                                <button class="connect-btn">
+                                    <i class="fas fa-comments"></i> Request Chat
+                                </button>
+                            </div>
+                        `).join('');
+                        
+                        console.log(`✅ Successfully loaded ${experts.length} experts`);
+                    } else {
+                        expertsGrid.innerHTML = `
+                            <div style="text-align: center; padding: 40px; color: #6b7280; grid-column: 1 / -1;">
+                                <i class="fas fa-user-tie" style="font-size: 48px; margin-bottom: 15px; opacity: 0.3;"></i>
+                                <h4>No Experts Available</h4>
+                                <p>Currently no legal experts are online. Please try again later.</p>
+                                <button onclick="loadAvailableExperts()" style="background: #556b2f; color: white; border: none; padding: 8px 16px; border-radius: 6px; cursor: pointer; margin-top: 10px;">
+                                    <i class="fas fa-refresh"></i> Refresh
+                                </button>
+                            </div>
+                        `;
+                    }
+                } else {
+                    const errorData = await response.json().catch(() => ({}));
+                    throw new Error(errorData.message || `HTTP ${response.status}: ${response.statusText}`);
+                }
+            } catch (error) {
+                console.error('Error loading experts:', error);
+                expertsGrid.innerHTML = `
+                    <div style="text-align: center; padding: 40px; color: #ef4444; grid-column: 1 / -1;">
+                        <i class="fas fa-exclamation-triangle" style="font-size: 48px; margin-bottom: 15px;"></i>
+                        <h4>Unable to Load Experts</h4>
+                        <p>Please check your connection and try again.</p>
+                        <button onclick="loadAvailableExperts()" style="background: #556b2f; color: white; border: none; padding: 8px 16px; border-radius: 6px; cursor: pointer; margin-top: 10px;">
+                            Retry
+                        </button>
+                    </div>
+                `;
+            }
+        }
+
+        async function connectToExpert(expertId, expertName, specialization) {
+            try {
+                // Check if user is logged in
+                const token = localStorage.getItem('lawhub_token');
+                if (!token) {
+                    showCustomAlert('Login Required', 'Please log in to connect with experts.', 'warning');
+                    return;
+                }
+
+                // Show loading state
+                showCustomAlert('Sending Request...', 'Please wait while we send your connection request.', 'info');
+                
+                // Send connection request
+                const response = await fetch('/api/notifications/connection-request', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify({ 
+                        expertId: expertId,
+                        message: `Hi ${expertName}, I would like to connect with you for legal consultation regarding ${specialization}.`
+                    })
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    currentExpert = { id: expertId, name: expertName, specialization: specialization };
+                    
+                    showCustomAlert(
+                        'Request Sent Successfully!', 
+                        `Your connection request has been sent to ${expertName}. You will be notified when they respond.`, 
+                        'success'
+                    );
+                    
+                    // Start polling for connection status
+                    pollConnectionStatus(expertId);
+                } else {
+                    throw new Error(data.message || 'Failed to send connection request');
+                }
+            } catch (error) {
+                console.error('Error connecting to expert:', error);
+                showCustomAlert('Connection Failed', error.message, 'error');
+            }
+        }
+
+        function pollConnectionStatus(expertId) {
+            const pollInterval = setInterval(async () => {
+                try {
+                    const response = await fetch(`/api/chat/status/${expertId}`, {
+                        headers: { 'Authorization': `Bearer ${localStorage.getItem('lawhub_token')}` }
+                    });
+
+                    if (response.ok) {
+                        const data = await response.json();
+                        if (data.connected) {
+                            clearInterval(pollInterval);
+                            startExpertChat(expertId);
+                        }
+                    }
+                } catch (error) {
+                    console.error('Error polling connection status:', error);
+                }
+            }, 3000);
+
+            // Stop polling after 5 minutes
+            setTimeout(() => clearInterval(pollInterval), 300000);
+        }
+
+        function startExpertChat(expertId) {
+            document.getElementById('connectionStatus').style.display = 'none';
+            document.getElementById('expertChatView').style.display = 'block';
+            
+            // Update chat header
+            document.getElementById('chatExpertName').textContent = currentExpert.name;
+            document.getElementById('chatExpertSpecialization').textContent = currentExpert.specialization;
+            
+            // Add welcome message
+            const chatMessages = document.getElementById('expertChatMessages');
+            chatMessages.innerHTML = `
+                <div class="chat-message message-received">
+                    Hello! I'm ${currentExpert.name}, and I specialize in ${currentExpert.specialization}. How can I help you today?
+                </div>
+            `;
+            
+            showCustomAlert('Connected!', `You are now connected with ${currentExpert.name}`, 'success');
+        }
+
+        function backToExpertList() {
+            document.getElementById('expertChatView').style.display = 'none';
+            document.getElementById('connectionStatus').style.display = 'none';
+            document.getElementById('expertListView').style.display = 'block';
+            currentExpert = null;
+        }
+
+        function sendExpertMessage() {
+            const input = document.getElementById('expertChatInput');
+            const message = input.value.trim();
+            
+            if (!message) return;
+            
+            const chatMessages = document.getElementById('expertChatMessages');
+            
+            // Add user message
+            const userMessage = document.createElement('div');
+            userMessage.className = 'chat-message message-sent';
+            userMessage.textContent = message;
+            chatMessages.appendChild(userMessage);
+            
+            // Clear input
+            input.value = '';
+            
+            // Scroll to bottom
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+            
+            // Simulate expert response (in real implementation, this would be real-time)
+            setTimeout(() => {
+                const expertResponse = document.createElement('div');
+                expertResponse.className = 'chat-message message-received';
+                expertResponse.textContent = "Thank you for your question. Let me review the relevant legal provisions and provide you with a comprehensive answer.";
+                chatMessages.appendChild(expertResponse);
+                chatMessages.scrollTop = chatMessages.scrollHeight;
+            }, 2000);
+        }
+
+        // Allow Enter key to trigger search
+        document.addEventListener('DOMContentLoaded', function() {
+            const searchInput = document.getElementById('lawSearchInput');
+            if (searchInput) {
+                searchInput.addEventListener('keypress', function(e) {
+                    if (e.key === 'Enter' && !e.shiftKey) {
+                        e.preventDefault();
+                        performLawSearch();
+                    }
+                });
+            }
+
+            // Expert chat input handler
+            const expertChatInput = document.getElementById('expertChatInput');
+            if (expertChatInput) {
+                expertChatInput.addEventListener('keypress', function(e) {
+                    if (e.key === 'Enter' && !e.shiftKey) {
+                        e.preventDefault();
+                        sendExpertMessage();
+                    }
+                });
+            }
+        });
+
+        // Initialize dashboard on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            // Load dashboard data when page loads
+            loadDashboard();
+            
+            // Load notification count
+            loadUnreadCount();
+            
+            // Set up periodic notification count refresh (every 30 seconds)
+            setInterval(loadUnreadCount, 30000);
+        });
 
     </script>
     

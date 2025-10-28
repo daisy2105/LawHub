@@ -1,0 +1,55 @@
+Constitution Key Points - LawHub
+
+=== Constitutional Law ===
+- Fundamental Rights (Articles 12-35): Right to equality, freedom, life & personal liberty, religious freedom, and remedies.
+- Directive Principles: Non-justiciable principles guiding governance and social welfare.
+- Separation of Powers: Legislature, Executive, Judiciary roles and checks & balances.
+- Basic Structure Doctrine: Certain features of the Constitution cannot be amended.
+
+=== Criminal Law ===
+- Principles: Mens rea (guilty mind), actus reus (guilty act), procedural safeguards.
+- Criminal Procedure: Arrest, investigation, bail, charge framing, trial, sentencing, appeals.
+- Rights of accused: Presumption of innocence, right to counsel, fair trial.
+
+=== Civil Law ===
+- Contracts: Offer, acceptance, consideration, capacity, breach, remedies.
+- Torts & Remedies: Negligence, nuisance, defamation, remedies—damages, injunctions.
+- Civil Procedure: Pleadings, jurisdiction, limitation, evidence rules.
+
+=== Commercial Law ===
+- Business Entities: Formation, duties, liability of partnerships and companies.
+- Contractual obligations: Sale, agency, negotiable instruments, commercial disputes.
+- Regulation: Consumer protection and corporate compliance.
+
+=== Family Law ===
+- Marriage & Divorce: Grounds, procedures, maintenance, alimony.
+- Child Welfare: Custody, adoption, guardianship principles.
+- Personal laws: Variations by religion and applicable statutes.
+
+=== Environmental Law ===
+- Polluter pays principle and precautionary principle.
+- Regulatory framework: Environmental impact assessments, pollution control boards.
+- Public interest litigation and judicial oversight in environmental protection.
+
+=== Cyber Law ===
+- Digital offences: Hacking, data breaches, identity theft.
+- Data protection principles: Privacy, consent, lawful processing.
+- Electronic evidence: Admissibility and chain-of-custody concerns.
+
+=== Consumer Protection ===
+- Consumer rights: Safety, information, choice, redressal mechanisms.
+- Remedies: Complaints to consumer forums and compensation claims.
+- Unfair trade practices and defective goods handling.
+
+=== Labour Law ===
+- Worker rights: Wages, safe working conditions, social security.
+- Industrial relations: Trade unions, collective bargaining, dispute resolution.
+- Employment contracts and termination safeguards.
+
+=== Administrative Law ===
+- Rule-making and delegated legislation: Limits and guidance.
+- Judicial review: Grounds - illegality, irrationality, unfairness.
+- Principles of natural justice: Fair hearing, absence of bias.
+
+----------------------------
+Usage: Each heading above corresponds to a course/section in LawHub. Display these key points as the concise preview/summary for the relevant section. The full text files under `constitution/` contain the authoritative content.

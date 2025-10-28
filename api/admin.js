@@ -296,4 +296,118 @@ router.delete('/admin/users/:id', async (req, res) => {
   }
 });
 
+// SIMPLE Search History - Get AI search history for admin
+router.get('/admin/search-history', async (req, res) => {
+  try {
+    console.log('🔍 Admin search history requested');
+    
+    // Import SearchHistory model
+    const SearchHistory = mongoose.model('SearchHistory');
+    
+    // Get search history with user details
+    const searchHistory = await SearchHistory.find({})
+      .populate('userId', 'email name')
+      .sort({ searchedAt: -1 })
+      .limit(100); // Limit to recent 100 searches
+    
+    console.log('📊 Found', searchHistory.length, 'search records');
+    
+    res.json({
+      success: true,
+      searches: searchHistory.map(search => ({
+        id: search._id,
+        user: {
+          id: search.userId?._id,
+          email: search.userId?.email || 'Unknown',
+          name: search.userId?.name || 'Unknown User'
+        },
+        query: search.query,
+        response: search.response.substring(0, 200) + (search.response.length > 200 ? '...' : ''), // Truncate for admin view
+        model: search.model,
+        searchedAt: search.searchedAt
+      }))
+    });
+    
+  } catch (error) {
+    console.error('❌ Error getting search history:', error);
+    res.status(500).json({
+      success: false,
+      message: error.message,
+      searches: []
+    });
+  }
+});
+
+// SIMPLE Chat Connections - Get expert-user connections for admin
+router.get('/admin/chat-connections', async (req, res) => {
+  try {
+    console.log('💬 Admin chat connections requested');
+    
+    // Import connection models
+    const ConnectionRequest = mongoose.model('ConnectionRequest');
+    
+    // Get all connection requests with details
+    const connections = await ConnectionRequest.find({})
+      .sort({ requestedAt: -1 })
+      .limit(100); // Limit to recent 100 connections
+    
+    // Get user and expert details for each connection
+    const connectionsWithDetails = await Promise.all(
+      connections.map(async (conn) => {
+        try {
+          const user = await User.findById(conn.userId);
+          const expert = await ExpertApplication.findById(conn.expertId);
+          
+          return {
+            id: conn._id,
+            user: {
+              id: conn.userId,
+              email: user?.email || 'Unknown',
+              name: user?.name || 'Unknown User'
+            },
+            expert: {
+              id: conn.expertId,
+              name: expert?.userName || 'Unknown Expert',
+              email: expert?.userEmail || 'Unknown',
+              specialization: expert?.specialization || 'Unknown'
+            },
+            status: conn.status,
+            message: conn.message,
+            requestedAt: conn.requestedAt,
+            respondedAt: conn.respondedAt,
+            chatSessionId: conn.chatSessionId
+          };
+        } catch (err) {
+          console.error('Error processing connection:', err);
+          return {
+            id: conn._id,
+            user: { id: conn.userId, email: 'Error loading', name: 'Error' },
+            expert: { id: conn.expertId, name: 'Error loading', email: 'Error', specialization: 'Error' },
+            status: conn.status,
+            message: conn.message,
+            requestedAt: conn.requestedAt,
+            respondedAt: conn.respondedAt,
+            chatSessionId: conn.chatSessionId
+          };
+        }
+      })
+    );
+    
+    console.log('🔗 Found', connections.length, 'connection records');
+    
+    res.json({
+      success: true,
+      connections: connectionsWithDetails
+    });
+    
+  } catch (error) {
+    console.error('❌ Error getting chat connections:', error);
+    res.status(500).json({
+      success: false,
+      message: error.message,
+      connections: []
+    });
+  }
+});
+
 module.exports = router;

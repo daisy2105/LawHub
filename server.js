@@ -14,8 +14,12 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 
 // Middleware
+const allowedOrigins = process.env.ALLOWED_ORIGINS ? 
+  process.env.ALLOWED_ORIGINS.split(',') : 
+  ['http://localhost:5501', 'http://127.0.0.1:5501', 'http://localhost:3000', 'http://localhost:3001'];
+
 app.use(cors({
-  origin: process.env.NODE_ENV === 'production' ? true : ['http://localhost:5501', 'http://127.0.0.1:5501', 'http://localhost:3000'],
+  origin: process.env.NODE_ENV === 'production' ? allowedOrigins : true,
   credentials: true
 }));
 
@@ -32,9 +36,10 @@ app.use(session({
     mongoUrl: MONGODB_URI
   }),
   cookie: {
-    secure: false, // Set to true in production with HTTPS
+    secure: process.env.NODE_ENV === 'production', // HTTPS in production
     httpOnly: true,
-    maxAge: 24 * 60 * 60 * 1000 // 24 hours
+    maxAge: 24 * 60 * 60 * 1000, // 24 hours
+    sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax'
   }
 }));
 
@@ -116,6 +121,12 @@ app.use('/api', require('./api/expert')); // Use the correct expert.js with prop
 app.use('/api', require('./api/admin'));
 app.use('/api/chat', require('./api/chat')); // Chat API routes
 app.use('/api/experts', require('./api/experts')); // Get approved experts list
+app.use('/api/notifications', require('./api/notifications')); // Notification system
+app.use('/api/constitution', require('./api/constitution')); // Constitution sections API
+
+// Apply optional auth middleware to law-search routes (saves history if logged in)
+const { optionalAuth } = require('./middleware/auth');
+app.use('/api/law-search', optionalAuth, require('./api/law-search')); // AI-powered law search API
 
 // Health check endpoint
 app.get('/api/health', (req, res) => {

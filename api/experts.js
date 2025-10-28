@@ -22,8 +22,8 @@ function authenticateUser(req, res, next) {
   }
 }
 
-// GET /api/experts - Get all approved experts
-router.get('/', authenticateUser, async (req, res) => {
+// GET /api/experts - Get all approved experts (public endpoint)
+router.get('/', async (req, res) => {
   try {
     console.log('📋 Fetching approved experts...');
     

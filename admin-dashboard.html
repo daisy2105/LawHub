@@ -580,6 +580,20 @@
                             System Activities
                         </a>
                     </li>
+                    <li class="nav-item">
+                        <a href="#" class="nav-link" data-section="search-history">
+                            <i class="fas fa-search"></i>
+                            Search History
+                            <span class="nav-badge" id="searchCount">0</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#" class="nav-link" data-section="chat-connections">
+                            <i class="fas fa-comments"></i>
+                            Chat Connections
+                            <span class="nav-badge" id="connectionCount">0</span>
+                        </a>
+                    </li>
                 </ul>
             </nav>
 
@@ -686,6 +700,32 @@
                     <div class="loading">
                         <i class="fas fa-spinner fa-spin"></i>
                         <p>Loading activities...</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Search History Section -->
+            <section id="search-history-section" class="section-content">
+                <h3 style="color: #fff; margin-bottom: 20px; font-size: 1.5rem;">
+                    <i class="fas fa-search"></i> AI Search History
+                </h3>
+                <div id="searchHistoryList">
+                    <div class="loading">
+                        <i class="fas fa-spinner fa-spin"></i>
+                        <p>Loading search history...</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Chat Connections Section -->
+            <section id="chat-connections-section" class="section-content">
+                <h3 style="color: #fff; margin-bottom: 20px; font-size: 1.5rem;">
+                    <i class="fas fa-comments"></i> Expert Chat Connections
+                </h3>
+                <div id="chatConnectionsList">
+                    <div class="loading">
+                        <i class="fas fa-spinner fa-spin"></i>
+                        <p>Loading chat connections...</p>
                     </div>
                 </div>
             </section>
@@ -801,7 +841,9 @@
                 overview: { title: 'Dashboard Overview', desc: 'Monitor system statistics and recent activities' },
                 users: { title: 'User Management', desc: 'View and manage registered users' },
                 experts: { title: 'Expert Applications', desc: 'Review and approve expert applications' },
-                activities: { title: 'System Activities', desc: 'Monitor user activities and system events' }
+                activities: { title: 'System Activities', desc: 'Monitor user activities and system events' },
+                'search-history': { title: 'AI Search History', desc: 'View user AI search queries and responses' },
+                'chat-connections': { title: 'Expert Chat Connections', desc: 'Monitor user-expert chat connections and status' }
             };
 
             const sectionInfo = titles[section] || titles.overview;
@@ -829,6 +871,12 @@
                     break;
                 case 'activities':
                     await loadActivitiesData();
+                    break;
+                case 'search-history':
+                    await loadSearchHistoryData();
+                    break;
+                case 'chat-connections':
+                    await loadChatConnectionsData();
                     break;
             }
         }
@@ -1498,6 +1546,178 @@
             if (!dateString) return 'N/A';
             const date = new Date(dateString);
             return date.toLocaleDateString() + ' ' + date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+        }
+
+        // Load search history data
+        async function loadSearchHistoryData() {
+            try {
+                console.log('🔍 Loading search history...');
+                
+                const response = await fetch(`${API_BASE_URL}/api/admin/search-history`);
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    const searches = data.searches || [];
+                    
+                    let html = '';
+                    if (searches.length > 0) {
+                        html = searches.map(search => `
+                            <div class="data-card" style="margin-bottom: 15px; background: rgba(255,255,255,0.1); border-radius: 10px; padding: 20px;">
+                                <div style="display: flex; justify-content: between; align-items: start; margin-bottom: 10px;">
+                                    <div style="flex: 1;">
+                                        <h4 style="color: #4fc3f7; margin-bottom: 5px;">
+                                            <i class="fas fa-user"></i> ${search.user.email}
+                                        </h4>
+                                        <p style="color: #aaa; font-size: 0.9rem;">
+                                            <i class="fas fa-clock"></i> ${formatDate(search.searchedAt)}
+                                        </p>
+                                    </div>
+                                    <span class="badge" style="background: #2196f3; color: white; padding: 4px 8px; border-radius: 12px; font-size: 0.8rem;">
+                                        ${search.model}
+                                    </span>
+                                </div>
+                                <div style="margin: 15px 0;">
+                                    <strong style="color: #fff;">Query:</strong>
+                                    <div style="background: rgba(0,0,0,0.3); padding: 10px; border-radius: 5px; margin-top: 5px; color: #e0e0e0;">
+                                        ${search.query}
+                                    </div>
+                                </div>
+                                <div>
+                                    <strong style="color: #fff;">Response:</strong>
+                                    <div style="background: rgba(0,0,0,0.3); padding: 10px; border-radius: 5px; margin-top: 5px; color: #e0e0e0; max-height: 100px; overflow-y: auto;">
+                                        ${search.response}
+                                    </div>
+                                </div>
+                            </div>
+                        `).join('');
+                    } else {
+                        html = `
+                            <div class="no-data">
+                                <i class="fas fa-search"></i>
+                                <p>No search history found</p>
+                            </div>
+                        `;
+                    }
+                    
+                    document.getElementById('searchHistoryList').innerHTML = html;
+                    document.getElementById('searchCount').textContent = searches.length;
+                    
+                } else {
+                    throw new Error('Failed to load search history');
+                }
+                
+            } catch (error) {
+                console.error('❌ Error loading search history:', error);
+                document.getElementById('searchHistoryList').innerHTML = `
+                    <div class="error-message">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        <p>Error loading search history: ${error.message}</p>
+                    </div>
+                `;
+            }
+        }
+
+        // Load chat connections data
+        async function loadChatConnectionsData() {
+            try {
+                console.log('💬 Loading chat connections...');
+                
+                const response = await fetch(`${API_BASE_URL}/api/admin/chat-connections`);
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    const connections = data.connections || [];
+                    
+                    let html = '';
+                    if (connections.length > 0) {
+                        html = connections.map(conn => `
+                            <div class="data-card" style="margin-bottom: 15px; background: rgba(255,255,255,0.1); border-radius: 10px; padding: 20px;">
+                                <div style="display: flex; justify-content: between; align-items: start; margin-bottom: 15px;">
+                                    <div style="flex: 1;">
+                                        <h4 style="color: #4fc3f7; margin-bottom: 5px;">
+                                            <i class="fas fa-user"></i> ${conn.user.email}
+                                        </h4>
+                                        <p style="color: #aaa; font-size: 0.9rem;">User</p>
+                                    </div>
+                                    <div style="flex: 1; text-align: center;">
+                                        <i class="fas fa-arrow-right" style="color: #888; margin: 0 10px;"></i>
+                                    </div>
+                                    <div style="flex: 1; text-align: right;">
+                                        <h4 style="color: #81c784; margin-bottom: 5px;">
+                                            <i class="fas fa-user-tie"></i> ${conn.expert.name}
+                                        </h4>
+                                        <p style="color: #aaa; font-size: 0.9rem;">${conn.expert.specialization}</p>
+                                    </div>
+                                </div>
+                                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                                    <span class="badge" style="background: ${getStatusColor(conn.status)}; color: white; padding: 6px 12px; border-radius: 15px; font-size: 0.8rem;">
+                                        <i class="fas ${getStatusIcon(conn.status)}"></i> ${conn.status.toUpperCase()}
+                                    </span>
+                                    <span style="color: #aaa; font-size: 0.9rem;">
+                                        <i class="fas fa-clock"></i> ${formatDate(conn.requestedAt)}
+                                    </span>
+                                </div>
+                                ${conn.message ? `
+                                    <div style="margin-top: 10px;">
+                                        <strong style="color: #fff;">Message:</strong>
+                                        <div style="background: rgba(0,0,0,0.3); padding: 10px; border-radius: 5px; margin-top: 5px; color: #e0e0e0;">
+                                            ${conn.message}
+                                        </div>
+                                    </div>
+                                ` : ''}
+                                ${conn.chatSessionId ? `
+                                    <div style="margin-top: 10px; padding-top: 10px; border-top: 1px solid rgba(255,255,255,0.1);">
+                                        <small style="color: #aaa;">
+                                            <i class="fas fa-comments"></i> Chat ID: ${conn.chatSessionId}
+                                        </small>
+                                    </div>
+                                ` : ''}
+                            </div>
+                        `).join('');
+                    } else {
+                        html = `
+                            <div class="no-data">
+                                <i class="fas fa-comments"></i>
+                                <p>No chat connections found</p>
+                            </div>
+                        `;
+                    }
+                    
+                    document.getElementById('chatConnectionsList').innerHTML = html;
+                    document.getElementById('connectionCount').textContent = connections.length;
+                    
+                } else {
+                    throw new Error('Failed to load chat connections');
+                }
+                
+            } catch (error) {
+                console.error('❌ Error loading chat connections:', error);
+                document.getElementById('chatConnectionsList').innerHTML = `
+                    <div class="error-message">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        <p>Error loading chat connections: ${error.message}</p>
+                    </div>
+                `;
+            }
+        }
+
+        // Helper functions for connection status
+        function getStatusColor(status) {
+            switch (status) {
+                case 'pending': return '#ff9800';
+                case 'accepted': return '#4caf50';
+                case 'rejected': return '#f44336';
+                default: return '#757575';
+            }
+        }
+
+        function getStatusIcon(status) {
+            switch (status) {
+                case 'pending': return 'fa-clock';
+                case 'accepted': return 'fa-check';
+                case 'rejected': return 'fa-times';
+                default: return 'fa-question';
+            }
         }
 
         // Logout function
