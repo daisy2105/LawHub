@@ -27,16 +27,16 @@ Go to **Environment** tab and add these variables:
 
 ```
 NODE_ENV=production
-MONGODB_URI=mongodb+srv://lawhubuser:lawhub866587@cluster0.bvsm4wb.mongodb.net/lawhub?retryWrites=true&w=majority&appName=Cluster0
-JWT_SECRET=lawhub-secret-key-2025-super-secure
-HUGGINGFACE_API_KEY=YOUR_HUGGINGFACE_API_KEY_HERE
-HF_API_KEY=YOUR_HUGGINGFACE_API_KEY_HERE
-PINECONE_API_KEY=pcsk_76YU8T_SP9BdiSSgBNkkVkdvpeHXK4Xt9XWhw2L3kxqHAHiB3WtreNyasz53HrvRpACPT3
-PINECONE_ENVIRONMENT=aped-4627-b74a
-ALLOWED_ORIGINS=https://lawhub-1.onrender.com
-SESSION_SECRET=lawhub-session-secret-production-2025
+MONGODB_URI=mongodb+srv://[USERNAME]:[PASSWORD]@[CLUSTER].mongodb.net/[DATABASE]
+JWT_SECRET=your-super-secure-jwt-secret-key
+HUGGINGFACE_API_KEY=your-huggingface-api-key
+HF_API_KEY=your-huggingface-api-key
+PINECONE_API_KEY=your-pinecone-api-key
+PINECONE_ENVIRONMENT=your-pinecone-environment
+ALLOWED_ORIGINS=https://yourdomain.onrender.com
+SESSION_SECRET=your-session-secret-key
 BCRYPT_ROUNDS=12
-CHAT_ENCRYPTION_KEY=8f3e2d1c0b9a8f7e6d5c4b3a2f1e0d9c
+CHAT_ENCRYPTION_KEY=your-32-character-encryption-key
 ```
 
 ### Step 4: Deploy
