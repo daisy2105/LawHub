@@ -1115,10 +1115,13 @@
         }
 
         /* Chat Button */
+        /* .chat-fab - REMOVED (using expert-chat-floating-btn instead)
         .chat-fab {
-            position: fixed;
-            bottom: 24px;
-            right: 24px;
+            position: fixed !important;
+            bottom: 24px !important;
+            right: 24px !important;
+            left: auto !important;
+            top: auto !important;
             width: 60px;
             height: 60px;
             background: #10b981;
@@ -1126,14 +1129,14 @@
             border: none;
             cursor: pointer;
             box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3);
-            z-index: 1000;
+            z-index: 9999;
             display: flex;
             align-items: center;
             justify-content: center;
             color: white;
             font-size: 24px;
             transition: all 0.3s ease;
-        }
+        } */
 
         .chat-fab:hover {
             transform: scale(1.05);
@@ -3421,12 +3424,6 @@
         </div>
     </div>
 
-    <!-- Chat FAB with notification badge (Facebook Messenger style) -->
-    <button class="chat-fab" onclick="openChatInterface()" style="background: linear-gradient(135deg, #556b2f, #6b8e23); position: relative;">
-        <i class="fas fa-comments"></i>
-        <span id="chatNotificationBadge" style="position: absolute; top: -8px; right: -8px; background: #ff3b30; color: white; border-radius: 50%; min-width: 22px; height: 22px; font-size: 12px; font-weight: bold; display: none; align-items: center; justify-content: center; border: 3px solid white; box-shadow: 0 2px 8px rgba(255, 59, 48, 0.5); padding: 0 6px;">0</span>
-    </button>
-
     <!-- Profile Setup Modal for First Time Users -->
     <div class="profile-setup-modal" id="profileSetupModal">
         <div class="profile-setup-container">
@@ -3707,7 +3704,9 @@
 
     <script>
         // Global API Configuration - Change this to switch between local and remote
-        const API_BASE_URL = ''; // Empty string for relative URLs to use current domain
+        const API_BASE_URL = window.location.hostname === 'localhost' 
+            ? 'http://localhost:5000' 
+            : 'https://lawhub-1.onrender.com'; // Backend server URL
         // const API_BASE_URL = 'https://lawhub-1.onrender.com'; // Uncomment for remote server
         
         // API Keys for Constitution Sections
@@ -3743,7 +3742,7 @@
                     throw new Error(`No API key found for section: ${sectionId}`);
                 }
 
-                const response = await fetch(`/api/constitution/section/${sectionId}`, {
+                const response = await fetch(`${API_BASE_URL}/api/constitution/section/${sectionId}`, {
                     headers: {
                         'apikey': apiKey,
                         'Content-Type': 'application/json'
@@ -3804,7 +3803,7 @@
             
             try {
                 const apiKey = CONSTITUTION_API_KEYS[sectionId];
-                const response = await fetch(`/api/constitution/section/${sectionId}/search?query=${encodeURIComponent(query)}&apikey=${apiKey}`);
+                const response = await fetch(`${API_BASE_URL}/api/constitution/section/${sectionId}/search?query=${encodeURIComponent(query)}&apikey=${apiKey}`);
                 const data = await response.json();
                 
                 if (data.success && data.matches.length > 0) {
@@ -5132,8 +5131,8 @@
                 // Get token for authenticated request
                 const token = localStorage.getItem('lawhub_token');
                 
-                // Simple API call to deployed server
-                const response = await fetch('https://lawhub-1.onrender.com/api/auth/profile', {
+                // Simple API call to backend server
+                const response = await fetch(`${API_BASE_URL}/api/auth/profile`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
@@ -5836,7 +5835,7 @@
                     return;
                 }
 
-                const response = await fetch('/api/notifications', {
+                const response = await fetch(`${API_BASE_URL}/api/notifications`, {
                     headers: { 'Authorization': `Bearer ${token}` }
                 });
 
@@ -5882,7 +5881,7 @@
                 const token = localStorage.getItem('lawhub_token');
                 if (!token) return;
 
-                await fetch('/api/notifications/mark-read', {
+                await fetch(`${API_BASE_URL}/api/notifications/mark-read`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
@@ -5913,7 +5912,7 @@
                 const token = localStorage.getItem('lawhub_token');
                 if (!token) return;
 
-                const response = await fetch('/api/notifications/unread-count', {
+                const response = await fetch(`${API_BASE_URL}/api/notifications/unread-count`, {
                     headers: { 'Authorization': `Bearer ${token}` }
                 });
 
@@ -6114,7 +6113,7 @@
             }
 
             // Load from server first, then merge with localStorage
-            fetch('/api/constitution/notifications', {
+            fetch(`${API_BASE_URL}/api/constitution/notifications`, {
                 headers: { 'Authorization': `Bearer ${token}` }
             })
             .then(res => res.json())
@@ -6406,7 +6405,7 @@
 
             async function loadContentWithAuth() {
                 try {
-                    const res = await fetch(`/api/constitution/section/${moduleType}`, {
+                    const res = await fetch(`${API_BASE_URL}/api/constitution/section/${moduleType}`, {
                         headers: {
                             'Authorization': token ? `Bearer ${token}` : ''
                         }
@@ -6450,7 +6449,7 @@
 
             // If there's a token, check enrollment first
             if (token) {
-                fetch(`/api/constitution/enrolled/${moduleType}`, {
+                fetch(`${API_BASE_URL}/api/constitution/enrolled/${moduleType}`, {
                     headers: { 'Authorization': `Bearer ${token}` }
                 }).then(r => r.json()).then(info => {
                     if (info && info.enrolled) {
@@ -6473,7 +6472,7 @@
                             btn.disabled = true;
                             btn.textContent = 'Enrolling...';
                             try {
-                                const enrollRes = await fetch(`/api/constitution/enroll/${moduleType}`, {
+                                const enrollRes = await fetch(`${API_BASE_URL}/api/constitution/enroll/${moduleType}`, {
                                     method: 'POST',
                                     headers: { 'Authorization': `Bearer ${token}` }
                                 });
@@ -6606,7 +6605,7 @@
             `;
 
             try {
-                const res = await fetch('/api/constitution/my-enrollments', {
+                const res = await fetch(`${API_BASE_URL}/api/constitution/my-enrollments`, {
                     headers: { 'Authorization': `Bearer ${token}` }
                 });
 
@@ -6734,7 +6733,7 @@
             enrollBtn.disabled = true;
 
             try {
-                const res = await fetch(`/api/constitution/enroll/${sectionId}`, {
+                const res = await fetch(`${API_BASE_URL}/api/constitution/enroll/${sectionId}`, {
                     method: 'POST',
                     headers: { 'Authorization': `Bearer ${token}` }
                 });
@@ -6806,7 +6805,7 @@
             }
 
             try {
-                const res = await fetch(`/api/constitution/section/${sectionId}`, {
+                const res = await fetch(`${API_BASE_URL}/api/constitution/section/${sectionId}`, {
                     headers: { 'Authorization': `Bearer ${token}` }
                 });
 
@@ -6917,7 +6916,7 @@
             }
 
             try {
-                const res = await fetch('/api/constitution/my-enrollments', {
+                const res = await fetch(`${API_BASE_URL}/api/constitution/my-enrollments`, {
                     headers: { 'Authorization': `Bearer ${token}` }
                 });
 
@@ -7029,7 +7028,7 @@
             
             try {
                 console.log('Testing my-enrollments API...');
-                const res = await fetch('/api/constitution/my-enrollments', {
+                const res = await fetch(`${API_BASE_URL}/api/constitution/my-enrollments`, {
                     headers: { 'Authorization': `Bearer ${token}` }
                 });
                 
@@ -7058,7 +7057,7 @@
             }
 
             try {
-                const res = await fetch('/api/constitution/my-enrollments', {
+                const res = await fetch(`${API_BASE_URL}/api/constitution/my-enrollments`, {
                     headers: { 'Authorization': `Bearer ${token}` }
                 });
 
@@ -7383,7 +7382,7 @@ Your question: "${query}"`;
             
             try {
                 console.log('Fetching experts from API...');
-                const response = await fetch('/api/experts');
+                const response = await fetch(`${API_BASE_URL}/api/experts`);
 
                 console.log('Response status:', response.status);
                 
@@ -7456,7 +7455,7 @@ Your question: "${query}"`;
                 showCustomAlert('Sending Request...', 'Please wait while we send your connection request.', 'info');
                 
                 // Send connection request
-                const response = await fetch('/api/notifications/connection-request', {
+                const response = await fetch(`${API_BASE_URL}/api/notifications/connection-request`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
@@ -7493,7 +7492,7 @@ Your question: "${query}"`;
         function pollConnectionStatus(expertId) {
             const pollInterval = setInterval(async () => {
                 try {
-                    const response = await fetch(`/api/chat/status/${expertId}`, {
+                    const response = await fetch(`${API_BASE_URL}/api/chat/status/${expertId}`, {
                         headers: { 'Authorization': `Bearer ${localStorage.getItem('lawhub_token')}` }
                     });
 
@@ -7622,5 +7621,1598 @@ Your question: "${query}"`;
     
     <!-- Real Chat Functionality -->
     <script src="chat-functionality.js"></script>
+
+    <!-- ═══════════════════════════════════════════════════════════
+         EXPERT CHAT MODAL (NEW IMPLEMENTATION)
+         ═══════════════════════════════════════════════════════════ -->
+    
+    <!-- Floating Chat Button -->
+    <div id="expertChatFloatingBtn" class="expert-chat-floating-btn" onclick="openExpertChatModal()">
+        <i class="fas fa-comments"></i>
+        <span id="chatNotificationBadge" class="chat-notification-badge" style="display: none;">0</span>
+    </div>
+
+    <!-- Expert Chat Modal - SIMPLIFIED: Loads expert-chat.html in iframe -->
+    <div id="expertChatModal" class="expert-chat-modal" style="display: none;">
+        <!-- Modal Overlay -->
+        <div class="expert-chat-overlay" onclick="closeExpertChatModal()"></div>
+        
+        <!-- Modal Content with iframe -->
+        <div class="expert-chat-modal-content" style="display: flex; flex-direction: column; height: 90vh; max-height: 900px; background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%); border-radius: 24px; overflow: hidden; box-shadow: 0 20px 60px rgba(0,0,0,0.5);">
+            <!-- Modal Header - GORGEOUS GRADIENT -->
+            <div class="expert-chat-modal-header" style="background: linear-gradient(135deg, rgba(102, 126, 234, 0.95) 0%, rgba(118, 75, 162, 0.95) 100%); backdrop-filter: blur(20px); color: white; padding: 20px 25px; display: flex; justify-content: space-between; align-items: center; flex-shrink: 0; border-bottom: 1px solid rgba(255,255,255,0.2); box-shadow: 0 4px 20px rgba(0,0,0,0.3);">
+                <div class="expert-chat-modal-title" style="display: flex; align-items: center; gap: 12px; font-size: 22px; font-weight: 700; text-shadow: 0 2px 10px rgba(0,0,0,0.3);">
+                    <i class="fas fa-comments" style="font-size: 24px;"></i>
+                    <span>Expert Chat System</span>
+                </div>
+                <button class="expert-chat-close-btn" onclick="closeExpertChatModal()" style="background: rgba(255,255,255,0.2); backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.3); color: white; font-size: 20px; cursor: pointer; padding: 8px 12px; border-radius: 12px; transition: all 0.3s; box-shadow: 0 4px 15px rgba(0,0,0,0.2);">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+
+            <!-- Iframe Container - Loads the full expert-chat.html -->
+            <div style="flex: 1; overflow: hidden; position: relative;">
+                <iframe 
+                    id="expertChatIframe" 
+                    src="expert-chat.html" 
+                    style="width: 100%; height: 100%; border: none; display: block;"
+                    title="Expert Chat System"
+                ></iframe>
+            </div>
+
+                <!-- Chat Interface (hidden by default) -->
+                <div id="expertChatInterface" class="expert-chat-interface" style="display: none;">
+                    <div class="expert-chat-interface-header">
+                        <button class="expert-chat-back-btn" onclick="backToExpertChatList()">
+                            <i class="fas fa-arrow-left"></i> Back
+                        </button>
+                        <div class="expert-chat-interface-info">
+                            <div class="expert-chat-interface-name" id="expertChatInterfaceName">Expert Name</div>
+                            <div class="expert-chat-interface-subtitle" id="expertChatInterfaceSubtitle">Legal Expert</div>
+                        </div>
+                    </div>
+                    <div class="expert-chat-messages" id="expertChatMessagesContainer">
+                        <!-- Messages will be loaded here -->
+                    </div>
+                    <div class="expert-chat-input-container">
+                        <input 
+                            type="text" 
+                            id="expertChatMessageInput" 
+                            class="expert-chat-input" 
+                            placeholder="Type your message..."
+                            onkeypress="handleExpertChatKeyPress(event)"
+                        >
+                        <button class="expert-chat-send-btn" onclick="sendExpertChatMessage()">
+                            <i class="fas fa-paper-plane"></i>
+                        </button>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <!-- Expert Chat Modal Styles -->
+    <style>
+        /* ═══════════════════════════════════════════════════════════
+           FLOATING CHAT BUTTON - NEW EXPERT CHAT (TOP-RIGHT, BLUE)
+           ═══════════════════════════════════════════════════════════ */
+        .expert-chat-floating-btn {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            width: 70px;
+            height: 70px;
+            background: linear-gradient(135deg, #2196F3, #1976D2);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 28px;
+            cursor: pointer;
+            box-shadow: 0 4px 20px rgba(33, 150, 243, 0.5);
+            z-index: 9998;
+            transition: all 0.3s ease;
+            border: 3px solid white;
+        }
+
+        .expert-chat-floating-btn:hover {
+            transform: scale(1.15) rotate(5deg);
+            box-shadow: 0 6px 24px rgba(33, 150, 243, 0.7);
+        }
+
+        .chat-notification-badge {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            background: linear-gradient(135deg, #ff4444 0%, #cc0000 100%);
+            color: white;
+            border-radius: 50%;
+            min-width: 24px;
+            height: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            font-weight: 700;
+            border: 3px solid white;
+            padding: 0 6px;
+            box-shadow: 0 4px 12px rgba(255, 68, 68, 0.6);
+            animation: notificationPulse 2s ease-in-out infinite;
+        }
+
+        @keyframes notificationPulse {
+            0%, 100% { 
+                transform: scale(1);
+                box-shadow: 0 4px 12px rgba(255, 68, 68, 0.6);
+            }
+            50% { 
+                transform: scale(1.15);
+                box-shadow: 0 6px 20px rgba(255, 68, 68, 0.9);
+            }
+        }
+
+        /* ═══════════════════════════════════════════════════════════
+           MODAL OVERLAY & CONTAINER
+           ═══════════════════════════════════════════════════════════ */
+        .expert-chat-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 9999;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            animation: expertChatFadeIn 0.3s ease;
+        }
+
+        @keyframes expertChatFadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .expert-chat-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(4px);
+        }
+
+        .expert-chat-modal-content {
+            position: relative;
+            width: 65%;
+            max-width: 600px;
+            height: 85vh;
+            max-height: 700px;
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            display: flex;
+            flex-direction: column;
+            animation: expertChatSlideUp 0.3s ease;
+            overflow: hidden;
+        }
+
+        @keyframes expertChatSlideUp {
+            from { 
+                opacity: 0;
+                transform: translateY(50px);
+            }
+            to { 
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* ═══════════════════════════════════════════════════════════
+           MODAL HEADER - BEAUTIFUL GRADIENT
+           ═══════════════════════════════════════════════════════════ */
+        .expert-chat-modal-header {
+            background: linear-gradient(135deg, #556b2f 0%, #6B8E23 50%, #6B8E23 100%);
+            color: white;
+            padding: 24px 28px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        .expert-chat-modal-title {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 22px;
+            font-weight: 700;
+        }
+
+        .expert-chat-modal-title i {
+            font-size: 26px;
+        }
+
+        .expert-chat-modal-title span::after {
+            content: '';
+            display: block;
+            font-size: 13px;
+            font-weight: 400;
+            opacity: 0.9;
+            margin-top: 2px;
+        }
+
+        .expert-chat-close-btn {
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            color: white;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-size: 20px;
+            transition: all 0.3s;
+        }
+
+        .expert-chat-close-btn:hover {
+            background: rgba(255, 255, 255, 0.35) !important;
+            transform: rotate(90deg) scale(1.1);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.3) !important;
+        }
+
+        /* ═══════════════════════════════════════════════════════════
+           TABS
+           ═══════════════════════════════════════════════════════════ */
+        .expert-chat-tabs {
+            display: flex;
+            background: #f5f5f5;
+            border-bottom: 2px solid #e0e0e0;
+        }
+
+        .expert-chat-tab {
+            flex: 1;
+            padding: 16px 20px;
+            background: transparent;
+            border: none;
+            font-size: 15px;
+            font-weight: 500;
+            color: #666;
+            cursor: pointer;
+            transition: all 0.3s;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .expert-chat-tab:hover {
+            background: rgba(107, 142, 35, 0.1);
+            color: #6B8E23;
+        }
+
+        .expert-chat-tab.active {
+            background: white;
+            color: #6B8E23;
+            font-weight: 600;
+        }
+
+        .expert-chat-tab.active::after {
+            content: '';
+            position: absolute;
+            bottom: -2px;
+            left: 0;
+            width: 100%;
+            height: 3px;
+            background: #6B8E23;
+        }
+
+        .expert-chat-tab-badge {
+            background: #f44336;
+            color: white;
+            border-radius: 12px;
+            padding: 2px 8px;
+            font-size: 12px;
+            font-weight: 600;
+            min-width: 20px;
+            text-align: center;
+        }
+
+        /* ═══════════════════════════════════════════════════════════
+           TAB CONTENT - BEAUTIFUL BACKGROUND
+           ═══════════════════════════════════════════════════════════ */
+        .expert-chat-tab-content {
+            flex: 1;
+            overflow-y: auto;
+            padding: 28px;
+            background: linear-gradient(to bottom, #ffffff 0%, #f8f9fa 100%);
+        }
+
+        .expert-chat-tab-pane {
+            display: none;
+        }
+
+        .expert-chat-tab-pane.active {
+            display: block;
+        }
+
+        /* ═══════════════════════════════════════════════════════════
+           LOADING & ERROR STATES
+           ═══════════════════════════════════════════════════════════ */
+        .expert-chat-loading {
+            text-align: center;
+            padding: 40px;
+            color: #666;
+            font-size: 16px;
+        }
+
+        .expert-chat-loading i {
+            font-size: 32px;
+            color: #6B8E23;
+            margin-bottom: 12px;
+        }
+
+        .expert-chat-error {
+            background: #fee;
+            color: #c33;
+            padding: 16px;
+            border-radius: 8px;
+            margin-bottom: 16px;
+        }
+
+        .expert-chat-empty {
+            text-align: center;
+            padding: 60px 20px;
+            color: #999;
+        }
+
+        .expert-chat-empty i {
+            font-size: 64px;
+            color: #ddd;
+            margin-bottom: 16px;
+        }
+
+        .expert-chat-empty p {
+            font-size: 16px;
+            margin-top: 12px;
+        }
+
+        /* ═══════════════════════════════════════════════════════════
+           EXPERT CARDS (For Users - Find Expert) - BEAUTIFUL UI
+           ═══════════════════════════════════════════════════════════ */
+        .expert-chat-experts-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .expert-chat-expert-card {
+            background: white;
+            border-radius: 16px;
+            padding: 20px 24px;
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+            transition: all 0.3s;
+            border: 2px solid transparent;
+        }
+
+        .expert-chat-expert-card:hover {
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.12);
+            transform: translateX(4px);
+            border-color: #6B8E23;
+        }
+
+        .expert-chat-expert-avatar {
+            font-size: 64px;
+            flex-shrink: 0;
+            width: 80px;
+            height: 80px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, #f0f9ff, #e0f2fe);
+            border-radius: 50%;
+        }
+
+        .expert-chat-expert-info {
+            flex: 1;
+        }
+
+        .expert-chat-expert-name {
+            font-size: 18px;
+            font-weight: 700;
+            color: #1a1a1a;
+            margin-bottom: 6px;
+        }
+
+        .expert-chat-expert-specialization {
+            color: #6B8E23;
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 6px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .expert-chat-expert-specialization::before {
+            content: '⚖️';
+        }
+
+        .expert-chat-expert-location {
+            color: #666;
+            font-size: 13px;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .expert-chat-expert-rating {
+            color: #666;
+            font-size: 13px;
+            margin: 4px 0;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .expert-chat-expert-status {
+            width: 12px;
+            height: 12px;
+            background: #4CAF50;
+            border-radius: 50%;
+            border: 2px solid white;
+            box-shadow: 0 0 0 2px #4CAF50;
+            flex-shrink: 0;
+        }
+
+        .expert-chat-btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 10px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            white-space: nowrap;
+        }
+
+        .expert-chat-btn-primary {
+            background: linear-gradient(135deg, #6B8E23, #556b1f);
+            color: white;
+            box-shadow: 0 4px 12px rgba(107, 142, 35, 0.3);
+            min-width: 140px;
+        }
+
+        .expert-chat-btn-primary:hover:not(:disabled) {
+            background: linear-gradient(135deg, #556b1f, #6B8E23);
+            box-shadow: 0 6px 16px rgba(107, 142, 35, 0.4);
+            transform: translateY(-2px);
+        }
+
+        .expert-chat-btn-primary:disabled {
+            background: linear-gradient(135deg, #9e9e9e, #757575);
+            cursor: not-allowed;
+            opacity: 0.7;
+            box-shadow: none;
+        }
+
+        .expert-chat-btn-success {
+            background: #4CAF50;
+            color: white;
+        }
+
+        .expert-chat-btn-success:hover {
+            background: #45a049;
+        }
+
+        .expert-chat-btn-danger {
+            background: #f44336;
+            color: white;
+        }
+
+        .expert-chat-btn-danger:hover {
+            background: #da190b;
+        }
+
+        /* ═══════════════════════════════════════════════════════════
+           REQUEST CARDS (For Experts - Pending Requests)
+           ═══════════════════════════════════════════════════════════ */
+        .expert-chat-requests-list {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .expert-chat-request-card {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .expert-chat-request-header {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            margin-bottom: 12px;
+        }
+
+        .expert-chat-request-avatar {
+            font-size: 48px;
+        }
+
+        .expert-chat-request-info {
+            flex: 1;
+        }
+
+        .expert-chat-request-name {
+            font-size: 16px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 4px;
+        }
+
+        .expert-chat-request-text {
+            color: #6B8E23;
+            font-size: 14px;
+            margin-bottom: 4px;
+        }
+
+        .expert-chat-request-time {
+            color: #999;
+            font-size: 12px;
+        }
+
+        .expert-chat-request-actions {
+            display: flex;
+            gap: 12px;
+            margin-top: 16px;
+        }
+
+        .expert-chat-request-actions .expert-chat-btn {
+            flex: 1;
+            margin-top: 0;
+        }
+
+        /* ═══════════════════════════════════════════════════════════
+           CONVERSATION LIST (Active Chats) - BEAUTIFUL DESIGN
+           ═══════════════════════════════════════════════════════════ */
+        .expert-chat-conversations-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .expert-chat-conversation-item {
+            background: white;
+            border-radius: 16px;
+            padding: 18px 20px;
+            cursor: pointer;
+            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+            transition: all 0.3s;
+            border: 2px solid transparent;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .expert-chat-conversation-item:hover {
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.12);
+            transform: translateX(4px);
+            border-color: #6B8E23;
+        }
+
+        .expert-chat-conversation-avatar {
+            font-size: 48px;
+            width: 60px;
+            height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, #f0f9ff, #e0f2fe);
+            border-radius: 50%;
+            flex-shrink: 0;
+        }
+
+        .expert-chat-conversation-info {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .expert-chat-conversation-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+
+        .expert-chat-conversation-name {
+            font-size: 16px;
+            font-weight: 700;
+            color: #1a1a1a;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .expert-chat-conversation-time {
+            font-size: 12px;
+            color: #999;
+            flex-shrink: 0;
+        }
+
+        .expert-chat-conversation-preview {
+            color: #666;
+            font-size: 14px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .expert-chat-unread-badge {
+            background: #6B8E23;
+            color: white;
+            border-radius: 12px;
+            padding: 3px 10px;
+            font-size: 11px;
+            font-weight: 700;
+            margin-left: 8px;
+        }
+
+        /* ═══════════════════════════════════════════════════════════
+           CHAT INTERFACE - BEAUTIFUL MESSAGING UI
+           ═══════════════════════════════════════════════════════════ */
+        .expert-chat-interface {
+            display: flex;
+            flex-direction: column;
+            height: 550px;
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+        }
+
+        .expert-chat-interface-header {
+            background: linear-gradient(135deg, #556b2f 0%, #6B8E23 100%);
+            color: white;
+            padding: 20px 24px;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .expert-chat-back-btn {
+            background: rgba(255, 255, 255, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            color: white;
+            padding: 10px 18px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .expert-chat-back-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: translateX(-2px);
+        }
+
+        .expert-chat-interface-name {
+            font-size: 18px;
+            font-weight: 700;
+        }
+
+        .expert-chat-interface-subtitle {
+            font-size: 13px;
+            opacity: 0.9;
+            margin-top: 2px;
+        }
+
+        .expert-chat-messages {
+            flex: 1;
+            overflow-y: auto;
+            padding: 24px;
+            background: linear-gradient(to bottom, #f8f9fa 0%, #ffffff 100%);
+        }
+
+        .expert-chat-message {
+            margin-bottom: 20px;
+            display: flex;
+            flex-direction: column;
+            animation: messageSlideIn 0.3s ease;
+        }
+
+        @keyframes messageSlideIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .expert-chat-message.sent {
+            align-items: flex-end;
+        }
+
+        .expert-chat-message.received {
+            align-items: flex-start;
+        }
+
+        .expert-chat-message-bubble {
+            max-width: 75%;
+            padding: 14px 18px;
+            border-radius: 20px;
+            word-wrap: break-word;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+            font-size: 14px;
+            line-height: 1.5;
+        }
+
+        .expert-chat-message.sent .expert-chat-message-bubble {
+            background: linear-gradient(135deg, #6B8E23 0%, #556b1f 100%);
+            color: white;
+            border-bottom-right-radius: 4px;
+        }
+
+        .expert-chat-message.received .expert-chat-message-bubble {
+            background: white;
+            color: #333;
+            border: 1px solid #e0e0e0;
+            border-bottom-left-radius: 4px;
+        }
+
+        .expert-chat-message-time {
+            font-size: 11px;
+            color: #999;
+            margin-top: 6px;
+            padding: 0 6px;
+        }
+
+        .expert-chat-input-container {
+            padding: 20px 24px;
+            background: white;
+            border-top: 2px solid #f0f0f0;
+            display: flex;
+            gap: 12px;
+        }
+
+        .expert-chat-input {
+            flex: 1;
+            padding: 14px 20px;
+            border: 2px solid #e0e0e0;
+            border-radius: 28px;
+            font-size: 14px;
+            outline: none;
+            transition: all 0.3s;
+            font-family: inherit;
+        }
+
+        .expert-chat-input:focus {
+            border-color: #6B8E23;
+            box-shadow: 0 0 0 4px rgba(107, 142, 35, 0.1);
+        }
+
+        .expert-chat-send-btn {
+            background: linear-gradient(135deg, #6B8E23, #556b1f);
+            color: white;
+            border: none;
+            width: 52px;
+            height: 52px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-size: 20px;
+            transition: all 0.3s;
+            box-shadow: 0 4px 12px rgba(107, 142, 35, 0.3);
+        }
+
+        .expert-chat-send-btn:hover {
+            background: linear-gradient(135deg, #556b1f, #6B8E23);
+            transform: scale(1.05) rotate(5deg);
+            box-shadow: 0 6px 16px rgba(107, 142, 35, 0.4);
+        }
+
+        .expert-chat-send-btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            box-shadow: none;
+        }
+
+        /* ═══════════════════════════════════════════════════════════
+           RESPONSIVE
+           ═══════════════════════════════════════════════════════════ */
+        @media (max-width: 768px) {
+            .expert-chat-modal-content {
+                width: 95%;
+                max-height: 95vh;
+            }
+
+            .expert-chat-experts-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .expert-chat-message-bubble {
+                max-width: 85%;
+            }
+
+            .expert-chat-floating-btn {
+                width: 60px;
+                height: 60px;
+                font-size: 24px;
+                top: 80px;
+            }
+        }
+    </style>
+
+    <!-- Expert Chat Modal JavaScript -->
+    <script>
+        // ═══════════════════════════════════════════════════════════
+        // EXPERT CHAT MODAL FUNCTIONALITY
+        // ═══════════════════════════════════════════════════════════
+        
+        let expertChatCurrentRole = 'user';
+        let expertChatCurrentConversation = null;
+        let expertChatExperts = [];
+        let expertChatConversations = [];
+        let expertChatMessages = [];
+        let expertChatCurrentUser = null;
+
+        // Initialize Expert Chat on page load
+        document.addEventListener('DOMContentLoaded', async function() {
+            // Get current user
+            const userStr = localStorage.getItem('lawhub_user');
+            if (userStr) {
+                expertChatCurrentUser = JSON.parse(userStr);
+            }
+
+            // Check if user is an expert
+            await checkIfUserIsExpert();
+
+            // Load notification count
+            await loadExpertChatNotifications();
+
+            // Auto-refresh notifications every 30 seconds
+            setInterval(loadExpertChatNotifications, 30000);
+        });
+
+        // Check if user is an expert
+        async function checkIfUserIsExpert() {
+            try {
+                const token = localStorage.getItem('lawhub_token');
+                const response = await fetch(`${API_BASE_URL}/api/expert/status`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    if (data.hasApplication && data.application.status === 'approved') {
+                        expertChatCurrentRole = 'expert';
+                    }
+                }
+            } catch (error) {
+                console.log('User is not an expert');
+            }
+        }
+
+        // Load notification count for badge
+        async function loadExpertChatNotifications() {
+            try {
+                const token = localStorage.getItem('lawhub_token');
+                
+                if (expertChatCurrentRole === 'expert') {
+                    // Get pending requests count
+                    const response = await fetch(`${API_BASE_URL}/api/expert-chat/pending-requests`, {
+                        headers: { 'Authorization': `Bearer ${token}` }
+                    });
+                    
+                    if (response.ok) {
+                        const data = await response.json();
+                        const count = data.requests ? data.requests.length : 0;
+                        updateChatBadge(count);
+                    }
+                } else {
+                    // Get unread messages count
+                    const response = await fetch(`${API_BASE_URL}/api/expert-chat/active-conversations?role=user`, {
+                        headers: { 'Authorization': `Bearer ${token}` }
+                    });
+                    
+                    if (response.ok) {
+                        const data = await response.json();
+                        const conversations = data.conversations || [];
+                        const unreadCount = conversations.reduce((sum, conv) => sum + (conv.unreadCount || 0), 0);
+                        updateChatBadge(unreadCount);
+                    }
+                }
+            } catch (error) {
+                console.error('Error loading notifications:', error);
+            }
+        }
+
+        // Update badge
+        function updateChatBadge(count) {
+            const badge = document.getElementById('chatNotificationBadge');
+            if (count > 0) {
+                badge.textContent = count;
+                badge.style.display = 'flex';
+            } else {
+                badge.style.display = 'none';
+            }
+        }
+
+        // ═══════════════════════════════════════════════════════════
+        // EXPERT CHAT MODAL - SIMPLIFIED (uses iframe)
+        // ═══════════════════════════════════════════════════════════
+        
+        // Listen for notification updates from iframe
+        window.addEventListener('message', function(event) {
+            // Security: In production, check event.origin
+            if (event.data && event.data.type === 'CHAT_NOTIFICATION_UPDATE') {
+                const count = event.data.count || 0;
+                const badge = document.getElementById('chatNotificationBadge');
+                
+                if (badge) {
+                    if (count > 0) {
+                        badge.textContent = count > 99 ? '99+' : count;
+                        badge.style.display = 'flex';
+                        console.log('🔔 Notification badge updated:', count);
+                    } else {
+                        badge.style.display = 'none';
+                    }
+                }
+            }
+        });
+        
+        // Open modal
+        function openExpertChatModal() {
+            console.log('🔓 Opening Expert Chat Modal (iframe mode)');
+            const modal = document.getElementById('expertChatModal');
+            modal.style.display = 'flex';
+            
+            // Reload iframe with cache-busting parameter to get latest version
+            const iframe = document.getElementById('expertChatIframe');
+            const timestamp = new Date().getTime();
+            iframe.src = 'expert-chat.html?v=' + timestamp;
+            
+            // Prevent body scroll
+            document.body.style.overflow = 'hidden';
+            
+            // Hide notification badge when modal is opened
+            const badge = document.getElementById('chatNotificationBadge');
+            if (badge) {
+                setTimeout(() => {
+                    // Badge will be updated by iframe's notification system
+                }, 1000);
+            }
+        }
+
+        // Close modal
+        function closeExpertChatModal() {
+            console.log('🔒 Closing Expert Chat Modal');
+            const modal = document.getElementById('expertChatModal');
+            modal.style.display = 'none';
+            
+            // Allow body scroll
+            document.body.style.overflow = 'auto';
+        }
+
+        // Close on Escape key
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                const modal = document.getElementById('expertChatModal');
+                if (modal.style.display === 'flex') {
+                    closeExpertChatModal();
+                }
+            }
+        });
+
+        // Initialize tabs based on role
+        function initializeExpertChatTabs() {
+            const tabsContainer = document.getElementById('expertChatTabs');
+            
+            if (expertChatCurrentRole === 'user') {
+                tabsContainer.innerHTML = `
+                    <button class="expert-chat-tab active" onclick="switchExpertChatTab(1)">
+                        <i class="fas fa-search"></i> Find Expert
+                    </button>
+                    <button class="expert-chat-tab" onclick="switchExpertChatTab(2)">
+                        <i class="fas fa-comments"></i> My Chats
+                    </button>
+                `;
+            } else {
+                tabsContainer.innerHTML = `
+                    <button class="expert-chat-tab active" onclick="switchExpertChatTab(1)">
+                        <i class="fas fa-inbox"></i> Connection Requests
+                        <span id="expertChatRequestsBadge" class="expert-chat-tab-badge" style="display: none;">0</span>
+                    </button>
+                    <button class="expert-chat-tab" onclick="switchExpertChatTab(2)">
+                        <i class="fas fa-comments"></i> Active Chats
+                    </button>
+                `;
+            }
+        }
+
+        // Switch tabs
+        function switchExpertChatTab(tabNumber) {
+            // Update tab buttons
+            document.querySelectorAll('.expert-chat-tab').forEach((tab, index) => {
+                if (index + 1 === tabNumber) {
+                    tab.classList.add('active');
+                } else {
+                    tab.classList.remove('active');
+                }
+            });
+
+            // Update tab panes
+            document.querySelectorAll('.expert-chat-tab-pane').forEach((pane, index) => {
+                if (index + 1 === tabNumber) {
+                    pane.classList.add('active');
+                } else {
+                    pane.classList.remove('active');
+                }
+            });
+
+            // Hide chat interface
+            document.getElementById('expertChatInterface').style.display = 'none';
+
+            // Load appropriate data
+            if (tabNumber === 1) {
+                if (expertChatCurrentRole === 'user') {
+                    loadExpertChatExperts();
+                } else {
+                    loadExpertChatPendingRequests();
+                }
+            } else if (tabNumber === 2) {
+                loadExpertChatConversations();
+            }
+        }
+
+        // ═══════════════════════════════════════════════════════════
+        // LOAD EXPERTS (For Users)
+        // ═══════════════════════════════════════════════════════════
+        async function loadExpertChatExperts() {
+            const loading = document.getElementById('expertChatTab1Loading');
+            const error = document.getElementById('expertChatTab1Error');
+            const content = document.getElementById('expertChatTab1Content');
+
+            loading.style.display = 'block';
+            error.style.display = 'none';
+            content.innerHTML = '';
+
+            try {
+                const token = localStorage.getItem('lawhub_token');
+                const response = await fetch(`${API_BASE_URL}/api/expert-chat/available-experts`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+
+                if (!response.ok) throw new Error('Failed to load experts');
+
+                const data = await response.json();
+                expertChatExperts = data.experts || [];
+
+                loading.style.display = 'none';
+
+                if (expertChatExperts.length === 0) {
+                    content.innerHTML = `
+                        <div class="expert-chat-empty">
+                            <i class="fas fa-user-tie"></i>
+                            <p>No experts available at the moment</p>
+                        </div>
+                    `;
+                    return;
+                }
+
+                // Create experts grid
+                const grid = document.createElement('div');
+                grid.className = 'expert-chat-experts-grid';
+
+                expertChatExperts.forEach(expert => {
+                    const card = createExpertChatExpertCard(expert);
+                    grid.appendChild(card);
+                });
+
+                content.appendChild(grid);
+
+            } catch (err) {
+                loading.style.display = 'none';
+                error.textContent = 'Error loading experts: ' + err.message;
+                error.style.display = 'block';
+            }
+        }
+
+        // Create expert card
+        function createExpertChatExpertCard(expert) {
+            const card = document.createElement('div');
+            card.className = 'expert-chat-expert-card';
+
+            const isRequested = expert.requestStatus === 'pending';
+            const isAccepted = expert.requestStatus === 'accepted';
+
+            let buttonHtml = '';
+            if (isAccepted) {
+                buttonHtml = '<button class="expert-chat-btn expert-chat-btn-primary" disabled><i class="fas fa-check-circle"></i> Chat Active</button>';
+            } else if (isRequested) {
+                buttonHtml = '<button class="expert-chat-btn expert-chat-btn-primary" disabled onclick="showExpertChatAlreadyRequested()"><i class="fas fa-clock"></i> Request Sent</button>';
+            } else {
+                buttonHtml = `<button class="expert-chat-btn expert-chat-btn-primary" onclick="requestExpertChat('${expert.userId}', '${expert.name.replace(/'/g, "\\'")}')"><i class="fas fa-comment"></i> Request Chat</button>`;
+            }
+
+            card.innerHTML = `
+                <div class="expert-chat-expert-avatar">${expert.profilePicture || '👨‍💼'}</div>
+                <div class="expert-chat-expert-info">
+                    <div class="expert-chat-expert-name">${expert.name}</div>
+                    <div class="expert-chat-expert-specialization">${expert.specialization || 'Legal Expert'}</div>
+                    <div class="expert-chat-expert-location"><i class="fas fa-briefcase"></i> ${expert.experience || '0-2'}</div>
+                </div>
+                <div class="expert-chat-expert-status"></div>
+                ${buttonHtml}
+            `;
+
+            return card;
+        }
+
+        // Request chat with expert
+        async function requestExpertChat(expertUserId, expertName) {
+            if (!confirm(`Send chat request to ${expertName}?`)) {
+                return;
+            }
+
+            try {
+                const token = localStorage.getItem('lawhub_token');
+                const response = await fetch(`${API_BASE_URL}/api/expert-chat/request`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify({
+                        expertUserId: expertUserId,
+                        message: `Hi, I would like to consult with you regarding a legal matter.`
+                    })
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    alert('✅ Chat request sent successfully! The expert will be notified.');
+                    loadExpertChatExperts(); // Reload
+                } else {
+                    if (data.alreadyExists) {
+                        alert('⏳ Request already sent. Please wait for expert to accept.');
+                    } else if (data.alreadyAccepted) {
+                        alert('✅ You already have an active conversation with this expert. Check "My Chats" tab.');
+                    } else {
+                        alert('❌ ' + data.message);
+                    }
+                }
+
+            } catch (error) {
+                alert('❌ Error sending request: ' + error.message);
+            }
+        }
+
+        function showExpertChatAlreadyRequested() {
+            alert('⏳ Request already sent. Please wait for expert to accept.');
+        }
+
+        // ═══════════════════════════════════════════════════════════
+        // LOAD PENDING REQUESTS (For Experts)
+        // ═══════════════════════════════════════════════════════════
+        async function loadExpertChatPendingRequests() {
+            const loading = document.getElementById('expertChatTab1Loading');
+            const error = document.getElementById('expertChatTab1Error');
+            const content = document.getElementById('expertChatTab1Content');
+
+            loading.style.display = 'block';
+            error.style.display = 'none';
+            content.innerHTML = '';
+
+            try {
+                const token = localStorage.getItem('lawhub_token');
+                const response = await fetch(`${API_BASE_URL}/api/expert-chat/pending-requests`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+
+                if (!response.ok) throw new Error('Failed to load requests');
+
+                const data = await response.json();
+                const requests = data.requests || [];
+
+                loading.style.display = 'none';
+
+                // Update badge
+                const badge = document.getElementById('expertChatRequestsBadge');
+                if (requests.length > 0) {
+                    badge.textContent = requests.length;
+                    badge.style.display = 'inline-block';
+                } else {
+                    badge.style.display = 'none';
+                }
+
+                if (requests.length === 0) {
+                    content.innerHTML = `
+                        <div class="expert-chat-empty">
+                            <i class="fas fa-inbox"></i>
+                            <p>No pending requests</p>
+                        </div>
+                    `;
+                    return;
+                }
+
+                // Create requests list
+                const list = document.createElement('div');
+                list.className = 'expert-chat-requests-list';
+
+                requests.forEach(request => {
+                    const card = createExpertChatRequestCard(request);
+                    list.appendChild(card);
+                });
+
+                content.appendChild(list);
+
+            } catch (err) {
+                loading.style.display = 'none';
+                error.textContent = 'Error loading requests: ' + err.message;
+                error.style.display = 'block';
+            }
+        }
+
+        // Create request card
+        function createExpertChatRequestCard(request) {
+            const card = document.createElement('div');
+            card.className = 'expert-chat-request-card';
+
+            const timeAgo = getExpertChatTimeAgo(new Date(request.createdAt));
+
+            card.innerHTML = `
+                <div class="expert-chat-request-header">
+                    <div class="expert-chat-request-avatar">👤</div>
+                    <div class="expert-chat-request-info">
+                        <div class="expert-chat-request-name">${request.userName}</div>
+                        <div class="expert-chat-request-text">wants to connect with you</div>
+                        <div class="expert-chat-request-time">${timeAgo}</div>
+                    </div>
+                </div>
+                ${request.message ? `<div style="color: #666; font-size: 14px; margin-top: 12px; font-style: italic;">"${request.message}"</div>` : ''}
+                <div class="expert-chat-request-actions">
+                    <button class="expert-chat-btn expert-chat-btn-success" onclick="acceptExpertChatRequest('${request.id}', '${request.userName.replace(/'/g, "\\'")}')">
+                        <i class="fas fa-check"></i> Accept
+                    </button>
+                    <button class="expert-chat-btn expert-chat-btn-danger" onclick="rejectExpertChatRequest('${request.id}', '${request.userName.replace(/'/g, "\\'")}')">
+                        <i class="fas fa-times"></i> Decline
+                    </button>
+                </div>
+            `;
+
+            return card;
+        }
+
+        // Accept request
+        async function acceptExpertChatRequest(requestId, userName) {
+            if (!confirm(`Accept chat request from ${userName}?`)) {
+                return;
+            }
+
+            try {
+                const token = localStorage.getItem('lawhub_token');
+                const response = await fetch(`${API_BASE_URL}/api/expert-chat/request/${requestId}/accept`, {
+                    method: 'POST',
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    alert('✅ Request accepted! You can now chat with the user.');
+                    loadExpertChatPendingRequests();
+                    loadExpertChatNotifications();
+                } else {
+                    alert('❌ ' + data.message);
+                }
+
+            } catch (error) {
+                alert('❌ Error accepting request: ' + error.message);
+            }
+        }
+
+        // Reject request
+        async function rejectExpertChatRequest(requestId, userName) {
+            if (!confirm(`Decline chat request from ${userName}?`)) {
+                return;
+            }
+
+            try {
+                const token = localStorage.getItem('lawhub_token');
+                const response = await fetch(`${API_BASE_URL}/api/expert-chat/request/${requestId}/reject`, {
+                    method: 'POST',
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    alert('Request declined');
+                    loadExpertChatPendingRequests();
+                    loadExpertChatNotifications();
+                } else {
+                    alert('❌ ' + data.message);
+                }
+
+            } catch (error) {
+                alert('❌ Error declining request: ' + error.message);
+            }
+        }
+
+        // ═══════════════════════════════════════════════════════════
+        // LOAD CONVERSATIONS (Active Chats)
+        // ═══════════════════════════════════════════════════════════
+        async function loadExpertChatConversations() {
+            const loading = document.getElementById('expertChatTab2Loading');
+            const error = document.getElementById('expertChatTab2Error');
+            const content = document.getElementById('expertChatTab2Content');
+
+            loading.style.display = 'block';
+            error.style.display = 'none';
+            content.innerHTML = '';
+
+            try {
+                const token = localStorage.getItem('lawhub_token');
+                const response = await fetch(`${API_BASE_URL}/api/expert-chat/active-conversations?role=${expertChatCurrentRole}`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+
+                if (!response.ok) throw new Error('Failed to load conversations');
+
+                const data = await response.json();
+                expertChatConversations = data.conversations || [];
+
+                loading.style.display = 'none';
+
+                if (expertChatConversations.length === 0) {
+                    content.innerHTML = `
+                        <div class="expert-chat-empty">
+                            <i class="fas fa-comments"></i>
+                            <p>No active conversations</p>
+                            <p style="font-size: 14px; margin-top: 10px; color: #999;">
+                                ${expertChatCurrentRole === 'user' ? 'Start by requesting a chat with an expert!' : 'Accept a connection request to start chatting!'}
+                            </p>
+                        </div>
+                    `;
+                    return;
+                }
+
+                // Create conversations list
+                const list = document.createElement('div');
+                list.className = 'expert-chat-conversations-list';
+
+                expertChatConversations.forEach(conv => {
+                    const item = createExpertChatConversationItem(conv);
+                    list.appendChild(item);
+                });
+
+                content.appendChild(list);
+
+            } catch (err) {
+                loading.style.display = 'none';
+                error.textContent = 'Error loading conversations: ' + err.message;
+                error.style.display = 'block';
+            }
+        }
+
+        // Create conversation item
+        function createExpertChatConversationItem(conv) {
+            const item = document.createElement('div');
+            item.className = 'expert-chat-conversation-item';
+            item.onclick = () => openExpertChatConversation(conv);
+
+            const timeAgo = getExpertChatTimeAgo(new Date(conv.lastMessageTime));
+            const avatar = expertChatCurrentRole === 'user' ? '👨‍💼' : '👤';
+
+            item.innerHTML = `
+                <div class="expert-chat-conversation-avatar">${avatar}</div>
+                <div class="expert-chat-conversation-info">
+                    <div class="expert-chat-conversation-header">
+                        <div class="expert-chat-conversation-name">
+                            ${conv.otherUserName}
+                            ${conv.unreadCount > 0 ? `<span class="expert-chat-unread-badge">${conv.unreadCount}</span>` : ''}
+                        </div>
+                        <div class="expert-chat-conversation-time">${timeAgo}</div>
+                    </div>
+                    <div class="expert-chat-conversation-preview">${conv.lastMessage || 'No messages yet'}</div>
+                    ${conv.specialization ? `<div style="color: #6B8E23; font-size: 12px; margin-top: 4px; font-weight: 600;"><i class="fas fa-briefcase"></i> ${conv.specialization}</div>` : ''}
+                </div>
+            `;
+
+            return item;
+        }
+
+        // Open conversation
+        async function openExpertChatConversation(conv) {
+            expertChatCurrentConversation = conv;
+
+            // Update header
+            document.getElementById('expertChatInterfaceName').textContent = conv.otherUserName;
+            document.getElementById('expertChatInterfaceSubtitle').textContent = 
+                conv.specialization || (expertChatCurrentRole === 'user' ? 'Legal Expert' : 'User');
+
+            // Hide tab content, show chat interface
+            document.querySelectorAll('.expert-chat-tab-pane').forEach(pane => {
+                pane.classList.remove('active');
+            });
+            document.getElementById('expertChatInterface').style.display = 'flex';
+
+            // Load messages
+            await loadExpertChatMessages(conv.id);
+        }
+
+        // Back to conversations list
+        function backToExpertChatList() {
+            document.getElementById('expertChatInterface').style.display = 'none';
+            
+            // Show appropriate tab
+            const activeTabIndex = expertChatCurrentRole === 'user' ? 2 : 2;
+            document.getElementById(`expertChatTab${activeTabIndex}`).classList.add('active');
+            
+            expertChatCurrentConversation = null;
+            loadExpertChatConversations();
+        }
+
+        // ═══════════════════════════════════════════════════════════
+        // LOAD MESSAGES
+        // ═══════════════════════════════════════════════════════════
+        async function loadExpertChatMessages(conversationId) {
+            const container = document.getElementById('expertChatMessagesContainer');
+            container.innerHTML = '<div class="expert-chat-loading"><i class="fas fa-spinner fa-spin"></i> Loading messages...</div>';
+
+            try {
+                const token = localStorage.getItem('lawhub_token');
+                const response = await fetch(`${API_BASE_URL}/api/expert-chat/conversation/${conversationId}/messages`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+
+                if (!response.ok) throw new Error('Failed to load messages');
+
+                const data = await response.json();
+                expertChatMessages = data.messages || [];
+
+                container.innerHTML = '';
+
+                if (expertChatMessages.length === 0) {
+                    container.innerHTML = `
+                        <div class="expert-chat-empty">
+                            <i class="fas fa-comments"></i>
+                            <p>No messages yet. Start the conversation!</p>
+                        </div>
+                    `;
+                    return;
+                }
+
+                // Display messages
+                expertChatMessages.forEach(msg => {
+                    const messageEl = createExpertChatMessageElement(msg);
+                    container.appendChild(messageEl);
+                });
+
+                // Scroll to bottom
+                container.scrollTop = container.scrollHeight;
+
+            } catch (err) {
+                container.innerHTML = `<div class="expert-chat-error">Error loading messages: ${err.message}</div>`;
+            }
+        }
+
+        // Create message element
+        function createExpertChatMessageElement(msg) {
+            const div = document.createElement('div');
+            const isOwnMessage = msg.senderId === expertChatCurrentUser.id || msg.senderId === expertChatCurrentUser._id;
+            
+            div.className = `expert-chat-message ${isOwnMessage ? 'sent' : 'received'}`;
+            
+            const time = new Date(msg.timestamp).toLocaleTimeString('en-US', { 
+                hour: '2-digit', 
+                minute: '2-digit' 
+            });
+
+            div.innerHTML = `
+                <div class="expert-chat-message-bubble">${msg.message}</div>
+                <div class="expert-chat-message-time">${time}</div>
+            `;
+
+            return div;
+        }
+
+        // Send message
+        async function sendExpertChatMessage() {
+            const input = document.getElementById('expertChatMessageInput');
+            const message = input.value.trim();
+
+            if (!message) return;
+            if (!expertChatCurrentConversation) {
+                alert('No conversation selected');
+                return;
+            }
+
+            input.disabled = true;
+
+            try {
+                const token = localStorage.getItem('lawhub_token');
+                const response = await fetch(`${API_BASE_URL}/api/expert-chat/conversation/${expertChatCurrentConversation.id}/message`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify({ message })
+                });
+
+                if (!response.ok) throw new Error('Failed to send message');
+
+                const data = await response.json();
+
+                if (data.success) {
+                    input.value = '';
+                    await loadExpertChatMessages(expertChatCurrentConversation.id);
+                } else {
+                    alert('❌ ' + data.message);
+                }
+
+            } catch (error) {
+                alert('❌ Error sending message: ' + error.message);
+            } finally {
+                input.disabled = false;
+                input.focus();
+            }
+        }
+
+        // Handle Enter key
+        function handleExpertChatKeyPress(event) {
+            if (event.key === 'Enter' && !event.shiftKey) {
+                event.preventDefault();
+                sendExpertChatMessage();
+            }
+        }
+
+        // Time ago utility
+        function getExpertChatTimeAgo(date) {
+            const seconds = Math.floor((new Date() - date) / 1000);
+            
+            if (seconds < 60) return 'Just now';
+            if (seconds < 3600) return Math.floor(seconds / 60) + 'm ago';
+            if (seconds < 86400) return Math.floor(seconds / 3600) + 'h ago';
+            if (seconds < 604800) return Math.floor(seconds / 86400) + ' days ago';
+            
+            return date.toLocaleDateString();
+        }
+
+        // Auto-refresh messages every 5 seconds when in chat
+        setInterval(() => {
+            if (expertChatCurrentConversation && document.getElementById('expertChatInterface').style.display === 'flex') {
+                loadExpertChatMessages(expertChatCurrentConversation.id);
+            }
+        }, 5000);
+    </script>
+
 </body>
 </html>

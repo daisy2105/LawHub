@@ -703,6 +703,11 @@
     </div>
 
     <script>
+        // API Base URL Configuration
+        const API_BASE_URL = window.location.hostname === 'localhost' 
+            ? 'http://localhost:5000' 
+            : 'https://lawhub-1.onrender.com';
+        
         // Start with login form visible
         function switchToSignup() {
             document.getElementById('formPanel').classList.add('signup-mode');
@@ -772,7 +777,7 @@
                 }
                 
                 // Regular user login
-                const response = await fetch('/api/auth/login', {
+                const response = await fetch(`${API_BASE_URL}/api/auth/login`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
@@ -834,7 +839,7 @@
             button.textContent = 'Creating Account...';
             
             try {
-                const response = await fetch('/api/auth/register', {
+                const response = await fetch(`${API_BASE_URL}/api/auth/register`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',

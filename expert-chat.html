@@ -1,0 +1,3050 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LawHub - Expert Chat</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- End-to-End Encryption Libraries -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jsencrypt/3.3.1/jsencrypt.min.js"></script>
+    
+    <style>
+        /* ═══════════════════════════════════════════════════════════
+           BASIC STYLES & LAYOUT
+           ═══════════════════════════════════════════════════════════ */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --secondary-gradient: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            --success-gradient: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            --warm-gradient: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
+            --glass-bg: rgba(255, 255, 255, 0.1);
+            --glass-border: rgba(255, 255, 255, 0.2);
+            --shadow-lg: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+            --shadow-xl: 0 20px 60px 0 rgba(31, 38, 135, 0.5);
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
+            background-attachment: fixed;
+            color: #333;
+            min-height: 100vh;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        /* Animated Background Particles */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                radial-gradient(circle at 20% 50%, rgba(255, 255, 255, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 80% 80%, rgba(255, 255, 255, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 40% 20%, rgba(255, 255, 255, 0.05) 0%, transparent 50%);
+            animation: float 20s ease-in-out infinite;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            50% { transform: translateY(-20px) rotate(5deg); }
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* ═══════════════════════════════════════════════════════════
+           HEADER - GLASSMORPHISM STYLE
+           ═══════════════════════════════════════════════════════════ */
+        .header {
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: white;
+            padding: 25px;
+            text-align: center;
+            box-shadow: var(--shadow-lg);
+            border-radius: 20px;
+            margin-bottom: 20px;
+            animation: slideDown 0.6s ease;
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .header h1 {
+            font-size: 32px;
+            margin-bottom: 8px;
+            font-weight: 700;
+            background: linear-gradient(135deg, #ffffff 0%, #f0f0f0 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .header p {
+            font-size: 16px;
+            opacity: 0.95;
+            font-weight: 400;
+        }
+
+        .user-info {
+            margin-top: 15px;
+            font-size: 14px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        .btn-logout {
+            background: rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(10px);
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            padding: 10px 20px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+
+        .btn-logout:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.15);
+        }
+
+        /* ═══════════════════════════════════════════════════════════
+           SIMPLE STICKY TABS AT TOP
+           ═══════════════════════════════════════════════════════════ */
+        .tabs {
+            display: flex;
+            background: rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(20px);
+            border-bottom: 2px solid rgba(255, 255, 255, 0.3);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            margin: 0;
+            padding: 0;
+        }
+
+        .tab {
+            flex: 1;
+            padding: 18px 24px;
+            text-align: center;
+            cursor: pointer;
+            background: transparent;
+            border: none;
+            border-bottom: 3px solid transparent;
+            font-size: 15px;
+            font-weight: 600;
+            color: rgba(255, 255, 255, 0.7);
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .tab:hover:not(.active) {
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+        }
+
+        .tab.active {
+            background: rgba(255, 255, 255, 0.15);
+            color: white;
+            font-weight: 700;
+            border-bottom-color: white;
+        }
+
+        .tab i {
+            font-size: 18px;
+        }
+
+        /* Badge for notification count */
+        .tab .badge {
+            margin-left: 8px;
+            background: #ff4444;
+            color: white;
+            border-radius: 12px;
+            padding: 2px 8px;
+            font-size: 11px;
+            font-weight: 700;
+            min-width: 18px;
+        }
+
+        /* Main Layout - Full Width (No Sidebar) */
+        .main-layout {
+            display: flex;
+            flex-direction: column;
+            gap: 0;
+            margin: 0;
+            animation: fadeIn 0.6s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .sidebar {
+            display: none;
+        }
+
+        .content-area {
+            flex: 1;
+            min-width: 0;
+        }
+
+        /* ═══════════════════════════════════════════════════════════
+           CONTENT SECTIONS - FILL ENTIRE SPACE
+           ═══════════════════════════════════════════════════════════ */
+        .tab-content {
+            display: none;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(20px);
+            padding: 30px;
+            min-height: 600px;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .tab-content h2 {
+            color: white;
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 25px;
+            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+        }
+
+        /* ═══════════════════════════════════════════════════════════
+           EXPERT CARDS - STUNNING GRADIENT CARDS
+           ═══════════════════════════════════════════════════════════ */
+        .experts-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 24px;
+            margin-top: 20px;
+        }
+
+        .expert-card {
+            background: rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: 20px;
+            padding: 25px;
+            text-align: center;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+            animation: cardPop 0.6s ease backwards;
+            animation-delay: calc(var(--index) * 0.1s);
+        }
+
+        @keyframes cardPop {
+            from {
+                opacity: 0;
+                transform: scale(0.8) translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1) translateY(0);
+            }
+        }
+
+        .expert-card::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(
+                45deg,
+                transparent,
+                rgba(255, 255, 255, 0.1),
+                transparent
+            );
+            transform: rotate(45deg);
+            transition: all 0.6s ease;
+        }
+
+        .expert-card:hover::before {
+            animation: shine 1.5s ease infinite;
+        }
+
+        @keyframes shine {
+            0% { transform: translateX(-100%) translateY(-100%) rotate(45deg); }
+            100% { transform: translateX(100%) translateY(100%) rotate(45deg); }
+        }
+
+        .expert-card:hover {
+            transform: translateY(-10px) scale(1.02);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+            border-color: rgba(255, 255, 255, 0.5);
+        }
+
+        .expert-avatar {
+            font-size: 64px;
+            margin-bottom: 15px;
+            filter: drop-shadow(0 4px 8px rgba(0,0,0,0.2));
+            animation: bounce 2s ease-in-out infinite;
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+
+        .expert-name {
+            font-size: 20px;
+            font-weight: 700;
+            margin-bottom: 8px;
+            color: white;
+            text-shadow: 0 2px 8px rgba(0,0,0,0.2);
+        }
+
+        .expert-specialization {
+            background: var(--warm-gradient);
+            color: white;
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 8px;
+            padding: 6px 16px;
+            border-radius: 20px;
+            display: inline-block;
+            box-shadow: 0 4px 15px rgba(250, 112, 154, 0.4);
+        }
+
+        .expert-location {
+            color: rgba(255, 255, 255, 0.9);
+            font-size: 14px;
+            margin-bottom: 12px;
+            font-weight: 500;
+        }
+
+        .expert-bio {
+            color: rgba(255, 255, 255, 0.85);
+            font-size: 13px;
+            margin: 12px 0;
+            line-height: 1.6;
+        }
+
+        /* ═══════════════════════════════════════════════════════════
+           BUTTONS - GORGEOUS GRADIENTS
+           ═══════════════════════════════════════════════════════════ */
+        .btn {
+            padding: 12px 28px;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.3);
+            transform: translate(-50%, -50%);
+            transition: width 0.6s, height 0.6s;
+        }
+
+        .btn:hover::before {
+            width: 300px;
+            height: 300px;
+        }
+
+        .btn span {
+            position: relative;
+            z-index: 1;
+        }
+
+        .btn-primary {
+            background: var(--primary-gradient);
+            color: white;
+        }
+
+        .btn-primary:hover:not(:disabled) {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.5);
+        }
+
+        .btn-primary:disabled {
+            background: linear-gradient(135deg, #ccc 0%, #aaa 100%);
+            cursor: not-allowed;
+            opacity: 0.6;
+        }
+
+        .btn-success {
+            background: var(--success-gradient);
+            color: white;
+        }
+
+        .btn-success:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(79, 172, 254, 0.5);
+        }
+
+        .btn-danger {
+            background: var(--secondary-gradient);
+            color: white;
+        }
+
+        .btn-danger:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(245, 87, 108, 0.5);
+        }
+
+        .btn-secondary {
+            background: linear-gradient(135deg, #868f96 0%, #596164 100%);
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(89, 97, 100, 0.5);
+        }
+
+        /* ═══════════════════════════════════════════════════════════
+           REQUEST CARDS - PREMIUM SLIDING CARDS
+           ═══════════════════════════════════════════════════════════ */
+        .requests-list {
+            margin-top: 20px;
+        }
+
+        .request-card {
+            background: rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: 20px;
+            padding: 24px;
+            margin-bottom: 20px;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            animation: slideInLeft 0.6s ease backwards;
+            animation-delay: calc(var(--index) * 0.15s);
+            position: relative;
+            overflow: hidden;
+        }
+
+        @keyframes slideInLeft {
+            from {
+                opacity: 0;
+                transform: translateX(-50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        .request-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            transition: left 0.7s ease;
+        }
+
+        .request-card:hover::before {
+            left: 100%;
+        }
+
+        .request-card:hover {
+            transform: translateX(8px) scale(1.02);
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.3);
+            border-color: rgba(255, 255, 255, 0.5);
+        }
+
+        .request-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .request-user {
+            font-size: 18px;
+            font-weight: 700;
+            color: white;
+            text-shadow: 0 2px 8px rgba(0,0,0,0.2);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .request-user::before {
+            content: '👤';
+            font-size: 24px;
+            background: var(--warm-gradient);
+            padding: 8px;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(250, 112, 154, 0.4);
+        }
+
+        .request-status {
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 700;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+        }
+
+        .status-pending {
+            background: linear-gradient(135deg, #FFD93D 0%, #F6C344 100%);
+            color: #856404;
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        .status-accepted {
+            background: var(--success-gradient);
+            color: white;
+        }
+
+        .status-rejected {
+            background: var(--secondary-gradient);
+            color: white;
+        }
+
+        .request-actions {
+            display: flex;
+            gap: 12px;
+            margin-top: 15px;
+        }
+
+        .request-actions .btn {
+            flex: 1;
+        }
+
+        /* ═══════════════════════════════════════════════════════════
+           CONVERSATIONS LIST
+           ═══════════════════════════════════════════════════════════ */
+        .conversations-list {
+            margin-top: 20px;
+        }
+
+        .conversation-item {
+            background: rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: 18px;
+            padding: 20px;
+            margin-bottom: 16px;
+            cursor: pointer;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+            animation: slideInUp 0.5s ease backwards;
+            animation-delay: calc(var(--index) * 0.1s);
+        }
+
+        @keyframes slideInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .conversation-item::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            right: -100%;
+            width: 100%;
+            height: 200%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+            transform: translateY(-50%) rotate(45deg);
+            transition: right 0.6s ease;
+        }
+
+        .conversation-item:hover::after {
+            right: 100%;
+        }
+
+        .conversation-item:hover {
+            transform: translateX(8px) scale(1.03);
+            background: rgba(255, 255, 255, 0.25);
+            border-color: rgba(255, 255, 255, 0.5);
+            box-shadow: 0 12px 35px rgba(0, 0, 0, 0.3);
+        }
+
+        .conversation-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .conversation-name {
+            font-size: 17px;
+            font-weight: 700;
+            color: white;
+            text-shadow: 0 2px 6px rgba(0,0,0,0.2);
+        }
+
+        .conversation-time {
+            font-size: 12px;
+            color: rgba(255, 255, 255, 0.8);
+            font-weight: 500;
+        }
+
+        .conversation-preview {
+            color: rgba(255, 255, 255, 0.85);
+            font-size: 14px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .unread-badge {
+            background: var(--secondary-gradient);
+            color: white;
+            border-radius: 20px;
+            padding: 4px 12px;
+            font-size: 12px;
+            font-weight: 700;
+            margin-left: 12px;
+            box-shadow: 0 4px 12px rgba(245, 87, 108, 0.5);
+            animation: wiggle 1s ease-in-out infinite;
+        }
+
+        @keyframes wiggle {
+            0%, 100% { transform: rotate(0deg); }
+            25% { transform: rotate(5deg); }
+            75% { transform: rotate(-5deg); }
+        }
+
+        /* ═══════════════════════════════════════════════════════════
+           CHAT INTERFACE - FILL ENTIRE DIALOG
+           ═══════════════════════════════════════════════════════════ */
+        .chat-container {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(20px);
+            z-index: 1000;
+        }
+
+        .chat-container.active {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .chat-header {
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.9) 0%, rgba(118, 75, 162, 0.9) 100%);
+            color: white;
+            padding: 20px 25px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-shrink: 0;
+        }
+
+        .chat-messages {
+            flex: 1;
+            overflow-y: auto;
+            overflow-x: hidden; /* Prevent horizontal scrollbar */
+            padding: 25px;
+            background: rgba(0,0,0,0.1);
+        }
+
+        .chat-input-container {
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.1);
+            border-top: 1px solid rgba(255, 255, 255, 0.2);
+            display: flex;
+            gap: 12px;
+            flex-shrink: 0;
+        }
+
+        .chat-header-left {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .chat-header-right {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .security-indicator {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            background: rgba(76, 175, 80, 0.3);
+            backdrop-filter: blur(10px);
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            border: 1px solid rgba(76, 175, 80, 0.5);
+        }
+        
+        .security-indicator i {
+            color: #4caf50;
+            animation: pulse 2s ease-in-out infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.6; }
+        }
+
+        .chat-title {
+            font-size: 20px;
+            font-weight: 700;
+        }
+
+        .chat-subtitle {
+            font-size: 13px;
+            opacity: 0.9;
+            margin-top: 3px;
+        }
+
+        .message {
+            margin-bottom: 20px;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            animation: messageSlideIn 0.3s ease;
+        }
+        
+        @keyframes messageSlideIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .message.deleting {
+            animation: messageSlideOut 0.3s ease forwards;
+        }
+        
+        @keyframes messageSlideOut {
+            to {
+                opacity: 0;
+                transform: translateX(-100px);
+                height: 0;
+                margin: 0;
+            }
+        }
+
+        .message.sent {
+            align-items: flex-end;
+        }
+
+        .message.received {
+            align-items: flex-start;
+        }
+        
+        .message-wrapper {
+            position: relative;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            width: 100%;
+        }
+        
+        .message.sent .message-wrapper {
+            flex-direction: row;
+            justify-content: flex-end;
+        }
+        
+        .message.received .message-wrapper {
+            flex-direction: row;
+            justify-content: flex-start;
+        }
+        
+        .message-content {
+            display: flex;
+            flex-direction: column;
+            max-width: 600px;
+        }
+        
+        .message.sent .message-content {
+            order: 2;
+            align-items: flex-end;
+        }
+        
+        .message.received .message-content {
+            align-items: flex-start;
+        }
+        
+        .message.sent .delete-message-btn {
+            order: 1;
+            margin-right: 10px;
+        }
+        
+        .delete-message-btn {
+            opacity: 0;
+            background: rgba(255, 69, 69, 0.9);
+            border: none;
+            color: white;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 8px rgba(255, 69, 69, 0.4);
+            flex-shrink: 0;
+        }
+        
+        .message:hover .delete-message-btn {
+            opacity: 1;
+        }
+        
+        .delete-message-btn:hover {
+            background: rgba(255, 20, 20, 1);
+            transform: scale(1.1);
+            box-shadow: 0 4px 12px rgba(255, 69, 69, 0.6);
+        }
+
+        .message-bubble {
+            max-width: 70%;
+            padding: 12px 16px;
+            border-radius: 18px;
+            word-wrap: break-word;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+        }
+
+        .message.sent .message-bubble {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-bottom-right-radius: 5px;
+        }
+
+        .message.received .message-bubble {
+            background: rgba(255, 255, 255, 0.25);
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-bottom-left-radius: 5px;
+        }
+
+        .message-time {
+            font-size: 11px;
+            color: rgba(255, 255, 255, 0.7);
+            margin-top: 6px;
+            padding: 0 8px;
+        }
+        
+        /* Typing Indicator */
+        .typing-indicator {
+            display: none;
+            padding: 10px 15px;
+            margin: 10px 0;
+            align-items: flex-start;
+        }
+        
+        .typing-indicator.active {
+            display: flex;
+        }
+        
+        .typing-bubble {
+            background: rgba(255, 255, 255, 0.25);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: 20px;
+            padding: 12px 18px;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+        
+        .typing-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.7);
+            animation: typingAnimation 1.4s infinite;
+        }
+        
+        .typing-dot:nth-child(2) {
+            animation-delay: 0.2s;
+        }
+        
+        .typing-dot:nth-child(3) {
+            animation-delay: 0.4s;
+        }
+        
+        @keyframes typingAnimation {
+            0%, 60%, 100% {
+                transform: translateY(0);
+                opacity: 0.7;
+            }
+            30% {
+                transform: translateY(-10px);
+                opacity: 1;
+            }
+        }
+
+        .chat-input {
+            flex: 1;
+            padding: 14px 20px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 30px;
+            font-size: 14px;
+            outline: none;
+            background: rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(10px);
+            color: white;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .chat-input::placeholder {
+            color: rgba(255, 255, 255, 0.6);
+        }
+
+        .chat-input:focus {
+            border-color: rgba(255, 255, 255, 0.6);
+            background: rgba(255, 255, 255, 0.25);
+            box-shadow: 0 0 20px rgba(255, 255, 255, 0.2);
+        }
+
+        .btn-send {
+            padding: 14px 30px;
+            background: var(--primary-gradient);
+            color: white;
+            border: none;
+            border-radius: 30px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 700;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn-send::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.3);
+            transform: translate(-50%, -50%);
+            transition: width 0.6s, height 0.6s;
+        }
+
+        .btn-send:hover::before {
+            width: 300px;
+            height: 300px;
+        }
+
+        .btn-send:hover {
+            transform: translateY(-3px) scale(1.05);
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.6);
+        }
+
+        .btn-send:disabled {
+            background: linear-gradient(135deg, #ccc 0%, #aaa 100%);
+            cursor: not-allowed;
+            opacity: 0.5;
+        }
+
+        /* ═══════════════════════════════════════════════════════════
+           UTILITY CLASSES - ENHANCED
+           ═══════════════════════════════════════════════════════════ */
+        .loading {
+            text-align: center;
+            padding: 50px;
+            color: white;
+            font-size: 16px;
+            font-weight: 600;
+        }
+
+        .loading i {
+            font-size: 32px;
+            margin-bottom: 15px;
+            display: block;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 80px 30px;
+            color: rgba(255, 255, 255, 0.9);
+        }
+
+        .empty-state-icon {
+            font-size: 72px;
+            margin-bottom: 20px;
+            opacity: 0.6;
+            animation: float 3s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-15px); }
+        }
+
+        .empty-state p {
+            font-size: 18px;
+            font-weight: 600;
+            text-shadow: 0 2px 8px rgba(0,0,0,0.2);
+        }
+
+        .error {
+            background: linear-gradient(135deg, rgba(245, 87, 108, 0.3) 0%, rgba(240, 147, 251, 0.3) 100%);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(245, 87, 108, 0.5);
+            color: white;
+            padding: 16px 20px;
+            border-radius: 15px;
+            margin-bottom: 20px;
+            font-weight: 600;
+            box-shadow: 0 4px 15px rgba(245, 87, 108, 0.3);
+        }
+
+        .success {
+            background: linear-gradient(135deg, rgba(79, 172, 254, 0.3) 0%, rgba(0, 242, 254, 0.3) 100%);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(79, 172, 254, 0.5);
+            color: white;
+            padding: 16px 20px;
+            border-radius: 15px;
+            margin-bottom: 20px;
+            font-weight: 600;
+            box-shadow: 0 4px 15px rgba(79, 172, 254, 0.3);
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        /* ═══════════════════════════════════════════════════════════
+           RESPONSIVE - MOBILE OPTIMIZED
+           ═══════════════════════════════════════════════════════════ */
+        @media (max-width: 968px) {
+            .main-layout {
+                flex-direction: column;
+            }
+
+            .tabs {
+                width: 100%;
+                flex-direction: row;
+                position: static;
+            }
+
+            .tab {
+                flex: 1;
+                text-align: center;
+                justify-content: center;
+                padding: 18px 12px;
+                border-left: none;
+                border-bottom: 4px solid transparent;
+            }
+
+            .tab:not(:last-child) {
+                border-bottom: 4px solid transparent;
+                border-right: 1px solid rgba(255, 255, 255, 0.2);
+            }
+
+            .tab.active {
+                border-left: none;
+                border-bottom: 4px solid white;
+                padding-left: 12px;
+            }
+
+            .tab.active::after {
+                display: none;
+            }
+
+            .tab:hover:not(.active) {
+                padding-left: 12px;
+            }
+
+            .experts-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .message-bubble {
+                max-width: 85%;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .tab span {
+                display: none;
+            }
+
+            .tab i {
+                font-size: 22px !important;
+            }
+
+            .header h1 {
+                font-size: 24px;
+            }
+
+            .tab-content {
+                padding: 20px;
+            }
+
+            .chat-input-container {
+                flex-direction: column;
+                gap: 10px;
+            }
+
+            .btn-send {
+                width: 100%;
+            }
+        }
+
+        /* High Performance Animations */
+        * {
+            will-change: auto;
+        }
+
+        .tab.active,
+        .expert-card:hover,
+        .request-card:hover,
+        .conversation-item:hover,
+        .btn:hover {
+            will-change: transform;
+        }
+
+        /* Reduced Motion Support */
+        @media (prefers-reduced-motion: reduce) {
+            *,
+            *::before,
+            *::after {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.01ms !important;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- ═══════════════════════════════════════════════════════════
+         HEADER (Hidden when in iframe)
+         ═══════════════════════════════════════════════════════════ -->
+    <div class="header" id="expertChatHeader">
+        <h1>⚖️ LawHub Expert Chat</h1>
+        <p>Connect with Legal Experts</p>
+        <div class="user-info">
+            <span id="userNameDisplay">Loading...</span>
+            <button class="btn-logout" onclick="logout()">Logout</button>
+            <button class="btn-logout" onclick="goToDashboard()">Dashboard</button>
+        </div>
+    </div>
+
+    <div class="container" id="expertChatContainer">
+        <!-- SIMPLE STICKY TABS -->
+        <div class="tabs" id="tabsContainer">
+            <!-- Tabs will be dynamically generated -->
+        </div>
+
+        <!-- TAB CONTENT 1: FIND EXPERTS -->
+        <div id="findExpertsTab" class="tab-content">
+            <h2>🔍 Available Legal Experts</h2>
+            <div id="expertsLoading" class="loading">Loading experts...</div>
+            <div id="expertsError" class="error hidden"></div>
+            <div id="expertsGrid" class="experts-grid"></div>
+            <div id="expertsEmpty" class="empty-state hidden">
+                <div class="empty-state-icon">👨‍⚖️</div>
+                <p>No experts available</p>
+            </div>
+        </div>
+
+        <!-- TAB CONTENT 2: PENDING REQUESTS -->
+        <div id="pendingRequestsTab" class="tab-content">
+            <h2>📥 Pending Chat Requests</h2>
+            <div id="requestsLoading" class="loading">Loading requests...</div>
+            <div id="requestsError" class="error hidden"></div>
+            <div id="requestsList" class="requests-list"></div>
+            <div id="requestsEmpty" class="empty-state hidden">
+                <div class="empty-state-icon">📭</div>
+                <p>No pending requests</p>
+            </div>
+        </div>
+
+        <!-- TAB CONTENT 3: MY CHATS -->
+        <div id="myChatsTab" class="tab-content">
+            <h2>💬 My Conversations</h2>
+            <div id="chatsLoading" class="loading">Loading conversations...</div>
+            <div id="chatsError" class="error hidden"></div>
+            <div id="conversationsList" class="conversations-list"></div>
+            <div id="chatsEmpty" class="empty-state hidden">
+                <div class="empty-state-icon">💬</div>
+                <p>No active conversations</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- CHAT INTERFACE - FULL SCREEN OVERLAY -->
+    <div id="chatInterface" class="chat-container">
+        <div class="chat-header">
+            <div class="chat-header-left">
+                <button class="btn-secondary" onclick="backToConversations()" style="padding: 8px 16px; border-radius: 8px;">← Back</button>
+                <div>
+                    <div class="chat-title" id="chatHeaderName">Expert Name</div>
+                    <div class="chat-subtitle" id="chatHeaderSubtitle">Legal Expert</div>
+                </div>
+            </div>
+            <div class="chat-header-right">
+                <div class="security-indicator" title="End-to-End Encrypted + Session Protected">
+                    <i class="fas fa-lock"></i>
+                    <span>Secure Chat</span>
+                </div>
+                <button class="btn-secondary" onclick="viewSecurityLogs()" 
+                        style="padding: 8px 16px; border-radius: 20px; font-size: 12px;" 
+                        title="View Security Audit Logs">
+                    <i class="fas fa-shield-alt"></i> Logs
+                </button>
+            </div>
+        </div>
+        <div class="chat-messages" id="chatMessages">
+            <!-- Messages here -->
+        </div>
+        
+        <!-- Typing Indicator -->
+        <div class="typing-indicator" id="typingIndicator">
+            <div class="typing-bubble">
+                <div class="typing-dot"></div>
+                <div class="typing-dot"></div>
+                <div class="typing-dot"></div>
+            </div>
+        </div>
+        
+        <div class="chat-input-container">
+            <input 
+                type="text" 
+                id="messageInput" 
+                class="chat-input" 
+                placeholder="Type your message..."
+                onkeypress="handleMessageKeyPress(event)"
+                oninput="handleTyping()"
+            >
+            <button class="btn-send" onclick="sendMessage()">Send</button>
+        </div>
+    </div>
+
+    <script>
+        // ═══════════════════════════════════════════════════════════
+        // CONFIGURATION
+        // ═══════════════════════════════════════════════════════════
+        const API_BASE_URL = window.location.hostname === 'localhost' 
+            ? 'http://localhost:5000' 
+            : 'https://lawhub-1.onrender.com';
+        
+        // Global state
+        let currentUser = null;
+        let currentRole = 'user'; // 'user' or 'expert'
+        let currentConversation = null;
+        let experts = [];
+        let conversations = [];
+        let messages = [];
+        let messagePollingInterval = null;
+        let notificationPollingInterval = null;
+        let lastNotificationCount = 0;
+        let isInitialized = false; // Prevent duplicate initialization
+        let typingTimeout = null;
+        let isTyping = false;
+
+        // ═══════════════════════════════════════════════════════════
+        // SECURITY FEATURES - Session Timeout & Copy Prevention
+        // ═══════════════════════════════════════════════════════════
+        let sessionTimeout = null;
+        let lastActivityTime = Date.now();
+        const SESSION_TIMEOUT_MS = 30 * 60 * 1000; // 30 minutes of inactivity
+
+        // ═══════════════════════════════════════════════════════════
+        // RATE LIMITING - Prevent spam and abuse
+        // ═══════════════════════════════════════════════════════════
+        const messageHistory = [];
+        const MAX_MESSAGES_PER_MINUTE = 20;
+        const RATE_LIMIT_WARNING_THRESHOLD = 15;
+
+        // ═══════════════════════════════════════════════════════════
+        // CONTENT FILTERING - Block inappropriate content
+        // ═══════════════════════════════════════════════════════════
+        const PROFANITY_LIST = ['fuck', 'shit', 'bitch', 'asshole', 'damn', 'bastard', 'crap'];
+        const SUSPICIOUS_PATTERNS = [
+            /bit\.ly/i,
+            /tinyurl/i,
+            /<script/i,
+            /javascript:/i,
+            /onerror=/i,
+            /onclick=/i
+        ];
+
+        // ═══════════════════════════════════════════════════════════
+        // AUDIT LOGGING - Track security events
+        // ═══════════════════════════════════════════════════════════
+        const auditLog = [];
+        const MAX_AUDIT_LOGS = 100;
+
+        function logSecurityEvent(eventType, details = {}) {
+            const logEntry = {
+                timestamp: new Date().toISOString(),
+                eventType: eventType,
+                userId: currentUser?.id || currentUser?._id || 'unknown',
+                userName: currentUser?.name || currentUser?.email || 'unknown',
+                details: details,
+                userAgent: navigator.userAgent
+            };
+            
+            auditLog.push(logEntry);
+            
+            // Keep only last 100 entries
+            if (auditLog.length > MAX_AUDIT_LOGS) {
+                auditLog.shift();
+            }
+            
+            // Log to console with emoji
+            const eventEmojis = {
+                'login': '🔐',
+                'logout': '🚪',
+                'message_sent': '📤',
+                'message_received': '📥',
+                'rate_limit_warning': '⚠️',
+                'rate_limit_blocked': '🛑',
+                'content_warning': '⚠️',
+                'copy_detected': '📋',
+                'session_timeout': '⏰',
+                'xss_attempt': '🚨',
+                'suspicious_link': '🔗',
+                'validation_failed': '❌'
+            };
+            
+            const emoji = eventEmojis[eventType] || '📝';
+            console.log(`${emoji} [AUDIT] ${eventType}:`, logEntry);
+            
+            // In production, you might want to send critical events to server
+            if (['xss_attempt', 'rate_limit_blocked', 'suspicious_link'].includes(eventType)) {
+                sendAuditToServer(logEntry);
+            }
+        }
+
+        async function sendAuditToServer(logEntry) {
+            try {
+                const token = localStorage.getItem('lawhub_token');
+                await fetch(`${API_BASE_URL}/api/expert-chat/audit-log`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify(logEntry)
+                });
+            } catch (error) {
+                console.log('Could not send audit log to server:', error);
+            }
+        }
+
+        function getAuditLogs(eventType = null) {
+            if (eventType) {
+                return auditLog.filter(log => log.eventType === eventType);
+            }
+            return [...auditLog];
+        }
+
+        function viewSecurityLogs() {
+            const logs = getAuditLogs();
+            
+            if (logs.length === 0) {
+                alert('📝 No security events logged yet.');
+                return;
+            }
+            
+            // Create a formatted summary
+            const summary = logs.slice(-20).reverse().map(log => {
+                const time = new Date(log.timestamp).toLocaleTimeString();
+                return `${time} - ${log.eventType}: ${JSON.stringify(log.details)}`;
+            }).join('\n');
+            
+            alert(`🔒 Security Audit Log (Last 20 events)\n\n${summary}\n\nTotal events: ${logs.length}`);
+            
+            // Also log to console for detailed view
+            console.log('📊 Full Security Audit Log:', logs);
+        }
+
+        // ═══════════════════════════════════════════════════════════
+        // END-TO-END ENCRYPTION - RSA + AES
+        // ═══════════════════════════════════════════════════════════
+        let userKeys = {
+            publicKey: null,
+            privateKey: null
+        };
+
+        // Generate RSA key pair for current user (2048-bit)
+        function generateKeyPair() {
+            const encrypt = new JSEncrypt({ default_key_size: 2048 });
+            encrypt.getKey();
+            
+            return {
+                publicKey: encrypt.getPublicKey(),
+                privateKey: encrypt.getPrivateKey()
+            };
+        }
+
+        // Load or generate user's encryption keys
+        function initializeEncryption() {
+            const userId = currentUser._id || currentUser.id;
+            const keyStorageKey = `lawhub_keys_${userId}`;
+            
+            // Check if keys exist in localStorage
+            const storedKeys = localStorage.getItem(keyStorageKey);
+            
+            if (storedKeys) {
+                // Use existing keys
+                userKeys = JSON.parse(storedKeys);
+            } else {
+                // Generate new key pair
+                userKeys = generateKeyPair();
+                // Store keys securely in localStorage
+                localStorage.setItem(keyStorageKey, JSON.stringify(userKeys));
+            }
+            
+            // Upload public key to server for key exchange
+            uploadPublicKey(userKeys.publicKey);
+        }
+
+        // Upload public key to server
+        async function uploadPublicKey(publicKey) {
+            try {
+                const token = localStorage.getItem('lawhub_token');
+                await fetch(`${API_BASE_URL}/api/expert-chat/public-key`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify({ publicKey })
+                });
+            } catch (error) {
+                // Silently fail - encryption will still work locally
+            }
+        }
+
+        // Get recipient's public key from server
+        async function getPublicKey(userId) {
+            try {
+                const token = localStorage.getItem('lawhub_token');
+                const response = await fetch(`${API_BASE_URL}/api/expert-chat/public-key/${userId}`, {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    return data.publicKey;
+                }
+            } catch (error) {
+                // Return null if can't get key - will use fallback encryption
+            }
+            return null;
+        }
+
+        // Encrypt message with AES (symmetric encryption for speed)
+        function encryptMessage(message, recipientPublicKey) {
+            // Generate random AES key for this message
+            const aesKey = CryptoJS.lib.WordArray.random(256/8).toString();
+            
+            // Encrypt the actual message with AES
+            const encryptedMessage = CryptoJS.AES.encrypt(message, aesKey).toString();
+            
+            // If we have recipient's public key, encrypt the AES key with RSA
+            let encryptedKey = aesKey;
+            if (recipientPublicKey) {
+                const encrypt = new JSEncrypt();
+                encrypt.setPublicKey(recipientPublicKey);
+                encryptedKey = encrypt.encrypt(aesKey) || aesKey;
+            }
+            
+            return {
+                encryptedMessage,
+                encryptedKey
+            };
+        }
+
+        // Decrypt message with AES
+        function decryptMessage(encryptedMessage, encryptedKey) {
+            try {
+                // If no encrypted key, message is not encrypted (old messages)
+                if (!encryptedKey || encryptedKey === '') {
+                    return encryptedMessage;
+                }
+                
+                // Check if we have encryption keys
+                if (!userKeys || !userKeys.privateKey) {
+                    console.log('⚠️ No encryption keys available');
+                    return encryptedMessage;
+                }
+                
+                // Decrypt AES key with our private key (RSA)
+                const decrypt = new JSEncrypt();
+                decrypt.setPrivateKey(userKeys.privateKey);
+                const aesKey = decrypt.decrypt(encryptedKey);
+                
+                if (!aesKey) {
+                    // Could not decrypt the key (not meant for us)
+                    console.log('⚠️ Could not decrypt AES key');
+                    return encryptedMessage;
+                }
+                
+                // Decrypt message with AES key
+                const decrypted = CryptoJS.AES.decrypt(encryptedMessage, aesKey);
+                const plaintext = decrypted.toString(CryptoJS.enc.Utf8);
+                
+                // If decryption resulted in empty string, return original
+                if (!plaintext || plaintext === '') {
+                    console.log('⚠️ Decryption resulted in empty string');
+                    return encryptedMessage;
+                }
+                
+                console.log('✅ Message decrypted successfully');
+                return plaintext;
+            } catch (error) {
+                // If decryption fails, return encrypted message as is
+                console.log('❌ Decryption error:', error.message);
+                return encryptedMessage;
+            }
+        }
+
+        // ═══════════════════════════════════════════════════════════
+        // INITIALIZATION
+        // ═══════════════════════════════════════════════════════════
+        document.addEventListener('DOMContentLoaded', async function() {
+            // Prevent duplicate initialization
+            if (isInitialized) {
+                console.log('⚠️ Already initialized, skipping...');
+                return;
+            }
+            isInitialized = true;
+            
+            console.log('🚀 Expert Chat System Initializing...');
+            
+            // Check if we're in an iframe and adjust UI
+            const isInIframe = window.self !== window.top;
+            if (isInIframe) {
+                console.log('📱 Running in iframe mode - adjusting UI');
+                // Hide header and adjust container
+                const header = document.getElementById('expertChatHeader');
+                const container = document.getElementById('expertChatContainer');
+                if (header) header.style.display = 'none';
+                if (container) {
+                    container.style.padding = '10px';
+                    container.style.maxWidth = '100%';
+                }
+            }
+            
+            // Check if user is logged in
+            const token = localStorage.getItem('lawhub_token');
+            if (!token) {
+                alert('Please login first');
+                if (!isInIframe) {
+                    window.location.href = '/login2.html';
+                }
+                return;
+            }
+
+            // Get user info
+            const userStr = localStorage.getItem('lawhub_user');
+            if (userStr) {
+                currentUser = JSON.parse(userStr);
+                const displayEl = document.getElementById('userNameDisplay');
+                if (displayEl) {
+                    displayEl.textContent = currentUser.name || currentUser.email;
+                }
+            }
+
+            // Check if user is an expert
+            await checkIfExpert();
+
+            // Initialize End-to-End Encryption
+            initializeEncryption();
+
+            // Initialize UI based on role
+            initializeTabs();
+
+            // Load initial data
+            if (currentRole === 'user') {
+                await loadExperts();
+            } else {
+                await loadPendingRequests();
+            }
+
+            // Start notification polling (check for new messages/requests every 5 seconds)
+            startNotificationPolling();
+
+            console.log('✅ Expert Chat System Ready');
+            
+            // Initialize security features
+            initializeSecurityFeatures();
+        });
+
+        // ═══════════════════════════════════════════════════════════
+        // SECURITY FEATURES INITIALIZATION
+        // ═══════════════════════════════════════════════════════════
+        function initializeSecurityFeatures() {
+            console.log('🔒 Initializing security features...');
+            
+            // 1. Session Timeout - Auto-logout after 30 min inactivity
+            startSessionTimer();
+            
+            // 2. Activity Monitoring - Reset timer on any user activity
+            document.addEventListener('mousemove', resetSessionTimer);
+            document.addEventListener('keypress', resetSessionTimer);
+            document.addEventListener('click', resetSessionTimer);
+            document.addEventListener('scroll', resetSessionTimer);
+            document.addEventListener('touchstart', resetSessionTimer);
+            
+            // 3. Copy Prevention - Initialize when chat opens
+            // Will be called in openConversation()
+            
+            // 4. Clean up old message history every minute (for rate limiting)
+            setInterval(cleanupMessageHistory, 60000);
+            
+            console.log('✅ Security features active:');
+            console.log('   - Session Timeout (30 min)');
+            console.log('   - Copy Prevention');
+            console.log('   - Input Validation & Sanitization');
+            console.log('   - Rate Limiting (20 msg/min)');
+            console.log('   - Content Filtering');
+        }
+
+        // ═══════════════════════════════════════════════════════════
+        // SESSION TIMEOUT - Auto-logout after 30 minutes of inactivity
+        // ═══════════════════════════════════════════════════════════
+        function startSessionTimer() {
+            // Check every minute if user has been inactive for 30 minutes
+            sessionTimeout = setInterval(() => {
+                const inactiveTime = Date.now() - lastActivityTime;
+                const remainingTime = SESSION_TIMEOUT_MS - inactiveTime;
+                
+                // Warn user 5 minutes before logout
+                if (remainingTime <= 5 * 60 * 1000 && remainingTime > 4 * 60 * 1000) {
+                    showSecurityWarning('⏰ You will be logged out in 5 minutes due to inactivity');
+                }
+                
+                // Auto-logout after 30 minutes of inactivity
+                if (inactiveTime >= SESSION_TIMEOUT_MS) {
+                    clearInterval(sessionTimeout);
+                    clearInterval(messagePollingInterval);
+                    clearInterval(notificationPollingInterval);
+                    alert('🔒 Session expired due to 30 minutes of inactivity.\n\nYour chats are saved! Just login again to continue.');
+                    logout();
+                }
+            }, 60000); // Check every minute
+            
+            console.log('⏱️ Session timeout started: 30 minutes of inactivity');
+        }
+
+        function resetSessionTimer() {
+            lastActivityTime = Date.now();
+        }
+
+        // ═══════════════════════════════════════════════════════════
+        // COPY PREVENTION WARNING
+        // ═══════════════════════════════════════════════════════════
+        function initializeCopyPrevention() {
+            const chatMessages = document.getElementById('chatMessages');
+            if (!chatMessages) {
+                console.log('⚠️ Chat messages container not found for copy prevention');
+                return;
+            }
+            
+            // Remove existing listener if any
+            chatMessages.removeEventListener('copy', handleCopy);
+            
+            // Add copy event listener
+            chatMessages.addEventListener('copy', handleCopy);
+            
+            console.log('📋 Copy prevention initialized for chat messages');
+        }
+
+        function handleCopy(e) {
+            const selection = window.getSelection().toString();
+            if (selection.length > 0) {
+                logSecurityEvent('copy_detected', { 
+                    length: selection.length,
+                    preview: selection.substring(0, 50) 
+                });
+                showSecurityWarning('⚠️ Reminder: Copied text contains confidential legal information!');
+                console.warn('📋 User copied text from chat:', selection.substring(0, 50) + '...');
+            }
+        }
+
+        function showSecurityWarning(message, type = 'warning') {
+            // Create temporary warning banner
+            const warning = document.createElement('div');
+            
+            const gradients = {
+                warning: 'linear-gradient(135deg, #ff6b6b 0%, #ff4444 100%)',
+                info: 'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)',
+                error: 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)'
+            };
+            
+            warning.style.cssText = `
+                position: fixed;
+                top: 80px;
+                left: 50%;
+                transform: translateX(-50%);
+                background: ${gradients[type] || gradients.warning};
+                color: white;
+                padding: 15px 30px;
+                border-radius: 12px;
+                box-shadow: 0 8px 32px rgba(255, 68, 68, 0.5);
+                z-index: 10000;
+                font-weight: 700;
+                font-size: 14px;
+                animation: slideDown 0.3s ease;
+                max-width: 90%;
+                text-align: center;
+            `;
+            warning.innerHTML = `<i class="fas fa-exclamation-triangle"></i> ${message}`;
+            document.body.appendChild(warning);
+            
+            // Remove after 4 seconds
+            setTimeout(() => {
+                warning.style.opacity = '0';
+                warning.style.transform = 'translateX(-50%) translateY(-20px)';
+                warning.style.transition = 'all 0.3s ease';
+                setTimeout(() => warning.remove(), 300);
+            }, 4000);
+        }
+
+        // ═══════════════════════════════════════════════════════════
+        // INPUT VALIDATION & SANITIZATION
+        // ═══════════════════════════════════════════════════════════
+        function sanitizeInput(text) {
+            if (!text || typeof text !== 'string') return '';
+            
+            // Remove HTML tags and dangerous characters
+            let sanitized = text
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#x27;')
+                .replace(/\//g, '&#x2F;');
+            
+            return sanitized;
+        }
+
+        function validateMessage(message) {
+            const errors = [];
+            
+            // Check if empty
+            if (!message || message.trim().length === 0) {
+                errors.push('Message cannot be empty');
+            }
+            
+            // Check length (max 5000 characters)
+            if (message.length > 5000) {
+                errors.push('Message too long (max 5000 characters)');
+            }
+            
+            // Check for suspicious patterns (XSS attempts)
+            for (const pattern of SUSPICIOUS_PATTERNS) {
+                if (pattern.test(message)) {
+                    logSecurityEvent('xss_attempt', { message: message.substring(0, 100) });
+                    errors.push('Message contains suspicious content');
+                    break;
+                }
+            }
+            
+            if (errors.length > 0) {
+                logSecurityEvent('validation_failed', { errors: errors });
+            }
+            
+            return {
+                valid: errors.length === 0,
+                errors: errors
+            };
+        }
+
+        // ═══════════════════════════════════════════════════════════
+        // RATE LIMITING
+        // ═══════════════════════════════════════════════════════════
+        function checkRateLimit() {
+            const now = Date.now();
+            const oneMinuteAgo = now - 60000;
+            
+            // Remove messages older than 1 minute
+            const recentMessages = messageHistory.filter(time => time > oneMinuteAgo);
+            
+            // Check if user is approaching limit
+            if (recentMessages.length >= RATE_LIMIT_WARNING_THRESHOLD && 
+                recentMessages.length < MAX_MESSAGES_PER_MINUTE) {
+                logSecurityEvent('rate_limit_warning', { 
+                    messageCount: recentMessages.length,
+                    limit: MAX_MESSAGES_PER_MINUTE 
+                });
+                showSecurityWarning(
+                    `⚠️ Slow down! You're sending messages too quickly (${recentMessages.length}/${MAX_MESSAGES_PER_MINUTE})`,
+                    'info'
+                );
+            }
+            
+            // Check if limit exceeded
+            if (recentMessages.length >= MAX_MESSAGES_PER_MINUTE) {
+                logSecurityEvent('rate_limit_blocked', { 
+                    messageCount: recentMessages.length,
+                    limit: MAX_MESSAGES_PER_MINUTE 
+                });
+                showSecurityWarning(
+                    '🛑 Rate limit exceeded! Please wait before sending more messages.',
+                    'error'
+                );
+                return false;
+            }
+            
+            // Add current message timestamp
+            messageHistory.push(now);
+            return true;
+        }
+
+        function cleanupMessageHistory() {
+            const oneMinuteAgo = Date.now() - 60000;
+            messageHistory.length = 0;
+            messageHistory.push(...messageHistory.filter(time => time > oneMinuteAgo));
+        }
+
+        // ═══════════════════════════════════════════════════════════
+        // CONTENT FILTERING
+        // ═══════════════════════════════════════════════════════════
+        function checkContentFilter(message) {
+            const warnings = [];
+            const lowerMessage = message.toLowerCase();
+            
+            // Check for profanity
+            for (const word of PROFANITY_LIST) {
+                if (lowerMessage.includes(word)) {
+                    logSecurityEvent('content_warning', { 
+                        type: 'profanity',
+                        message: message.substring(0, 50) 
+                    });
+                    warnings.push('⚠️ Your message contains inappropriate language');
+                    break;
+                }
+            }
+            
+            // Check for suspicious links
+            if (/https?:\/\//i.test(message)) {
+                const isSuspicious = SUSPICIOUS_PATTERNS.some(pattern => pattern.test(message));
+                if (isSuspicious) {
+                    logSecurityEvent('suspicious_link', { 
+                        message: message.substring(0, 100) 
+                    });
+                    warnings.push('⚠️ Your message contains a suspicious link');
+                }
+            }
+            
+            return {
+                allowed: true, // We warn but still allow (for legal discussions)
+                warnings: warnings
+            };
+        }
+
+        function showContentWarnings(warnings) {
+            if (warnings.length === 0) return true;
+            
+            const warningText = warnings.join('\n');
+            return confirm(
+                `${warningText}\n\nThis is a professional legal chat. Are you sure you want to send this message?`
+            );
+        }
+
+        // ═══════════════════════════════════════════════════════════
+        // CHECK IF USER IS EXPERT
+        // ═══════════════════════════════════════════════════════════
+        async function checkIfExpert() {
+            try {
+                const token = localStorage.getItem('lawhub_token');
+                const response = await fetch(`${API_BASE_URL}/api/expert-application/status`, {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    console.log('📊 Expert status check:', data);
+                    if (data.hasApplication && data.application.status === 'approved') {
+                        currentRole = 'expert';
+                        console.log('✅ User is an approved expert');
+                    } else {
+                        console.log('ℹ️ User is not an expert. Status:', data.application?.status || 'no application');
+                    }
+                } else {
+                    console.log('ℹ️ Expert status check failed:', response.status);
+                }
+            } catch (error) {
+                console.log('ℹ️ User is not an expert (this is normal for regular users):', error.message);
+            }
+        }
+
+        // ═══════════════════════════════════════════════════════════
+        // INITIALIZE TABS - SIMPLE VERSION
+        // ═══════════════════════════════════════════════════════════
+        function initializeTabs() {
+            const tabsContainer = document.getElementById('tabsContainer');
+            
+            console.log('🎯 Initializing tabs for role:', currentRole);
+            
+            if (currentRole === 'user') {
+                console.log('👤 Setting up USER tabs (Find Expert + My Chats)');
+                tabsContainer.innerHTML = `
+                    <button class="tab active" onclick="switchTab('findExperts')">
+                        <i class="fas fa-search"></i>
+                        <span>Find Expert</span>
+                    </button>
+                    <button class="tab" onclick="switchTab('myChats')" id="chatsTab">
+                        <i class="fas fa-comments"></i>
+                        <span>My Chats</span>
+                        <span class="badge" id="chatsBadge" style="display: none;">0</span>
+                    </button>
+                `;
+                switchTab('findExperts');
+            } else {
+                console.log('👨‍⚖️ Setting up EXPERT tabs (Requests + My Chats)');
+                tabsContainer.innerHTML = `
+                    <button class="tab active" onclick="switchTab('pendingRequests')" id="requestsTab">
+                        <i class="fas fa-inbox"></i>
+                        <span>Requests</span>
+                        <span class="badge" id="requestsBadge" style="display: none;">0</span>
+                    </button>
+                    <button class="tab" onclick="switchTab('myChats')" id="chatsTab">
+                        <i class="fas fa-comments"></i>
+                        <span>My Chats</span>
+                        <span class="badge" id="chatsBadge" style="display: none;">0</span>
+                    </button>
+                `;
+                switchTab('pendingRequests');
+            }
+        }
+
+        // ═══════════════════════════════════════════════════════════
+        // TAB SWITCHING - SIMPLE
+        // ═══════════════════════════════════════════════════════════
+        function switchTab(tabName) {
+            console.log('🔄 Switching to tab:', tabName);
+            
+            // Update tab buttons
+            document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('active'));
+            event?.target?.closest('.tab')?.classList.add('active');
+            
+            // Hide ALL tab contents
+            document.querySelectorAll('.tab-content').forEach(content => {
+                content.classList.remove('active');
+                content.style.display = 'none';
+            });
+
+            // Show selected tab
+            if (tabName === 'findExperts') {
+                document.getElementById('findExpertsTab').style.display = 'block';
+                document.getElementById('findExpertsTab').classList.add('active');
+                loadExperts();
+            } else if (tabName === 'pendingRequests') {
+                document.getElementById('pendingRequestsTab').style.display = 'block';
+                document.getElementById('pendingRequestsTab').classList.add('active');
+                loadPendingRequests();
+            } else if (tabName === 'myChats') {
+                document.getElementById('myChatsTab').style.display = 'block';
+                document.getElementById('myChatsTab').classList.add('active');
+                loadConversations();
+            }
+        }
+
+        // ═══════════════════════════════════════════════════════════
+        // LOAD EXPERTS (For Users)
+        // ═══════════════════════════════════════════════════════════
+        async function loadExperts() {
+            const loading = document.getElementById('expertsLoading');
+            const error = document.getElementById('expertsError');
+            const grid = document.getElementById('expertsGrid');
+            const empty = document.getElementById('expertsEmpty');
+
+            loading.classList.remove('hidden');
+            error.classList.add('hidden');
+            grid.innerHTML = '';
+            empty.classList.add('hidden');
+
+            try {
+                const token = localStorage.getItem('lawhub_token');
+                const response = await fetch(`${API_BASE_URL}/api/expert-chat/available-experts`, {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+
+                if (!response.ok) throw new Error('Failed to load experts');
+
+                const data = await response.json();
+                experts = data.experts || [];
+
+                loading.classList.add('hidden');
+
+                if (experts.length === 0) {
+                    empty.classList.remove('hidden');
+                    return;
+                }
+
+                // Display experts with staggered animation
+                experts.forEach((expert, index) => {
+                    const card = createExpertCard(expert, index);
+                    grid.appendChild(card);
+                });
+
+            } catch (err) {
+                loading.classList.add('hidden');
+                error.textContent = 'Error loading experts: ' + err.message;
+                error.classList.remove('hidden');
+            }
+        }
+
+        // ═══════════════════════════════════════════════════════════
+        // CREATE EXPERT CARD - WITH ANIMATION
+        // ═══════════════════════════════════════════════════════════
+        function createExpertCard(expert, index = 0) {
+            const card = document.createElement('div');
+            card.className = 'expert-card';
+            card.style.setProperty('--index', index);
+            
+            const isRequested = expert.requestStatus === 'pending';
+            const isAccepted = expert.requestStatus === 'accepted';
+            
+            let buttonHtml = '';
+            if (isAccepted) {
+                buttonHtml = '<button class="btn btn-success" disabled>✅ Chat Active</button>';
+            } else if (isRequested) {
+                buttonHtml = '<button class="btn btn-primary" disabled onclick="showAlreadyRequested()">⏳ Request Sent</button>';
+            } else {
+                buttonHtml = `<button class="btn btn-primary" onclick="requestChat('${expert.userId}', '${expert.name}')"><span>💬 Request Chat</span></button>`;
+            }
+
+            card.innerHTML = `
+                <div class="expert-avatar">${expert.profilePicture || '👨‍⚖️'}</div>
+                <div class="expert-name">${expert.name}</div>
+                <div class="expert-specialization">${expert.specialization || 'Legal Expert'}</div>
+                <div class="expert-location">📍 ${expert.location || 'India'}</div>
+                ${expert.bio ? `<div class="expert-bio">${expert.bio.substring(0, 100)}${expert.bio.length > 100 ? '...' : ''}</div>` : ''}
+                <div class="expert-experience" style="font-size: 13px; color: rgba(255,255,255,0.8); margin: 8px 0; font-weight: 600;">
+                    ${expert.experience || 'Experienced'} | ⭐ ${expert.rating || '4.5'}
+                </div>
+                ${buttonHtml}
+            `;
+
+            return card;
+        }
+
+        // ═══════════════════════════════════════════════════════════
+        // REQUEST CHAT
+        // ═══════════════════════════════════════════════════════════
+        async function requestChat(expertUserId, expertName) {
+            if (!confirm(`Send chat request to ${expertName}?`)) {
+                return;
+            }
+
+            try {
+                const token = localStorage.getItem('lawhub_token');
+                const response = await fetch(`${API_BASE_URL}/api/expert-chat/request`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify({
+                        expertUserId: expertUserId,
+                        message: `Hi, I would like to consult with you regarding a legal matter.`
+                    })
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    alert('✅ Chat request sent successfully! The expert will be notified.');
+                    loadExperts(); // Reload to update button states
+                } else {
+                    if (data.alreadyExists) {
+                        alert('⏳ Request already sent. Please wait for expert to accept.');
+                    } else if (data.alreadyAccepted) {
+                        alert('✅ You already have an active conversation with this expert. Check "My Chats" tab.');
+                    } else {
+                        alert('❌ ' + data.message);
+                    }
+                }
+
+            } catch (error) {
+                alert('❌ Error sending request: ' + error.message);
+            }
+        }
+
+        function showAlreadyRequested() {
+            alert('⏳ Request already sent. Please wait for expert to accept.');
+        }
+
+        // ═══════════════════════════════════════════════════════════
+        // LOAD PENDING REQUESTS (For Experts)
+        // ═══════════════════════════════════════════════════════════
+        async function loadPendingRequests() {
+            const loading = document.getElementById('requestsLoading');
+            const error = document.getElementById('requestsError');
+            const list = document.getElementById('requestsList');
+            const empty = document.getElementById('requestsEmpty');
+
+            loading.classList.remove('hidden');
+            error.classList.add('hidden');
+            list.innerHTML = '';
+            empty.classList.add('hidden');
+
+            try {
+                const token = localStorage.getItem('lawhub_token');
+                const response = await fetch(`${API_BASE_URL}/api/expert-chat/pending-requests`, {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+
+                if (!response.ok) throw new Error('Failed to load requests');
+
+                const data = await response.json();
+                const requests = data.requests || [];
+
+                loading.classList.add('hidden');
+
+                if (requests.length === 0) {
+                    empty.classList.remove('hidden');
+                    return;
+                }
+
+                // REMOVE DUPLICATE REQUESTS - Keep only the latest request from each user
+                const uniqueRequests = [];
+                const seenUserIds = new Set();
+                
+                // Sort by createdAt descending (newest first)
+                const sortedRequests = requests.sort((a, b) => 
+                    new Date(b.createdAt) - new Date(a.createdAt)
+                );
+                
+                // Filter duplicates
+                for (const request of sortedRequests) {
+                    if (!seenUserIds.has(request.userId)) {
+                        uniqueRequests.push(request);
+                        seenUserIds.add(request.userId);
+                    }
+                }
+
+                console.log(`📋 Loaded ${requests.length} requests, ${uniqueRequests.length} unique users`);
+
+                // Display requests with staggered animation
+                uniqueRequests.forEach((request, index) => {
+                    const card = createRequestCard(request, index);
+                    list.appendChild(card);
+                });
+
+            } catch (err) {
+                loading.classList.add('hidden');
+                error.textContent = 'Error loading requests: ' + err.message;
+                error.classList.remove('hidden');
+            }
+        }
+
+        // ═══════════════════════════════════════════════════════════
+        // CREATE REQUEST CARD - WITH ANIMATION
+        // ═══════════════════════════════════════════════════════════
+        function createRequestCard(request, index = 0) {
+            const card = document.createElement('div');
+            card.className = 'request-card';
+            card.style.setProperty('--index', index);
+            
+            const timeAgo = getTimeAgo(new Date(request.createdAt));
+
+            card.innerHTML = `
+                <div class="request-header">
+                    <div class="request-user">${request.userName}</div>
+                    <span class="request-status status-pending">Pending</span>
+                </div>
+                <div style="color: rgba(255,255,255,0.85); font-size: 14px; margin-bottom: 8px; font-weight: 500;">${request.userEmail}</div>
+                ${request.message ? `<div style="color: rgba(255,255,255,0.9); font-size: 15px; margin: 15px 0; font-style: italic; padding: 15px; background: rgba(255,255,255,0.1); border-radius: 12px; border-left: 4px solid var(--warm-gradient);">"${request.message}"</div>` : ''}
+                <div style="color: rgba(255,255,255,0.7); font-size: 13px; margin-bottom: 15px; font-weight: 600;">⏰ ${timeAgo}</div>
+                <div class="request-actions">
+                    <button class="btn btn-success" onclick="acceptRequest('${request.id}', '${request.userName}')">
+                        <span>✅ Accept</span>
+                    </button>
+                    <button class="btn btn-danger" onclick="rejectRequest('${request.id}', '${request.userName}')">
+                        <span>❌ Reject</span>
+                    </button>
+                </div>
+            `;
+
+            return card;
+        }
+
+        // ═══════════════════════════════════════════════════════════
+        // ACCEPT REQUEST
+        // ═══════════════════════════════════════════════════════════
+        async function acceptRequest(requestId, userName) {
+            if (!confirm(`Accept chat request from ${userName}?`)) {
+                return;
+            }
+
+            try {
+                const token = localStorage.getItem('lawhub_token');
+                const response = await fetch(`${API_BASE_URL}/api/expert-chat/request/${requestId}/accept`, {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    alert('✅ Request accepted! Opening chat...');
+                    
+                    // Reload requests to remove the accepted one
+                    await loadPendingRequests();
+                    
+                    // Auto-switch to My Chats tab and open the conversation
+                    switchTab('myChats');
+                    
+                    // Wait a bit for conversations to load, then open the new one
+                    setTimeout(async () => {
+                        await loadConversations();
+                        // Find and open the conversation with this user
+                        const newConv = conversations.find(c => c.otherUserId === data.conversation?.userId);
+                        if (newConv) {
+                            await openConversation(newConv);
+                        }
+                    }, 500);
+                } else {
+                    alert('❌ ' + data.message);
+                }
+
+            } catch (error) {
+                alert('❌ Error accepting request: ' + error.message);
+            }
+        }
+
+        // ═══════════════════════════════════════════════════════════
+        // REJECT REQUEST
+        // ═══════════════════════════════════════════════════════════
+        async function rejectRequest(requestId, userName) {
+            if (!confirm(`Reject chat request from ${userName}?`)) {
+                return;
+            }
+
+            try {
+                const token = localStorage.getItem('lawhub_token');
+                const response = await fetch(`${API_BASE_URL}/api/expert-chat/request/${requestId}/reject`, {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    alert('Request rejected');
+                    loadPendingRequests(); // Reload requests
+                } else {
+                    alert('❌ ' + data.message);
+                }
+
+            } catch (error) {
+                alert('❌ Error rejecting request: ' + error.message);
+            }
+        }
+
+        // ═══════════════════════════════════════════════════════════
+        // LOAD CONVERSATIONS - FIX DUPLICATES
+        // ═══════════════════════════════════════════════════════════
+        async function loadConversations() {
+            const loading = document.getElementById('chatsLoading');
+            const error = document.getElementById('chatsError');
+            const list = document.getElementById('conversationsList');
+            const empty = document.getElementById('chatsEmpty');
+
+            loading.classList.remove('hidden');
+            error.classList.add('hidden');
+            list.innerHTML = '';
+            empty.classList.add('hidden');
+
+            try {
+                const token = localStorage.getItem('lawhub_token');
+                const response = await fetch(`${API_BASE_URL}/api/expert-chat/active-conversations?role=${currentRole}`, {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+
+                if (!response.ok) throw new Error('Failed to load conversations');
+
+                const data = await response.json();
+                const allConversations = data.conversations || [];
+
+                loading.classList.add('hidden');
+
+                if (allConversations.length === 0) {
+                    empty.classList.remove('hidden');
+                    return;
+                }
+
+                // REMOVE DUPLICATES - Keep only unique conversations
+                const uniqueConversations = [];
+                const seenIds = new Set();
+                
+                for (const conv of allConversations) {
+                    const uniqueKey = `${conv.userId}-${conv.expertId}`;
+                    if (!seenIds.has(uniqueKey)) {
+                        uniqueConversations.push(conv);
+                        seenIds.add(uniqueKey);
+                    }
+                }
+
+                console.log(`💬 Showing ${uniqueConversations.length} unique conversations (filtered from ${allConversations.length})`);
+
+                // Display conversations
+                uniqueConversations.forEach((conv, index) => {
+                    const item = createConversationItem(conv, index);
+                    list.appendChild(item);
+                });
+
+            } catch (err) {
+                loading.classList.add('hidden');
+                error.textContent = 'Error loading conversations: ' + err.message;
+                error.classList.remove('hidden');
+            }
+        }
+
+        // ═══════════════════════════════════════════════════════════
+        // CREATE CONVERSATION ITEM - WITH ANIMATION
+        // ═══════════════════════════════════════════════════════════
+        function createConversationItem(conv, index = 0) {
+            const item = document.createElement('div');
+            item.className = 'conversation-item';
+            item.style.setProperty('--index', index);
+            item.onclick = () => openConversation(conv);
+
+            const timeAgo = getTimeAgo(new Date(conv.lastMessageTime));
+
+            item.innerHTML = `
+                <div class="conversation-header">
+                    <div class="conversation-name">
+                        ${currentRole === 'user' ? '👨‍⚖️' : '👤'} ${conv.otherUserName}
+                        ${conv.unreadCount > 0 ? `<span class="unread-badge">${conv.unreadCount}</span>` : ''}
+                    </div>
+                    <div class="conversation-time">${timeAgo}</div>
+                </div>
+                <div class="conversation-preview">${conv.lastMessage || 'No messages yet'}</div>
+                ${conv.specialization ? `<div style="color: rgba(255,255,255,0.8); font-size: 13px; margin-top: 6px; font-weight: 600;">⚖️ ${conv.specialization}</div>` : ''}
+            `;
+
+            return item;
+        }
+
+        // ═══════════════════════════════════════════════════════════
+        // OPEN CONVERSATION - FULL SCREEN
+        // ═══════════════════════════════════════════════════════════
+        async function openConversation(conv) {
+            currentConversation = conv;
+
+            // Update header
+            document.getElementById('chatHeaderName').textContent = conv.otherUserName;
+            document.getElementById('chatHeaderSubtitle').textContent = conv.specialization || (currentRole === 'user' ? 'Legal Expert' : 'User');
+
+            // Show full screen chat
+            document.getElementById('chatInterface').classList.add('active');
+
+            // Initialize copy prevention for this chat
+            initializeCopyPrevention();
+
+            // Load messages
+            await loadMessages(conv.id);
+            
+            // Start polling
+            startMessagePolling();
+        }
+
+        // ═══════════════════════════════════════════════════════════
+        // BACK TO CONVERSATIONS
+        // ═══════════════════════════════════════════════════════════
+        function backToConversations() {
+            document.getElementById('chatInterface').classList.remove('active');
+            currentConversation = null;
+            
+            // Stop polling
+            stopMessagePolling();
+            
+            // Reload conversations
+            loadConversations();
+        }
+
+        // ═══════════════════════════════════════════════════════════
+        // LOAD MESSAGES
+        // ═══════════════════════════════════════════════════════════
+        async function loadMessages(conversationId, silent = false) {
+            const messagesContainer = document.getElementById('chatMessages');
+            
+            if (!silent) {
+                messagesContainer.innerHTML = '<div class="loading">Loading messages...</div>';
+            }
+
+            try {
+                const token = localStorage.getItem('lawhub_token');
+                const response = await fetch(`${API_BASE_URL}/api/expert-chat/conversation/${conversationId}/messages`, {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+
+                if (!response.ok) throw new Error('Failed to load messages');
+
+                const data = await response.json();
+                const newMessages = data.messages || [];
+
+                // Check if there are new messages
+                const hasNewMessages = newMessages.length !== messages.length;
+                const shouldScroll = !silent || hasNewMessages;
+                
+                messages = newMessages;
+
+                if (!silent) {
+                    messagesContainer.innerHTML = '';
+                }
+
+                if (messages.length === 0) {
+                    messagesContainer.innerHTML = '<div class="empty-state"><div class="empty-state-icon">💬</div><p>No messages yet. Start the conversation!</p></div>';
+                    return;
+                }
+
+                // Only re-render if there are new messages
+                if (hasNewMessages || !silent) {
+                    messagesContainer.innerHTML = '';
+                    
+                    // Display messages - WhatsApp/Instagram style
+                    messages.forEach(msg => {
+                        const messageEl = createMessageElement(msg);
+                        messagesContainer.appendChild(messageEl);
+                    });
+
+                    // Auto-scroll to bottom only if there are new messages
+                    if (shouldScroll) {
+                        setTimeout(() => {
+                            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+                        }, 100);
+                    }
+                    
+                    // Mark messages as read
+                    markMessagesAsRead(conversationId);
+                }
+
+            } catch (err) {
+                if (!silent) {
+                    messagesContainer.innerHTML = `<div class="error">Error loading messages: ${err.message}</div>`;
+                }
+            }
+        }
+        
+        // Mark all messages in conversation as read
+        async function markMessagesAsRead(conversationId) {
+            try {
+                const token = localStorage.getItem('lawhub_token');
+                await fetch(`${API_BASE_URL}/api/expert-chat/conversation/${conversationId}/read`, {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+            } catch (error) {
+                // Silently fail - not critical
+            }
+        }
+
+        // ═══════════════════════════════════════════════════════════
+        // CREATE MESSAGE ELEMENT - WhatsApp/Instagram Style
+        // ═══════════════════════════════════════════════════════════
+        function createMessageElement(msg) {
+            const div = document.createElement('div');
+            const isOwnMessage = msg.senderId === currentUser.id || msg.senderId === currentUser._id;
+            
+            div.className = `message ${isOwnMessage ? 'sent' : 'received'}`;
+            
+            const time = new Date(msg.timestamp).toLocaleTimeString('en-US', { 
+                hour: '2-digit', 
+                minute: '2-digit' 
+            });
+
+            // Decrypt or display message
+            let displayMessage = msg.message;
+            
+            if (isOwnMessage) {
+                // For our own messages, check local cache first
+                const messageId = msg._id || msg.id;
+                const cachedMessage = getLocalMessage(messageId);
+                if (cachedMessage) {
+                    console.log('✅ Using cached message:', messageId);
+                    displayMessage = cachedMessage;
+                } else {
+                    // Fallback: show encrypted (shouldn't happen for new messages)
+                    console.log('⚠️ No cached message found for:', messageId);
+                    displayMessage = msg.message;
+                }
+            } else {
+                // For received messages, decrypt with our private key
+                if (msg.encryptedKey) {
+                    console.log('🔓 Attempting to decrypt received message...');
+                    displayMessage = decryptMessage(msg.message, msg.encryptedKey);
+                }
+            }
+            
+            // 🔒 SECURITY: Sanitize message before display (prevent XSS)
+            // Note: Message is already sanitized when sent, but double-check for safety
+            displayMessage = displayMessage
+                .replace(/&lt;/g, '<')
+                .replace(/&gt;/g, '>')
+                .replace(/&quot;/g, '"')
+                .replace(/&#x27;/g, "'")
+                .replace(/&#x2F;/g, '/');
+            
+            // Make URLs clickable (safe)
+            displayMessage = displayMessage.replace(
+                /(https?:\/\/[^\s]+)/g, 
+                '<a href="$1" target="_blank" rel="noopener noreferrer" style="color: #4fc3f7; text-decoration: underline;">$1</a>'
+            );
+            
+            // WhatsApp/Instagram style with seen/delivered status
+            // Blue ticks for read messages, gray ticks for delivered
+            let statusIcon = '';
+            if (isOwnMessage) {
+                if (msg.isRead) {
+                    statusIcon = `<span style="color: #4fc3f7; margin-left: 6px;">✓✓</span>`; // Blue for read
+                } else {
+                    statusIcon = `<span style="color: rgba(255,255,255,0.6); margin-left: 6px;">✓✓</span>`; // Gray for delivered
+                }
+            }
+            
+            // Only show delete button for own messages
+            const deleteButton = isOwnMessage ? `<button class="delete-message-btn" onclick="deleteMessage('${msg._id || msg.id}', event)" title="Delete message"><i class="fas fa-trash"></i></button>` : '';
+
+            div.innerHTML = `
+                <div class="message-wrapper">
+                    ${deleteButton}
+                    <div class="message-content">
+                        <div class="message-bubble">
+                            ${displayMessage}
+                        </div>
+                        <div class="message-time">${time} ${statusIcon}</div>
+                    </div>
+                </div>
+            `;
+
+            return div;
+        }
+        
+        // Store sent message locally (plaintext)
+        function storeLocalMessage(messageId, plaintext) {
+            const key = `lawhub_msg_${currentUser._id || currentUser.id}`;
+            let messages = JSON.parse(localStorage.getItem(key) || '{}');
+            messages[messageId] = plaintext;
+            
+            // Keep only last 1000 messages to avoid filling storage
+            const msgIds = Object.keys(messages);
+            if (msgIds.length > 1000) {
+                const oldestIds = msgIds.slice(0, msgIds.length - 1000);
+                oldestIds.forEach(id => delete messages[id]);
+            }
+            
+            localStorage.setItem(key, JSON.stringify(messages));
+        }
+        
+        // Get locally stored message (plaintext)
+        function getLocalMessage(messageId) {
+            const key = `lawhub_msg_${currentUser._id || currentUser.id}`;
+            const messages = JSON.parse(localStorage.getItem(key) || '{}');
+            return messages[messageId] || null;
+        }
+        
+        // Delete locally stored message
+        function deleteLocalMessage(messageId) {
+            const key = `lawhub_msg_${currentUser._id || currentUser.id}`;
+            const messages = JSON.parse(localStorage.getItem(key) || '{}');
+            delete messages[messageId];
+            localStorage.setItem(key, JSON.stringify(messages));
+        }
+        
+        // ═══════════════════════════════════════════════════════════
+        // DELETE MESSAGE
+        // ═══════════════════════════════════════════════════════════
+        async function deleteMessage(messageId, event) {
+            if (!confirm('Delete this message? This cannot be undone.')) {
+                return;
+            }
+            
+            try {
+                const token = localStorage.getItem('lawhub_token');
+                const response = await fetch(`${API_BASE_URL}/api/expert-chat/message/${messageId}`, {
+                    method: 'DELETE',
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+                
+                if (!response.ok) throw new Error('Failed to delete message');
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    // Remove from localStorage
+                    deleteLocalMessage(messageId);
+                    
+                    // Find and remove message from UI with animation
+                    const messages = document.querySelectorAll('.message');
+                    messages.forEach(msgEl => {
+                        const deleteBtn = msgEl.querySelector('.delete-message-btn');
+                        if (deleteBtn && deleteBtn.getAttribute('onclick').includes(messageId)) {
+                            msgEl.classList.add('deleting');
+                            setTimeout(() => {
+                                msgEl.remove();
+                            }, 300);
+                        }
+                    });
+                    
+                    console.log('✅ Message deleted successfully');
+                } else {
+                    alert('❌ Failed to delete message');
+                }
+            } catch (error) {
+                console.error('❌ Error deleting message:', error);
+                alert('❌ Error deleting message: ' + error.message);
+            }
+        }
+
+        // ═══════════════════════════════════════════════════════════
+        // SEND MESSAGE - Manual only, no automation
+        // ═══════════════════════════════════════════════════════════
+        async function sendMessage() {
+            const input = document.getElementById('messageInput');
+            const message = input.value.trim();
+
+            if (!message) {
+                return;
+            }
+
+            if (!currentConversation) {
+                alert('No conversation selected');
+                return;
+            }
+
+            // 🔒 SECURITY CHECK 1: Validate Message
+            const validation = validateMessage(message);
+            if (!validation.valid) {
+                alert('❌ ' + validation.errors.join('\n'));
+                return;
+            }
+
+            // 🔒 SECURITY CHECK 2: Rate Limiting
+            if (!checkRateLimit()) {
+                return; // Blocked by rate limit
+            }
+
+            // 🔒 SECURITY CHECK 3: Content Filtering
+            const contentCheck = checkContentFilter(message);
+            if (contentCheck.warnings.length > 0) {
+                const userConfirmed = showContentWarnings(contentCheck.warnings);
+                if (!userConfirmed) {
+                    return; // User cancelled
+                }
+            }
+
+            // Clear input immediately for better UX
+            input.value = '';
+            
+            // Disable input briefly to prevent double-sending
+            input.disabled = true;
+
+            try {
+                // Get recipient's user ID
+                const recipientId = currentRole === 'user' ? currentConversation.expertId : currentConversation.userId;
+                
+                // Get recipient's public key for encryption
+                const recipientPublicKey = await getPublicKey(recipientId);
+                
+                // 🔒 SECURITY: Sanitize input before encryption
+                const sanitizedMessage = sanitizeInput(message);
+                
+                // Encrypt the message (End-to-End Encryption)
+                const { encryptedMessage, encryptedKey } = encryptMessage(sanitizedMessage, recipientPublicKey);
+                
+                const token = localStorage.getItem('lawhub_token');
+                const response = await fetch(`${API_BASE_URL}/api/expert-chat/conversation/${currentConversation.id}/message`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify({ 
+                        message: encryptedMessage,  // Send encrypted message
+                        encryptedKey: encryptedKey  // Send encrypted AES key
+                    })
+                });
+
+                if (!response.ok) throw new Error('Failed to send message');
+
+                const data = await response.json();
+
+                if (data.success) {
+                    // Store the plaintext message locally so we can display it
+                    const messageId = data.messageData.id || data.messageData._id;
+                    storeLocalMessage(messageId, sanitizedMessage);
+                    
+                    logSecurityEvent('message_sent', { 
+                        conversationId: currentConversation.id,
+                        messageLength: sanitizedMessage.length 
+                    });
+                    
+                    console.log('✅ Message sent with security checks passed');
+                    
+                    // Reload messages to show the new one
+                    await loadMessages(currentConversation.id, true);
+                } else {
+                    alert('❌ ' + data.message);
+                    // Restore message if failed
+                    input.value = message;
+                }
+
+            } catch (error) {
+                alert('❌ Error sending message: ' + error.message);
+                // Restore message if failed
+                input.value = message;
+            } finally {
+                // Re-enable input
+                input.disabled = false;
+                input.focus();
+            }
+        }
+
+        // ═══════════════════════════════════════════════════════════
+        // HANDLE ENTER KEY IN MESSAGE INPUT
+        // ═══════════════════════════════════════════════════════════
+        function handleMessageKeyPress(event) {
+            if (event.key === 'Enter' && !event.shiftKey) {
+                event.preventDefault();
+                sendMessage();
+            }
+        }
+        
+        // ═══════════════════════════════════════════════════════════
+        // TYPING INDICATOR
+        // ═══════════════════════════════════════════════════════════
+        function handleTyping() {
+            if (!currentConversation) return;
+            
+            // Send typing status to server
+            sendTypingStatus(true);
+            
+            // Clear previous timeout
+            clearTimeout(typingTimeout);
+            
+            // Set new timeout to stop typing after 2 seconds of inactivity
+            typingTimeout = setTimeout(() => {
+                sendTypingStatus(false);
+            }, 2000);
+        }
+        
+        async function sendTypingStatus(typing) {
+            try {
+                const token = localStorage.getItem('lawhub_token');
+                await fetch(`${API_BASE_URL}/api/expert-chat/conversation/${currentConversation.id}/typing`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify({ typing })
+                });
+            } catch (error) {
+                // Silently fail - typing indicator is not critical
+            }
+        }
+        
+        async function checkTypingStatus() {
+            if (!currentConversation) return;
+            
+            try {
+                const token = localStorage.getItem('lawhub_token');
+                const response = await fetch(`${API_BASE_URL}/api/expert-chat/conversation/${currentConversation.id}/typing`, {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    const typingIndicator = document.getElementById('typingIndicator');
+                    
+                    if (data.isTyping && data.userId !== (currentUser._id || currentUser.id)) {
+                        typingIndicator.classList.add('active');
+                        // Auto-scroll to bottom to show typing indicator
+                        const messagesContainer = document.getElementById('chatMessages');
+                        messagesContainer.scrollTop = messagesContainer.scrollHeight;
+                    } else {
+                        typingIndicator.classList.remove('active');
+                    }
+                }
+            } catch (error) {
+                // Silently fail
+            }
+        }
+
+        // ═══════════════════════════════════════════════════════════
+        // UTILITY FUNCTIONS
+        // ═══════════════════════════════════════════════════════════
+        function getTimeAgo(date) {
+            const seconds = Math.floor((new Date() - date) / 1000);
+            
+            if (seconds < 60) return 'Just now';
+            if (seconds < 3600) return Math.floor(seconds / 60) + 'm ago';
+            if (seconds < 86400) return Math.floor(seconds / 3600) + 'h ago';
+            if (seconds < 604800) return Math.floor(seconds / 86400) + 'd ago';
+            
+            return date.toLocaleDateString();
+        }
+
+        function logout() {
+            if (confirm('Are you sure you want to logout?')) {
+                // Clear intervals
+                if (sessionTimeout) clearInterval(sessionTimeout);
+                if (messagePollingInterval) clearInterval(messagePollingInterval);
+                if (notificationPollingInterval) clearInterval(notificationPollingInterval);
+                
+                // Clear storage (but keep encryption keys for next session)
+                localStorage.removeItem('lawhub_token');
+                localStorage.removeItem('lawhub_user');
+                
+                // Redirect to login
+                window.location.href = '/login2.html';
+            }
+        }
+
+        function goToDashboard() {
+            window.location.href = '/modern-dashboard.html';
+        }
+
+        // ═══════════════════════════════════════════════════════════
+        // REAL-TIME MESSAGE POLLING (when chat is open)
+        // ═══════════════════════════════════════════════════════════
+        function startMessagePolling() {
+            // Clear any existing interval
+            stopMessagePolling();
+            
+            // Poll for new messages every 3 seconds
+            messagePollingInterval = setInterval(async () => {
+                if (currentConversation) {
+                    await loadMessages(currentConversation.id, true); // Silent reload
+                    await checkTypingStatus(); // Check if other user is typing
+                }
+            }, 3000);
+            
+            console.log('📡 Started message polling (3s interval)');
+        }
+
+        function stopMessagePolling() {
+            if (messagePollingInterval) {
+                clearInterval(messagePollingInterval);
+                messagePollingInterval = null;
+                console.log('🛑 Stopped message polling');
+            }
+        }
+
+        // ═══════════════════════════════════════════════════════════
+        // NOTIFICATION BADGE SYSTEM
+        // ═══════════════════════════════════════════════════════════
+        function startNotificationPolling() {
+            // Poll for new notifications every 5 seconds
+            notificationPollingInterval = setInterval(async () => {
+                await checkNotifications();
+            }, 5000);
+            
+            // Check immediately on start
+            checkNotifications();
+            
+            console.log('🔔 Started notification polling (5s interval)');
+        }
+
+        async function checkNotifications() {
+            try {
+                const token = localStorage.getItem('lawhub_token');
+                
+                // Get pending requests count (for experts)
+                let pendingRequestsCount = 0;
+                if (currentRole === 'expert') {
+                    const reqResponse = await fetch(`${API_BASE_URL}/api/expert-chat/pending-requests`, {
+                        headers: { 'Authorization': `Bearer ${token}` }
+                    });
+                    if (reqResponse.ok) {
+                        const reqData = await reqResponse.json();
+                        // Remove duplicates for count
+                        const requests = reqData.requests || [];
+                        const uniqueUserIds = new Set(requests.map(r => r.userId));
+                        pendingRequestsCount = uniqueUserIds.size;
+                    }
+                }
+
+                // Get unread messages count
+                const convResponse = await fetch(`${API_BASE_URL}/api/expert-chat/active-conversations?role=${currentRole}`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                
+                let unreadMessagesCount = 0;
+                if (convResponse.ok) {
+                    const convData = await convResponse.json();
+                    const convs = convData.conversations || [];
+                    unreadMessagesCount = convs.reduce((sum, conv) => sum + (conv.unreadCount || 0), 0);
+                }
+
+                const totalNotifications = pendingRequestsCount + unreadMessagesCount;
+
+                // Update tab badges
+                updateTabBadges(pendingRequestsCount, unreadMessagesCount);
+
+                // Update notification badge - communicate with parent window
+                updateNotificationBadge(totalNotifications);
+
+            } catch (error) {
+                console.log('Notification check error:', error.message);
+            }
+        }
+
+        function updateNotificationBadge(count) {
+            // If we're in an iframe, send message to parent window
+            if (window.self !== window.top) {
+                try {
+                    window.parent.postMessage({
+                        type: 'CHAT_NOTIFICATION_UPDATE',
+                        count: count
+                    }, '*');
+                } catch (e) {
+                    console.log('Could not communicate with parent window');
+                }
+            }
+
+            // Also update locally if badge exists
+            const localBadge = document.getElementById('chatNotificationBadge');
+            if (localBadge) {
+                if (count > 0) {
+                    localBadge.textContent = count > 99 ? '99+' : count;
+                    localBadge.style.display = 'flex';
+                } else {
+                    localBadge.style.display = 'none';
+                }
+            }
+
+            lastNotificationCount = count;
+        }
+
+        function updateTabBadges(requestsCount, unreadCount) {
+            // Update Requests badge (for experts)
+            const requestsBadge = document.getElementById('requestsBadge');
+            if (requestsBadge) {
+                if (requestsCount > 0) {
+                    requestsBadge.textContent = requestsCount;
+                    requestsBadge.style.display = 'inline-block';
+                } else {
+                    requestsBadge.style.display = 'none';
+                }
+            }
+
+            // Update Chats badge (for both users and experts)
+            const chatsBadge = document.getElementById('chatsBadge');
+            if (chatsBadge) {
+                if (unreadCount > 0) {
+                    chatsBadge.textContent = unreadCount;
+                    chatsBadge.style.display = 'inline-block';
+                } else {
+                    chatsBadge.style.display = 'none';
+                }
+            }
+        }
+
+        // Cleanup on page unload
+        window.addEventListener('beforeunload', () => {
+            stopMessagePolling();
+            if (notificationPollingInterval) {
+                clearInterval(notificationPollingInterval);
+            }
+        });
+    </script>
+</body>
+</html>

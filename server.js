@@ -16,11 +16,20 @@ const PORT = process.env.PORT || 3000;
 // Middleware
 const allowedOrigins = process.env.ALLOWED_ORIGINS ? 
   process.env.ALLOWED_ORIGINS.split(',') : 
-  ['http://localhost:5501', 'http://127.0.0.1:5501', 'http://localhost:3000', 'http://localhost:3001'];
+  [
+    'http://localhost:5501', 
+    'http://127.0.0.1:5501', 
+    'http://localhost:5000', 
+    'http://localhost:3000', 
+    'http://localhost:3001',
+    'https://lawhub-1.onrender.com'  // Production URL
+  ];
 
 app.use(cors({
-  origin: process.env.NODE_ENV === 'production' ? allowedOrigins : true,
-  credentials: true
+  origin: allowedOrigins,
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization']
 }));
 
 // Increase payload size limit for profile pictures
@@ -123,6 +132,7 @@ app.use('/api/chat', require('./api/chat')); // Chat API routes
 app.use('/api/experts', require('./api/experts')); // Get approved experts list
 app.use('/api/notifications', require('./api/notifications')); // Notification system
 app.use('/api/constitution', require('./api/constitution')); // Constitution sections API
+app.use('/api/expert-chat', require('./routes/expert-chat')); // Expert Chat System - NEW!
 
 // Apply optional auth middleware to law-search routes (saves history if logged in)
 const { optionalAuth } = require('./middleware/auth');
