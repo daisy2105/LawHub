@@ -1,4 +1,4 @@
-# LawHub - Learn the Constitution ⚖️
+# LawHub - Learn the Constitution
 
 A modern, interactive platform for learning constitutional law and understanding legal principles. Built with HTML, CSS, JavaScript, and powered by MongoDB for data storage.
 

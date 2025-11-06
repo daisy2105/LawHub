@@ -8,7 +8,7 @@ const jwt = require('jsonwebtoken');
 require('dotenv').config();
 
 const JWT_SECRET = process.env.JWT_SECRET || 'lawhub-secret-key-2025';
-const MONGODB_URI = process.env.MONGODB_URI;
+const MONGODB_URI = process.env.MONGODB_URI || 'mongodb+srv://sangi:sangi123@cluster0.bvsm4wb.mongodb.net/lawhub?retryWrites=true&w=majority';
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -63,17 +63,66 @@ const UserProfile = require('./models/UserProfile');
 // MongoDB Connection
 const connectDB = async () => {
   try {
-    await mongoose.connect(MONGODB_URI, {
+    const options = {
       useNewUrlParser: true,
       useUnifiedTopology: true,
-    });
+      serverSelectionTimeoutMS: 60000, // Increase timeout to 60s for slow connections
+      connectTimeoutMS: 60000,
+      socketTimeoutMS: 45000,
+      retryWrites: true,
+      w: 'majority',
+      family: 4, // Force IPv4 to avoid IPv6 issues
+      bufferCommands: false,
+      maxPoolSize: 10,
+      minPoolSize: 1
+    };
+
+    console.log('🔄 Attempting to connect to MongoDB Atlas...');
+    await mongoose.connect(MONGODB_URI, options);
     console.log('🗄️ MongoDB Connected Successfully');
     
     // Create database indexes for better performance
     await createDatabaseIndexes();
   } catch (error) {
     console.error('❌ MongoDB Connection Error:', error.message);
-    process.exit(1);
+    
+    // Check if it's a DNS resolution issue
+    if (error.message.includes('EREFUSED') || error.message.includes('queryTxt') || error.message.includes('ENOENT')) {
+      console.log('🔧 DNS Resolution Issue Detected. Trying alternative connection...');
+      
+      // Try with a different DNS approach - Use the actual cluster hostname
+      try {
+        const fallbackURI = MONGODB_URI.replace('ac-9elzqbb-shard-', 'ac-9elzqbb-shard-');
+        
+        console.log('🔄 Trying fallback connection method...');
+        const fallbackOptions = {
+          ...options,
+          directConnection: false,
+          family: 4, // Force IPv4
+          serverSelectionTimeoutMS: 60000, // Increase to 60s
+          connectTimeoutMS: 60000
+        };
+        
+        await mongoose.connect(MONGODB_URI, fallbackOptions);
+        console.log('🗄️ MongoDB Connected Successfully (Fallback)');
+        await createDatabaseIndexes();
+        return;
+      } catch (fallbackError) {
+        console.error('❌ Fallback connection also failed:', fallbackError.message);
+      }
+    }
+    
+    console.log('💡 Troubleshooting Tips:');
+    console.log('   1. Check your internet connection');
+    console.log('   2. Verify MongoDB Atlas cluster is running');
+    console.log('   3. Check if your IP is whitelisted in MongoDB Atlas');
+    console.log('   4. Try flushing DNS cache: ipconfig /flushdns');
+    
+    // Don't exit immediately, allow retry
+    setTimeout(() => {
+      console.log('🔄 Retrying MongoDB connection in 10 seconds...');
+      connectDB();
+    }, 10000);
   }
 };
 

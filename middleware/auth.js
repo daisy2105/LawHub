@@ -16,9 +16,17 @@ const verifyToken = async (req, res, next) => {
         }
         
         const token = authHeader.substring(7); // Remove 'Bearer ' prefix
+
+        // Defensive: treat literal strings 'null' or 'undefined' or empty as no token
+        if (!token || token === 'null' || token === 'undefined' || token.trim() === '') {
+            return res.status(401).json({
+                success: false,
+                message: 'Access denied. No token provided.'
+            });
+        }
         
         // Verify the token
-        const decoded = jwt.verify(token, JWT_SECRET);
+    const decoded = jwt.verify(token, JWT_SECRET);
         
         // Get user from database (excluding password)
         const user = await User.findById(decoded.userId).select('-password');
@@ -67,6 +75,12 @@ const optionalAuth = async (req, res, next) => {
         }
         
         const token = authHeader.substring(7);
+        // Defensive: if token is a literal 'null'/'undefined' or empty, treat as no auth
+        if (!token || token === 'null' || token === 'undefined' || token.trim() === '') {
+            req.user = null;
+            return next();
+        }
+
         const decoded = jwt.verify(token, JWT_SECRET);
         const user = await User.findById(decoded.userId).select('-password');
         

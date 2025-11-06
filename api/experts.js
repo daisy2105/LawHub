@@ -25,14 +25,14 @@ function authenticateUser(req, res, next) {
 // GET /api/experts - Get all approved experts (public endpoint)
 router.get('/', async (req, res) => {
   try {
-    console.log('📋 Fetching approved experts...');
+      console.log('Fetching approved experts...');
     
     // Fetch all approved expert applications
     const approvedExperts = await ExpertApplication.find({ status: 'approved' })
       .select('-documents -reviewNotes') // Exclude large fields
       .sort({ submittedAt: -1 });
     
-    console.log(`✅ Found ${approvedExperts.length} approved experts`);
+      console.log(`Found ${approvedExperts.length} approved experts`);
     
     // Transform to frontend-friendly format
     const experts = approvedExperts.map(expert => ({
@@ -40,7 +40,7 @@ router.get('/', async (req, res) => {
       userId: expert.userId,
       name: expert.userName || 'Legal Expert',
       email: expert.userEmail,
-      avatar: '👨‍⚖️', // Default avatar
+        avatar: 'Expert', // Default avatar
       specialization: expert.specialization,
       experience: expert.experience,
       bio: expert.bio,
@@ -60,7 +60,7 @@ router.get('/', async (req, res) => {
     res.json({ success: true, experts });
     
   } catch (error) {
-    console.error('❌ Error fetching experts:', error);
+      console.error('Error fetching experts:', error);
     res.status(500).json({ 
       success: false, 
       message: 'Failed to load experts',
@@ -72,26 +72,26 @@ router.get('/', async (req, res) => {
 // GET /api/experts/:id - Get single expert details
 router.get('/:id', authenticateUser, async (req, res) => {
   try {
-    console.log('🔍 Fetching expert details:', req.params.id);
-    
-    const expert = await ExpertApplication.findOne({ 
+    console.log('Fetching expert details:', req.params.id);
+
+    const expert = await ExpertApplication.findOne({
       _id: req.params.id,
-      status: 'approved' 
+      status: 'approved'
     }).select('-documents -reviewNotes');
-    
+
     if (!expert) {
       return res.status(404).json({ success: false, message: 'Expert not found' });
     }
-    
-    console.log('✅ Expert details retrieved');
-    
+
+    console.log('Expert details retrieved');
+
     // Transform to frontend-friendly format
     const expertData = {
       id: expert._id.toString(),
       userId: expert.userId,
       name: expert.userName || 'Legal Expert',
       email: expert.userEmail,
-      avatar: '👨‍⚖️',
+      avatar: 'Expert',
       specialization: expert.specialization,
       experience: expert.experience,
       bio: expert.bio,
@@ -107,15 +107,15 @@ router.get('/:id', authenticateUser, async (req, res) => {
       isOnline: true,
       approvedAt: expert.reviewedAt
     };
-    
+
     res.json({ success: true, expert: expertData });
-    
+
   } catch (error) {
-    console.error('❌ Error fetching expert details:', error);
-    res.status(500).json({ 
-      success: false, 
+    console.error('Error fetching expert details:', error);
+    res.status(500).json({
+      success: false,
       message: 'Failed to load expert details',
-      error: error.message 
+      error: error.message
     });
   }
 });

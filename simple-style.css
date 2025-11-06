@@ -8,40 +8,165 @@
 
 body {
     font-family: 'Roboto', sans-serif;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%), url('https://images.unsplash.com/photo-1521587760476-6c12a4b040da?q=80&w=2070&auto=format&fit=crop') no-repeat center center/cover;
+    /* Use desktop.png from images folder as background */
+    background-color: #000000;
+    background-image: url('/images/desktop.png');
+    background-repeat: no-repeat;
+    background-position: center center;
+    background-size: cover;
     background-attachment: fixed;
-    background-blend-mode: overlay;
     color: white;
     line-height: 1.6;
 }
 
+/* Sidebar navigation */
+.sidebar-main {
+    position: fixed;
+    left: 0;
+    top: 0;
+    height: 100vh;
+    width: 200px;
+    background: rgba(0,0,0,0.6);
+    backdrop-filter: blur(8px);
+    padding-top: 80px; /* leave space for header */
+    z-index: 1100;
+    border-right: 1px solid rgba(255,255,255,0.04);
+}
+
+.sidebar-nav {
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+    padding: 1rem;
+}
+
+.sidebar-nav a {
+    color: var(--beige, #F5E8D3);
+    text-decoration: none;
+    font-weight: 600;
+    padding: 10px 12px;
+    border-radius: 8px;
+}
+
+.sidebar-nav a:hover {
+    background: rgba(245,232,211,0.07);
+    color: #fff;
+}
+
+/* Header adjustments when sidebar present */
+.header .nav-container {
+    padding-left: 220px; /* avoid overlapping sidebar */
+}
+
+/* Hero quote centered with Didot style */
+.hero-section {
+    min-height: 80vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding-left: 220px; /* account for sidebar */
+    padding-right: 2rem;
+}
+
+.hero-quote-center {
+    text-align: center;
+    max-width: 900px;
+    padding: 4rem 2rem;
+    background: rgba(0,0,0,0.35);
+    border-radius: 12px;
+}
+
+.hero-quote-didot {
+    font-family: 'Didot', 'Times New Roman', serif;
+    font-size: 2.6rem;
+    line-height: 1.2;
+    color: var(--beige, #F5E8D3);
+    margin-bottom: 0.8rem;
+}
+
+.hero-quote-author {
+    font-family: 'Didot', 'Times New Roman', serif;
+    color: var(--beige, #F5E8D3);
+    opacity: 0.9;
+    font-size: 1.05rem;
+}
+
+/* Features area should avoid sidebar overlap */
+.features-section {
+    padding-left: 220px;
+}
+
+/* Data viz area avoid sidebar */
+.data-viz-section {
+    padding-left: 220px;
+}
+
+/* Responsive: collapse sidebar on small screens */
+@media (max-width: 900px) {
+    .sidebar-main { display: none; }
+    .header .nav-container { padding-left: 2rem; }
+    .hero-section { padding-left: 2rem; }
+    .features-section { padding-left: 2rem; }
+    .data-viz-section { padding-left: 2rem; }
+}
+
 
 .header {
-    background: rgba(255, 255, 255, 0.15);
-    backdrop-filter: blur(15px);
-    border-bottom: 1px solid rgba(255, 255, 255, 0.3);
+    background: transparent;
+    border-bottom: none;
     padding: 1rem 0;
     position: fixed;
     width: 100%;
     top: 0;
     z-index: 1000;
-    box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+    height: 80px;
 }
 
 .nav-container {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    max-width: 1200px;
-    margin: auto;
+    max-width: 100%;
+    margin: 0;
     padding: 0 2rem;
+    width: 100%;
+    position: relative;
+    height: 100%;
+}
+
+.logo-container {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+    margin-right: auto;
+    position: absolute;
+    left: 2rem;
+    top: 50%;
+    transform: translateY(-50%);
+}
+
+.logo-image {
+    width: 80px;
+    height: 80px;
+    object-fit: contain;
+    border-radius: 8px;
+    transition: transform 0.3s ease;
+    opacity: 0.95;
+    filter: brightness(1.1);
+}
+
+.logo-image:hover {
+    transform: scale(1.1);
+    opacity: 1;
 }
 
 .logo {
-    color: white;
+    color: var(--beige, #F5E8D3);
     font-size: 1.8rem;
     font-weight: 700;
     text-shadow: 1px 1px 3px rgba(0,0,0,0.2);
+    font-family: 'Playfair Display', serif;
+    margin: 0;
 }
 
 .nav-menu {
@@ -49,32 +174,27 @@ body {
     gap: 2rem;
 }
 
+.right-nav-section {
+    display: flex;
+    align-items: center;
+    gap: 2rem;
+    margin-left: auto;
+}
+
+.nav-menu {
+    display: flex;
+    gap: 1.5rem;
+    transition: all 0.3s ease;
+}
+
 .nav-menu a {
     color: #eee;
     text-decoration: none;
     font-weight: 600;
-    transition: color 0.3s ease;
-    position: relative;
-    padding-bottom: 5px;
+    transition: all 0.3s ease;
 }
-
-.nav-menu a::after {
-    content: '';
-    position: absolute;
-    width: 0;
-    height: 2px;
-    bottom: 0;
-    left: 0;
-    background: linear-gradient(90deg, #ff6b6b, #feca57);
-    transition: width 0.3s ease;
-}
-
 .nav-menu a:hover {
     color: white;
-}
-
-.nav-menu a:hover::after {
-    width: 100%;
 }
 
 .auth-section {
@@ -85,32 +205,35 @@ body {
 .login-button, .signup-button {
     padding: 0.6rem 1.2rem;
     border-radius: 50px;
-    border: 1px solid white;
+    border: 1px solid var(--beige, #F5E8D3);
     font-weight: 600;
     cursor: pointer;
     transition: all 0.3s ease;
+    background: var(--beige, #F5E8D3);
+    color: #333;
 }
 
 .login-button {
     background: transparent;
-    color: white;
+    color: var(--beige, #F5E8D3);
 }
 
 .login-button:hover {
-    background: white;
+    background: var(--beige, #F5E8D3);
     color: #333;
 }
 
 .signup-button {
-    background: linear-gradient(45deg, #ff6b6b, #ee5a52, #ff8a80);
-    color: white;
-    border: none;
-    box-shadow: 0 4px 15px rgba(255, 107, 107, 0.4);
+    background: var(--beige, #F5E8D3);
+    color: #333;
+    border: 1px solid var(--beige, #F5E8D3);
 }
 
 .signup-button:hover {
+    background: var(--beige, #F5E8D3);
+    color: #333;
+    opacity: 0.9;
     transform: translateY(-3px);
-    box-shadow: 0 6px 20px rgba(255, 107, 107, 0.6);
 }
 
 /* Hero Section */
@@ -163,53 +286,22 @@ body {
 }
 
 /* Content Sections */
-.about-section, .contact-section {
-    padding: 6rem 0;
+.about-section {
+    padding: 8rem 0 4rem 0;
     display: flex;
     justify-content: center;
     align-items: center;
+    min-height: 80vh;
 }
 
-.content-box, .contact-box {
-    background: rgba(0, 0, 0, 0.5);
-    backdrop-filter: blur(12px);
-    border-radius: 20px;
-    padding: 3rem;
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    box-shadow: 0 12px 40px 0 rgba(0, 0, 0, 0.5);
+.content-box {
     text-align: center;
-    max-width: 1100px;
-    margin: 0 2rem;
-    position: relative;
-    overflow: hidden;
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 4rem 3rem;
 }
 
-.content-box:hover, .contact-box:hover {
-    transform: translateY(-8px);
-    box-shadow: 0 8px 20px rgba(0,0,0,0.2);
-}
-
-.content-box::before, .contact-box::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: -100%;
-    width: 100%;
-    height: 100%;
-    background: linear-gradient(120deg, rgba(255,255,255,0) 0%, rgba(255,255,255,0.4) 50%, rgba(255,255,255,0) 100%);
-    transform: skewX(-20deg);
-}
-
-.content-box:hover::before, .contact-box:hover::before {
-    animation: shine 0.8s forwards;
-}
-
-@keyframes shine {
-    to { left: 100%; }
-}
-
-.content-box h2, .contact-box h2 {
+.content-box h2 {
     font-size: 3rem;
     margin-bottom: 1.5rem;
     font-weight: 700;
@@ -218,6 +310,20 @@ body {
     -webkit-text-fill-color: transparent;
     background-clip: text;
     text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+}
+
+.about-tagline {
+    font-family: 'Playfair Display', serif !important;
+    font-size: 4rem !important;
+    font-weight: 700 !important;
+    color: var(--beige, #F5E8D3) !important;
+    text-align: center !important;
+    margin-bottom: 2rem !important;
+    text-shadow: 3px 3px 6px rgba(0,0,0,0.7) !important;
+    letter-spacing: 3px;
+    line-height: 1.2;
+    background: none !important;
+    -webkit-text-fill-color: var(--beige, #F5E8D3) !important;
 }
 
 blockquote {
@@ -229,7 +335,7 @@ blockquote {
     padding-left: 1rem;
 }
 
-.content-box p, .contact-box p {
+.content-box p {
     font-size: 1.2rem;
     line-height: 1.8;
     color: #eee;
@@ -313,6 +419,7 @@ blockquote {
     display: flex;
     flex-direction: column;
     gap: 1rem;
+    transition: all 0.3s ease;
 }
 
 .nav-buttons button {
@@ -362,56 +469,11 @@ blockquote {
     transform: scale(1.1);
 }
 
-/* Contact Form */
-.contact-box {
-    max-width: 600px;
-}
-
-.contact-form {
-    margin-top: 1.5rem;
-    text-align: left;
-}
-
-.contact-form input, .contact-form textarea {
-    width: 100%;
-    padding: 0.8rem;
-    margin-bottom: 0.8rem;
-    border-radius: 10px;
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    background: rgba(255, 255, 255, 0.05);
-    color: white;
-    font-size: 1rem;
-    font-family: 'Roboto', sans-serif;
-}
-
-.contact-form input::placeholder, .contact-form textarea::placeholder {
-    color: #ccc;
-}
-
-.contact-form button {
-    width: 100%;
-    padding: 0.8rem;
-    border: none;
-    background: linear-gradient(45deg, #ff6b6b, #feca57);
-    color: white;
-    border-radius: 10px;
-    cursor: pointer;
-    font-size: 1.1rem;
-    font-weight: 600;
-    font-family: 'Roboto', sans-serif;
-    transition: all 0.3s ease;
-    box-shadow: 0 4px 15px rgba(255, 107, 107, 0.4);
-}
-
-.contact-form button:hover {
-    box-shadow: 0 6px 20px rgba(255, 107, 107, 0.6);
-    transform: translateY(-2px);
-}
-
 /* Data Visualization Section */
 .data-viz-section {
-    padding: 6rem 2rem;
+    padding: 4rem 2rem 6rem 2rem;
     text-align: center;
+    margin-top: 2rem;
 }
 
 .data-viz-section h2 {
@@ -449,6 +511,21 @@ blockquote {
     padding: 2rem 0;
     margin-top: 4rem;
     border-top: 1px solid #333;
+}
+
+.contact-info {
+    margin-bottom: 1.5rem;
+}
+
+.contact-info h3 {
+    color: var(--beige, #F5E8D3);
+    margin-bottom: 1rem;
+    font-size: 1.2rem;
+}
+
+.contact-info p {
+    margin: 0.5rem 0;
+    color: #ccc;
 }
 
 /* Dialog Box Styles */
@@ -583,3 +660,99 @@ blockquote {
     0% { transform: translate(-50%, -50%) rotate(0deg); }
     100% { transform: translate(-50%, -50%) rotate(360deg); }
 }
+
+/* Home page: override colors to use beige for fonts and buttons per request */
+:root {
+    --beige: #F5E8D3;
+    --beige-dark: #d8c9ad;
+}
+
+/* Set primary font color to beige */
+body {
+    color: var(--beige);
+}
+
+/* Navigation links */
+.nav-menu a {
+    color: var(--beige);
+}
+
+/* Buttons */
+.login-button {
+    background: transparent;
+    color: var(--beige);
+    border-color: var(--beige);
+}
+.login-button:hover {
+    background: var(--beige);
+    color: #333;
+}
+
+.signup-button {
+    background: var(--beige);
+    color: #333;
+    border: 1px solid var(--beige);
+    box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+}
+.signup-button:hover {
+    background: var(--beige);
+    color: #333;
+    opacity: 0.9;
+}
+
+.discover-button {
+    background: var(--beige);
+    color: #111;
+    box-shadow: 0 8px 25px rgba(0,0,0,0.25);
+}
+.discover-button:hover {
+    transform: translateY(-5px) scale(1.05);
+    box-shadow: 0 15px 35px rgba(0,0,0,0.35);
+}
+
+/* Headings that used gradients should show beige instead */
+.content-box h2,
+.features-section h2,
+.dialog-title,
+.data-viz-section h2,
+.hero-section h1,
+.feature-content h3 {
+    color: var(--beige) !important;
+    -webkit-text-fill-color: unset !important;
+    background: none !important;
+}
+
+/* Ensure placeholders and lighter text remain readable */
+.content-box p,
+.hero-quote,
+.feature-content p,
+.chart-container h3 {
+    color: var(--beige);
+}
+
+/* Footer adjustments */
+.footer {
+    color: var(--beige);
+    border-top-color: rgba(245,232,211,0.06);
+}
+
+/* Ensure interactive dots/buttons remain visible */
+.dot,
+.active-dot {
+    background: var(--beige) !important;
+}
+
+/* Hero quote with Didot font styling */
+.hero-quote-didot {
+    font-family: 'Didot', 'Times New Roman', serif !important;
+    font-size: 3.5rem;
+    line-height: 1.3;
+    color: var(--beige, #F5E8D3);
+    text-align: center;
+    font-weight: 400;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    margin-bottom: 2rem;
+    text-shadow: 2px 2px 8px rgba(0,0,0,0.7);
+}
+

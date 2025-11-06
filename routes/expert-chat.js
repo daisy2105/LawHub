@@ -5,6 +5,7 @@ const Conversation = require('../models/Conversation');
 const Message = require('../models/Message');
 const User = require('../models/User');
 const { verifyToken } = require('../middleware/auth');
+const encryption = require('../utils/encryption');
 
 // Store user public keys in memory (in production, use database)
 const publicKeys = new Map();
@@ -309,7 +310,7 @@ router.get('/active-conversations', verifyToken, async (req, res) => {
           otherUserName: userRole === 'expert' ? (otherUser?.name || 'User') : (expertDetails?.userName || 'Expert'),
           otherUserEmail: otherUser?.email,
           specialization: expertDetails?.specialization || 'Legal Expert',
-          lastMessage: conv.lastMessage || 'No messages yet',
+          lastMessage: conv.lastMessage || 'No messages yet', // This is already decrypted from conversation update
           lastMessageTime: conv.lastMessageTime,
           unreadCount: userRole === 'expert' ? conv.unreadCountExpert : conv.unreadCountUser,
           status: conv.status,
@@ -551,6 +552,14 @@ router.get('/conversation/:conversationId/messages', verifyToken, async (req, re
       .sort({ timestamp: 1 })
       .lean();
     
+    // Return messages as-is (frontend will handle decryption for CryptoJS encrypted messages)
+    const processedMessages = messages.map(msg => ({
+      ...msg,
+      // Don't decrypt server-side for CryptoJS messages
+      // Frontend will handle decryption of messages that start with U2FsdGVkX1
+      message: msg.message
+    }));
+    
     // Mark messages as read
     const userRole = conversation.userId.toString() === userId.toString() ? 'user' : 'expert';
     await Message.updateMany(
@@ -570,9 +579,11 @@ router.get('/conversation/:conversationId/messages', verifyToken, async (req, re
     }
     await conversation.save();
     
+    console.log(`✅ Retrieved ${processedMessages.length} messages (encryption handled by frontend)`);
+    
     res.json({
       success: true,
-      messages: messages,
+      messages: processedMessages,
       conversation: {
         id: conversation._id,
         userId: conversation.userId,
@@ -621,19 +632,35 @@ router.post('/conversation/:conversationId/message', verifyToken, async (req, re
     // Determine sender role
     const senderRole = conversation.userId.toString() === userId.toString() ? 'user' : 'expert';
     
-    // Create message (store encrypted message)
+    // Store the message as received from frontend (already encrypted if using CryptoJS)
+    const messageToStore = message.trim();
+    
+    // For CryptoJS encrypted messages, we don't decrypt them server-side
+    // The frontend handles encryption/decryption
+    let decryptedPreview = messageToStore;
+    
+    // Try to get a preview for conversation list (if it's a simple format)
+    if (!messageToStore.startsWith('U2FsdGVkX1')) {
+      // Not CryptoJS encrypted, use as-is for preview
+      decryptedPreview = messageToStore.substring(0, 50);
+    } else {
+      // CryptoJS encrypted - use a generic preview
+      decryptedPreview = '🔒 Encrypted message';
+    }
+    
+    // Create message (store the message as-is from frontend)
     const newMessage = await Message.create({
       conversationId: conversationId,
       senderId: userId,
       senderRole: senderRole,
-      message: message.trim(),  // This is the encrypted message
-      encryptedKey: encryptedKey || '',  // Store the encrypted AES key
+      message: messageToStore,  // Store as received from frontend
+      encryptedKey: encryptedKey || '', // Store encrypted key if provided
       isRead: false,
       timestamp: new Date()
     });
     
-    // Update conversation (store first 50 chars of encrypted message as preview)
-    conversation.lastMessage = message.trim().substring(0, 50);
+    // Update conversation with preview
+    conversation.lastMessage = decryptedPreview;
     conversation.lastMessageTime = new Date();
     
     // Increment unread count for the other party
@@ -645,15 +672,16 @@ router.post('/conversation/:conversationId/message', verifyToken, async (req, re
     
     await conversation.save();
     
-    console.log('✅ Encrypted message sent:', newMessage._id);
+    console.log('✅ Message stored:', newMessage._id);
     
+    // Return success with message data (frontend will handle display)
     res.json({
       success: true,
       message: 'Message sent successfully',
       messageData: {
         id: newMessage._id,
-        message: newMessage.message,
-        encryptedKey: newMessage.encryptedKey,
+        message: messageToStore, // Return as stored (encrypted)
+        encryptedKey: encryptedKey || '',
         timestamp: newMessage.timestamp,
         senderId: newMessage.senderId,
         senderRole: newMessage.senderRole
@@ -709,7 +737,9 @@ router.delete('/message/:messageId', verifyToken, async (req, res) => {
         .limit(1);
       
       if (lastMessage) {
-        conversation.lastMessage = lastMessage.message.substring(0, 50);
+        // Decrypt the last message for conversation preview
+        const decryptedMessage = encryption.decrypt(lastMessage.message);
+        conversation.lastMessage = decryptedMessage.substring(0, 50);
         conversation.lastMessageTime = lastMessage.timestamp;
       } else {
         conversation.lastMessage = '';

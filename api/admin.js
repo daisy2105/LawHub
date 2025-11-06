@@ -343,57 +343,42 @@ router.get('/admin/chat-connections', async (req, res) => {
   try {
     console.log('💬 Admin chat connections requested');
     
-    // Import connection models
-    const ConnectionRequest = mongoose.model('ConnectionRequest');
+    // Import conversation model
+    const Conversation = require('../models/Conversation');
     
-    // Get all connection requests with details
-    const connections = await ConnectionRequest.find({})
-      .sort({ requestedAt: -1 })
-      .limit(100); // Limit to recent 100 connections
+    // Get all conversations with user and expert details
+    const conversations = await Conversation.find({})
+      .populate('userId', 'name email')
+      .populate('expertId', 'name email')
+      .sort({ lastMessageTime: -1 })
+      .limit(100); // Limit to recent 100 conversations
     
-    // Get user and expert details for each connection
-    const connectionsWithDetails = await Promise.all(
-      connections.map(async (conn) => {
-        try {
-          const user = await User.findById(conn.userId);
-          const expert = await ExpertApplication.findById(conn.expertId);
-          
-          return {
-            id: conn._id,
-            user: {
-              id: conn.userId,
-              email: user?.email || 'Unknown',
-              name: user?.name || 'Unknown User'
-            },
-            expert: {
-              id: conn.expertId,
-              name: expert?.userName || 'Unknown Expert',
-              email: expert?.userEmail || 'Unknown',
-              specialization: expert?.specialization || 'Unknown'
-            },
-            status: conn.status,
-            message: conn.message,
-            requestedAt: conn.requestedAt,
-            respondedAt: conn.respondedAt,
-            chatSessionId: conn.chatSessionId
-          };
-        } catch (err) {
-          console.error('Error processing connection:', err);
-          return {
-            id: conn._id,
-            user: { id: conn.userId, email: 'Error loading', name: 'Error' },
-            expert: { id: conn.expertId, name: 'Error loading', email: 'Error', specialization: 'Error' },
-            status: conn.status,
-            message: conn.message,
-            requestedAt: conn.requestedAt,
-            respondedAt: conn.respondedAt,
-            chatSessionId: conn.chatSessionId
-          };
-        }
-      })
-    );
+    console.log('💬 Found', conversations.length, 'conversations');
     
-    console.log('🔗 Found', connections.length, 'connection records');
+    // Format the connections for admin display
+    const connectionsWithDetails = conversations.map(conv => {
+      return {
+        id: conv._id,
+        user: {
+          id: conv.userId?._id,
+          name: conv.userId?.name || 'Unknown User',
+          email: conv.userId?.email || 'Unknown'
+        },
+        expert: {
+          id: conv.expertId?._id,
+          name: conv.expertId?.name || 'Unknown Expert',
+          email: conv.expertId?.email || 'Unknown'
+        },
+        status: conv.status,
+        lastMessage: conv.lastMessage,
+        lastMessageTime: conv.lastMessageTime,
+        unreadCountUser: conv.unreadCountUser,
+        unreadCountExpert: conv.unreadCountExpert,
+        createdAt: conv.createdAt
+      };
+    });
+    
+    console.log('🔗 Formatted', connectionsWithDetails.length, 'connection records');
     
     res.json({
       success: true,
@@ -402,8 +387,8 @@ router.get('/admin/chat-connections', async (req, res) => {
     
   } catch (error) {
     console.error('❌ Error getting chat connections:', error);
-    res.status(500).json({
-      success: false,
+    res.status(500).json({ 
+      success: false, 
       message: error.message,
       connections: []
     });

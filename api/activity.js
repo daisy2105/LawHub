@@ -45,20 +45,19 @@ router.post('/login', verifyToken, async (req, res) => {
 // Log User Logout
 router.post('/logout', verifyToken, async (req, res) => {
     try {
-        const { db } = req.app.locals;
         const userId = req.user.id;
         const loginLogId = req.session?.loginLogId;
         
         if (loginLogId) {
             // Find the login record and calculate session duration
-            const loginRecord = await db.collection('login_logs').findOne({ _id: new ObjectId(loginLogId) });
+            const loginRecord = await mongoose.connection.db.collection('login_logs').findOne({ _id: new ObjectId(loginLogId) });
             
             if (loginRecord) {
                 const logoutTime = new Date();
                 const sessionDuration = Math.round((logoutTime - loginRecord.loginTime) / (1000 * 60)); // in minutes
                 
                 // Update login log with logout time and duration
-                await db.collection('login_logs').updateOne(
+                await mongoose.connection.db.collection('login_logs').updateOne(
                     { _id: new ObjectId(loginLogId) },
                     { 
                         $set: { 

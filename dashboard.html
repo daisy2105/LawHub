@@ -5,6 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>LawHub - Learning Dashboard</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&display=swap" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
@@ -75,10 +78,35 @@
             border-bottom: 1px solid rgba(255, 255, 255, 0.2);
         }
 
+        .logo-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            margin-bottom: 5px;
+        }
+
+        .logo-image {
+            width: 65px;
+            height: 65px;
+            object-fit: contain;
+            border-radius: 8px;
+            opacity: 0.95;
+            transition: transform 0.3s ease;
+            filter: brightness(1.1);
+        }
+
+        .logo-image:hover {
+            transform: scale(1.1);
+            opacity: 1;
+        }
+
         .logo h2 {
             color: white;
             font-size: 24px;
-            margin-bottom: 5px;
+            margin: 0;
+            font-family: 'Playfair Display', serif;
+            font-weight: 700;
         }
 
         .logo p {
@@ -1152,7 +1180,10 @@
         <!-- Sidebar -->
         <nav class="sidebar" id="sidebar">
             <div class="logo">
-                <h2><i class="fas fa-balance-scale"></i> LawHub</h2>
+                <div class="logo-container">
+                    <img src="/images/logo.jpg" alt="LawHub Logo" class="logo-image">
+                    <h2>LawHub</h2>
+                </div>
                 <p>Your Legal Learning Companion</p>
             </div>
             
@@ -1224,14 +1255,6 @@
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a href="#" class="nav-link" data-section="profile">
-                        <i class="fas fa-user"></i>
-                        Profile
-                    </a>
-                </li>
-            </ul>
-                </li>
-                <li class="nav-item">
                     <a href="#" class="nav-link" data-section="certificates">
                         <i class="fas fa-certificate"></i>
                         Certificates
@@ -1241,6 +1264,12 @@
                     <a href="#" class="nav-link" data-section="profile">
                         <i class="fas fa-user"></i>
                         Profile
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#" class="nav-link" onclick="logout()" style="color: #ff6b6b; border-top: 1px solid rgba(255, 255, 255, 0.2); margin-top: 15px; padding-top: 15px;">
+                        <i class="fas fa-sign-out-alt"></i>
+                        Logout
                     </a>
                 </li>
             </ul>
@@ -2126,6 +2155,14 @@
     </div>
 
     <script>
+        // Immediate logout check - prevent any display of dashboard content
+        (function() {
+            if (sessionStorage.getItem('user_logged_out') === 'true') {
+                window.location.replace('login2.html');
+                return;
+            }
+        })();
+        
         // Initialize Chart
         document.addEventListener('DOMContentLoaded', function() {
             try {
@@ -2502,6 +2539,57 @@
             return now.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
         }
 
+        // Logout function with security measures
+        function logout() {
+            try {
+                // Clear all authentication data
+                localStorage.removeItem('token');
+                localStorage.removeItem('user');
+                localStorage.removeItem('userProfile');
+                localStorage.removeItem('lawhub_token');
+                localStorage.removeItem('lawhub_user');
+                localStorage.clear();
+                
+                // Set logout flags in sessionStorage
+                sessionStorage.setItem('user_logged_out', 'true');
+                sessionStorage.setItem('logout_timestamp', new Date().toISOString());
+                
+                // Clear any Supabase session
+                if (window.supabase) {
+                    const supabase = window.supabase.createClient(
+                        'https://wnejyltcmihxiwvqgspx.supabase.co',
+                        'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InduZWp5bHRjbWloeGl3dnFnc3B4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTQ5Mjk1ODcsImV4cCI6MjA3MDUwNTU4N30.pIYpLXs0YLmXiPi8Bkio-goGpBKSFdaiDcJtBePz8wQ'
+                    );
+                    supabase.auth.signOut();
+                }
+                
+                // Use replace to avoid adding current page to history
+                window.location.replace('login2.html');
+            } catch (error) {
+                console.error('Logout error:', error);
+                // Fallback logout
+                window.location.replace('login2.html');
+            }
+        }
+
+        // Check authentication and prevent post-logout access
+        function checkUserAuth() {
+            // Check if user was logged out
+            if (sessionStorage.getItem('user_logged_out') === 'true') {
+                window.location.replace('login2.html');
+                return false;
+            }
+            
+            // Check for valid authentication
+            const token = localStorage.getItem('token') || localStorage.getItem('lawhub_token');
+            if (!token) {
+                window.location.replace('login2.html');
+                return false;
+            }
+            
+            return true;
+        }
+
         // Navigation functionality
         function initNavigation() {
             const navLinks = document.querySelectorAll('.nav-link');
@@ -2532,6 +2620,29 @@
 
         // Load user name on page load
         document.addEventListener('DOMContentLoaded', async function() {
+            // Check authentication first
+            if (!checkUserAuth()) {
+                return;
+            }
+            
+            // Add browser navigation prevention
+            window.history.pushState(null, null, window.location.href);
+            window.addEventListener('popstate', function(event) {
+                if (sessionStorage.getItem('user_logged_out') === 'true') {
+                    window.location.replace('login2.html');
+                    return;
+                }
+                window.history.pushState(null, null, window.location.href);
+            });
+            
+            // Prevent access if user was logged out in this session
+            window.addEventListener('pageshow', function(event) {
+                if (sessionStorage.getItem('user_logged_out') === 'true') {
+                    window.location.replace('login2.html');
+                    return;
+                }
+            });
+            
             // Initialize navigation
             initNavigation();
             const supabase = window.supabase.createClient(
@@ -2548,7 +2659,7 @@
                 if (error) {
                     console.error('Error getting user:', error);
                     // Redirect to login if no valid session
-                    window.location.href = 'login2.html';
+                    window.location.replace('login2.html');
                     return;
                 }
 
@@ -2579,11 +2690,11 @@
                     }
                 } else {
                     // If no name found, redirect to login
-                    window.location.href = 'login2.html';
+                    window.location.replace('login2.html');
                 }
             } catch (error) {
                 console.error('Error:', error);
-                window.location.href = 'login2.html';
+                window.location.replace('login2.html');
             }
         });
     </script>

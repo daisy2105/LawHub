@@ -5,7 +5,19 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>LawHub Admin Dashboard</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&display=swap" rel="stylesheet">
     <style>
+        :root {
+            --beige: #F5E8D3;
+            --beige-light: #FAF2E6;
+            --beige-dark: #E6D4B7;
+            --black: #000000;
+            --black-light: #1a1a1a;
+            --black-dark: #0d0d0d;
+        }
+
         * {
             margin: 0;
             padding: 0;
@@ -13,10 +25,10 @@
         }
 
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
-            background: linear-gradient(135deg, #0f0f23 0%, #1a1a3e 100%);
+            font-family: 'Playfair Display', 'Georgia', serif;
+            background: linear-gradient(135deg, var(--black) 0%, var(--black-light) 50%, var(--black-dark) 100%);
             min-height: 100vh;
-            color: #e0e0e0;
+            color: var(--beige);
             overflow-x: hidden;
         }
 
@@ -28,9 +40,9 @@
         /* Sidebar */
         .admin-sidebar {
             width: 280px;
-            background: rgba(255, 255, 255, 0.05);
+            background: rgba(0, 0, 0, 0.8);
             backdrop-filter: blur(20px);
-            border-right: 1px solid rgba(255, 255, 255, 0.1);
+            border-right: 1px solid var(--beige-dark);
             padding: 30px 0;
             position: fixed;
             height: 100vh;
@@ -43,15 +55,39 @@
             padding: 0 30px;
         }
 
-        .admin-logo h1 {
-            color: #fff;
-            font-size: 2rem;
-            font-weight: 700;
+        .logo-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
             margin-bottom: 5px;
         }
 
+        .logo-image {
+            width: 65px;
+            height: 65px;
+            object-fit: contain;
+            border-radius: 8px;
+            opacity: 0.95;
+            transition: transform 0.3s ease;
+            filter: brightness(1.1);
+        }
+
+        .logo-image:hover {
+            transform: scale(1.1);
+            opacity: 1;
+        }
+
+        .admin-logo h1 {
+            color: var(--beige);
+            font-size: 2rem;
+            font-weight: 700;
+            margin: 0;
+            font-family: 'Playfair Display', serif;
+        }
+
         .admin-logo p {
-            color: #888;
+            color: var(--beige-dark);
             font-size: 0.9rem;
         }
 
@@ -68,7 +104,7 @@
             display: flex;
             align-items: center;
             padding: 15px 20px;
-            color: #ccc;
+            color: var(--beige-dark);
             text-decoration: none;
             border-radius: 12px;
             transition: all 0.3s ease;
@@ -78,15 +114,15 @@
         }
 
         .nav-link:hover {
-            background: rgba(255, 255, 255, 0.1);
-            color: #fff;
+            background: rgba(245, 232, 211, 0.1);
+            color: var(--beige);
             transform: translateX(5px);
         }
 
         .nav-link.active {
-            background: linear-gradient(135deg, #667eea, #764ba2);
-            color: #fff;
-            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
+            background: linear-gradient(135deg, var(--beige-dark), var(--beige));
+            color: var(--black);
+            box-shadow: 0 8px 25px rgba(245, 232, 211, 0.3);
         }
 
         .nav-link i {
@@ -97,8 +133,8 @@
         }
 
         .nav-badge {
-            background: #ff4757;
-            color: #fff;
+            background: var(--beige-dark);
+            color: var(--black);
             padding: 2px 8px;
             border-radius: 10px;
             font-size: 0.7rem;
@@ -114,7 +150,7 @@
         }
 
         .admin-header {
-            background: rgba(255, 255, 255, 0.08);
+            background: rgba(0, 0, 0, 0.6);
             backdrop-filter: blur(20px);
             border-radius: 20px;
             padding: 25px 30px;
@@ -122,18 +158,18 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            border: 1px solid rgba(255, 255, 255, 0.1);
+            border: 1px solid var(--beige-dark);
         }
 
         .header-title h1 {
-            color: #fff;
+            color: var(--beige);
             font-size: 2rem;
             font-weight: 700;
             margin-bottom: 5px;
         }
 
         .header-title p {
-            color: #888;
+            color: var(--beige-dark);
             font-size: 1rem;
         }
 
@@ -144,8 +180,8 @@
         }
 
         .admin-btn {
-            background: linear-gradient(135deg, #ff6b6b, #ee5a6f);
-            color: #fff;
+            background: linear-gradient(135deg, var(--beige-dark), var(--beige));
+            color: var(--black);
             border: none;
             border-radius: 12px;
             padding: 12px 20px;
@@ -160,21 +196,22 @@
 
         .admin-btn:hover {
             transform: translateY(-2px);
-            box-shadow: 0 8px 25px rgba(255, 107, 107, 0.4);
+            box-shadow: 0 8px 25px rgba(245, 232, 211, 0.4);
         }
 
         .admin-btn.secondary {
-            background: linear-gradient(135deg, #51cf66, #40c057);
+            background: linear-gradient(135deg, var(--beige), var(--beige-light));
+            color: var(--black);
         }
 
         /* Content Sections */
         .section-content {
             display: none;
-            background: rgba(255, 255, 255, 0.05);
+            background: rgba(0, 0, 0, 0.6);
             backdrop-filter: blur(20px);
             border-radius: 20px;
             padding: 30px;
-            border: 1px solid rgba(255, 255, 255, 0.1);
+            border: 1px solid var(--beige-dark);
         }
 
         .section-content.active {
@@ -202,11 +239,11 @@
         }
 
         .stat-card {
-            background: rgba(255, 255, 255, 0.08);
+            background: rgba(0, 0, 0, 0.6);
             backdrop-filter: blur(20px);
             border-radius: 16px;
             padding: 25px;
-            border: 1px solid rgba(255, 255, 255, 0.1);
+            border: 1px solid var(--beige-dark);
             position: relative;
             overflow: hidden;
             transition: all 0.3s ease;
@@ -214,7 +251,7 @@
 
         .stat-card:hover {
             transform: translateY(-5px);
-            background: rgba(255, 255, 255, 0.12);
+            background: rgba(0, 0, 0, 0.8);
         }
 
         .stat-card::before {
@@ -224,11 +261,11 @@
             left: 0;
             right: 0;
             height: 4px;
-            background: linear-gradient(135deg, #667eea, #764ba2);
+            background: linear-gradient(135deg, var(--beige-dark), var(--beige));
         }
 
         .stat-icon {
-            background: linear-gradient(135deg, #667eea, #764ba2);
+            background: linear-gradient(135deg, var(--beige-dark), var(--beige));
             width: 50px;
             height: 50px;
             border-radius: 12px;
@@ -240,18 +277,18 @@
 
         .stat-icon i {
             font-size: 1.5rem;
-            color: #fff;
+            color: var(--black);
         }
 
         .stat-number {
             font-size: 2.5rem;
             font-weight: 700;
-            color: #fff;
+            color: var(--beige);
             margin-bottom: 5px;
         }
 
         .stat-label {
-            color: #888;
+            color: var(--beige-dark);
             font-size: 1rem;
             font-weight: 500;
         }
@@ -262,8 +299,8 @@
         }
 
         .list-item {
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid rgba(255, 255, 255, 0.1);
+            background: rgba(0, 0, 0, 0.4);
+            border: 1px solid var(--beige-dark);
             border-radius: 16px;
             padding: 20px;
             margin-bottom: 15px;
@@ -273,7 +310,7 @@
         }
 
         .list-item:hover {
-            background: rgba(255, 255, 255, 0.1);
+            background: rgba(0, 0, 0, 0.6);
             transform: translateX(5px);
         }
 
@@ -285,14 +322,14 @@
         }
 
         .item-info h3 {
-            color: #fff;
+            color: var(--beige);
             font-size: 1.2rem;
             font-weight: 600;
             margin-bottom: 5px;
         }
 
         .item-info p {
-            color: #888;
+            color: var(--beige-dark);
             font-size: 0.9rem;
         }
 
@@ -315,23 +352,23 @@
         }
 
         .action-btn.view {
-            background: linear-gradient(135deg, #4dabf7, #339af0);
-            color: #fff;
+            background: linear-gradient(135deg, var(--beige-dark), var(--beige));
+            color: var(--black);
         }
 
         .action-btn.approve {
-            background: linear-gradient(135deg, #51cf66, #40c057);
-            color: #fff;
+            background: linear-gradient(135deg, var(--beige), var(--beige-light));
+            color: var(--black);
         }
 
         .action-btn.reject {
-            background: linear-gradient(135deg, #ff6b6b, #ee5a6f);
-            color: #fff;
+            background: linear-gradient(135deg, var(--beige-dark), var(--beige));
+            color: var(--black);
         }
 
         .action-btn.delete {
-            background: linear-gradient(135deg, #f03e3e, #e03131);
-            color: #fff;
+            background: linear-gradient(135deg, var(--beige-dark), var(--beige));
+            color: var(--black);
         }
 
         .action-btn:hover {
@@ -349,27 +386,27 @@
         }
 
         .status-pending {
-            background: rgba(255, 193, 7, 0.2);
-            color: #ffc107;
-            border: 1px solid rgba(255, 193, 7, 0.3);
+            background: rgba(245, 232, 211, 0.2);
+            color: var(--beige-dark);
+            border: 1px solid rgba(245, 232, 211, 0.3);
         }
 
         .status-approved {
-            background: rgba(40, 167, 69, 0.2);
-            color: #28a745;
-            border: 1px solid rgba(40, 167, 69, 0.3);
+            background: rgba(245, 232, 211, 0.3);
+            color: var(--beige);
+            border: 1px solid rgba(245, 232, 211, 0.4);
         }
 
         .status-rejected {
-            background: rgba(220, 53, 69, 0.2);
-            color: #dc3545;
-            border: 1px solid rgba(220, 53, 69, 0.3);
+            background: rgba(245, 232, 211, 0.1);
+            color: var(--beige-dark);
+            border: 1px solid rgba(245, 232, 211, 0.2);
         }
 
         .status-active {
-            background: rgba(40, 167, 69, 0.2);
-            color: #28a745;
-            border: 1px solid rgba(40, 167, 69, 0.3);
+            background: rgba(245, 232, 211, 0.3);
+            color: var(--beige);
+            border: 1px solid rgba(245, 232, 211, 0.4);
         }
 
         /* Modal */
@@ -390,7 +427,7 @@
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
-            background: rgba(255, 255, 255, 0.1);
+            background: rgba(0, 0, 0, 0.9);
             backdrop-filter: blur(30px);
             border-radius: 20px;
             padding: 40px;
@@ -398,8 +435,8 @@
             width: 90%;
             max-height: 85vh;
             overflow-y: auto;
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            color: #fff;
+            border: 1px solid var(--beige-dark);
+            color: var(--beige);
             box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
         }
 
@@ -409,24 +446,24 @@
             align-items: center;
             margin-bottom: 30px;
             padding-bottom: 20px;
-            border-bottom: 2px solid rgba(255, 255, 255, 0.1);
+            border-bottom: 2px solid var(--beige-dark);
         }
 
         .modal-header h3 {
-            color: #fff;
+            color: var(--beige);
             font-size: 1.8rem;
             font-weight: 600;
             text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
         }
 
         .close-btn {
-            background: rgba(255, 255, 255, 0.1);
-            border: 1px solid rgba(255, 255, 255, 0.2);
+            background: rgba(0, 0, 0, 0.6);
+            border: 1px solid var(--beige-dark);
             border-radius: 50%;
             width: 40px;
             height: 40px;
             font-size: 1.5rem;
-            color: #888;
+            color: var(--beige-dark);
             cursor: pointer;
             transition: all 0.3s ease;
             display: flex;
@@ -435,9 +472,9 @@
         }
 
         .close-btn:hover {
-            color: #fff;
-            background: rgba(255, 255, 255, 0.2);
-            border-color: rgba(255, 255, 255, 0.4);
+            color: var(--beige);
+            background: rgba(0, 0, 0, 0.8);
+            border-color: var(--beige);
         }
 
         .modal-body {
@@ -445,7 +482,7 @@
         }
 
         .modal-body h4 {
-            color: #fff;
+            color: var(--beige);
             margin-bottom: 15px;
             margin-top: 25px;
             font-size: 1.2rem;
@@ -462,14 +499,14 @@
         }
 
         .modal-body p {
-            color: #e0e0e0;
+            color: var(--beige-dark);
             margin-bottom: 12px;
             padding: 5px 0;
             font-size: 0.95rem;
         }
 
         .modal-body p strong {
-            color: #fff;
+            color: var(--beige);
             font-weight: 600;
             display: inline-block;
             min-width: 140px;
@@ -479,13 +516,13 @@
         .loading {
             text-align: center;
             padding: 40px;
-            color: #888;
+            color: var(--beige-dark);
         }
 
         .loading i {
             font-size: 2rem;
             margin-bottom: 15px;
-            color: #667eea;
+            color: var(--beige);
         }
 
         /* Responsive */
@@ -524,22 +561,22 @@
         .empty-state {
             text-align: center;
             padding: 60px 20px;
-            color: #888;
+            color: var(--beige-dark);
         }
 
         .empty-state i {
             font-size: 4rem;
             margin-bottom: 20px;
-            color: #555;
+            color: var(--beige-dark);
         }
 
         .empty-state h3 {
-            color: #666;
+            color: var(--beige);
             margin-bottom: 10px;
         }
 
         .empty-state p {
-            color: #888;
+            color: var(--beige-dark);
         }
     </style>
 </head>
@@ -548,7 +585,10 @@
         <!-- Sidebar -->
         <aside class="admin-sidebar">
             <div class="admin-logo">
-                <h1><i class="fas fa-shield-alt"></i> LawHub Admin</h1>
+                <div class="logo-container">
+                    <img src="/images/logo.jpg" alt="LawHub Logo" class="logo-image">
+                    <h1>LawHub Admin</h1>
+                </div>
                 <p>Administrative Control Panel</p>
             </div>
 
@@ -572,12 +612,6 @@
                             <i class="fas fa-gavel"></i>
                             Expert Applications
                             <span class="nav-badge" id="expertCount">0</span>
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a href="#" class="nav-link" data-section="activities">
-                            <i class="fas fa-activity"></i>
-                            System Activities
                         </a>
                     </li>
                     <li class="nav-item">
@@ -614,6 +648,10 @@
                     <p id="sectionDescription">Monitor system statistics and recent activities</p>
                 </div>
                 <div class="header-actions">
+                    <div style="display: flex; flex-direction: column; align-items: flex-end; margin-right: 20px;">
+                        <div id="currentTime" style="color: var(--beige); font-size: 1.1rem; font-weight: 600; margin-bottom: 5px;"></div>
+                        <div id="currentDate" style="color: var(--beige-dark); font-size: 0.9rem;"></div>
+                    </div>
                     <button class="admin-btn secondary" onclick="refreshCurrentSection()">
                         <i class="fas fa-sync"></i>
                         Refresh
@@ -654,7 +692,7 @@
                     </div>
                 </div>
 
-                <h3 style="color: #fff; margin-bottom: 20px; font-size: 1.5rem;">
+                <h3 style="color: var(--beige); margin-bottom: 20px; font-size: 1.5rem;">
                     <i class="fas fa-chart-line"></i> Recent Activity
                 </h3>
                 <div id="recentActivity">
@@ -667,7 +705,7 @@
 
             <!-- Users Section -->
             <section id="users-section" class="section-content">
-                <h3 style="color: #fff; margin-bottom: 20px; font-size: 1.5rem;">
+                <h3 style="color: var(--beige); margin-bottom: 20px; font-size: 1.5rem;">
                     <i class="fas fa-users"></i> Registered Users
                 </h3>
                 <div id="usersList">
@@ -680,7 +718,7 @@
 
             <!-- Experts Section -->
             <section id="experts-section" class="section-content">
-                <h3 style="color: #fff; margin-bottom: 20px; font-size: 1.5rem;">
+                <h3 style="color: var(--beige); margin-bottom: 20px; font-size: 1.5rem;">
                     <i class="fas fa-gavel"></i> Expert Applications
                 </h3>
                 <div id="expertsList">
@@ -691,22 +729,9 @@
                 </div>
             </section>
 
-            <!-- Activities Section -->
-            <section id="activities-section" class="section-content">
-                <h3 style="color: #fff; margin-bottom: 20px; font-size: 1.5rem;">
-                    <i class="fas fa-activity"></i> System Activities
-                </h3>
-                <div id="activitiesList">
-                    <div class="loading">
-                        <i class="fas fa-spinner fa-spin"></i>
-                        <p>Loading activities...</p>
-                    </div>
-                </div>
-            </section>
-
             <!-- Search History Section -->
             <section id="search-history-section" class="section-content">
-                <h3 style="color: #fff; margin-bottom: 20px; font-size: 1.5rem;">
+                <h3 style="color: var(--beige); margin-bottom: 20px; font-size: 1.5rem;">
                     <i class="fas fa-search"></i> AI Search History
                 </h3>
                 <div id="searchHistoryList">
@@ -719,7 +744,7 @@
 
             <!-- Chat Connections Section -->
             <section id="chat-connections-section" class="section-content">
-                <h3 style="color: #fff; margin-bottom: 20px; font-size: 1.5rem;">
+                <h3 style="color: var(--beige); margin-bottom: 20px; font-size: 1.5rem;">
                     <i class="fas fa-comments"></i> Expert Chat Connections
                 </h3>
                 <div id="chatConnectionsList">
@@ -750,14 +775,61 @@
 
         // Initialize dashboard
         document.addEventListener('DOMContentLoaded', function() {
+            console.log('🚀 Admin Dashboard Starting...');
+            
+            // Prevent back button after logout
+            window.addEventListener('pageshow', function(event) {
+                if (event.persisted || sessionStorage.getItem('admin_logged_out') === 'true') {
+                    console.log('🔒 Preventing back button access after logout');
+                    window.location.replace('login2.html');
+                    return;
+                }
+            });
+            
+            // Handle browser back/forward navigation
+            window.addEventListener('popstate', function(event) {
+                if (sessionStorage.getItem('admin_logged_out') === 'true') {
+                    console.log('🔒 Preventing navigation after logout');
+                    window.location.replace('login2.html');
+                    return;
+                }
+            });
+            
             checkAdminAuth();
             setupNavigation();
+            
+            // Start time updates immediately
+            updateCurrentTime();
+            setInterval(updateCurrentTime, 1000); // Update every second
+            
+            // Load all data
             loadDashboardData();
+            
+            // Auto-refresh data every 2 minutes
+            setInterval(() => {
+                console.log('🔄 Auto-refreshing dashboard data...');
+                loadDashboardData();
+            }, 120000); // 2 minutes
+            
+            console.log('✅ Admin Dashboard Initialized with auto-refresh');
         });
 
-        // Authentication check
+        // Authentication check with logout prevention
         async function checkAdminAuth() {
             console.log('🔍 Starting admin authentication check...');
+            
+            // First check if user was logged out in this session
+            const loggedOut = sessionStorage.getItem('admin_logged_out');
+            const logoutTime = sessionStorage.getItem('logout_timestamp');
+            
+            if (loggedOut === 'true') {
+                console.log('❌ User was logged out in this session - preventing access');
+                // Clear any remaining tokens
+                localStorage.removeItem('admin_token');
+                localStorage.removeItem('admin_login_time');
+                window.location.replace('login2.html');
+                return;
+            }
             
             const adminToken = localStorage.getItem('admin_token');
             const loginTime = localStorage.getItem('admin_login_time');
@@ -767,7 +839,7 @@
             
             if (!adminToken || !loginTime) {
                 console.log('❌ No admin token or login time found - redirecting to login');
-                window.location.href = 'login2.html';
+                window.location.replace('login2.html');
                 return;
             }
             
@@ -782,8 +854,9 @@
             if (hoursDiff >= 8) {
                 localStorage.removeItem('admin_token');
                 localStorage.removeItem('admin_login_time');
+                sessionStorage.setItem('admin_logged_out', 'true');
                 console.log('⌛ Admin session expired - redirecting to login');
-                window.location.href = 'login2.html';
+                window.location.replace('login2.html');
                 return;
             }
 
@@ -791,12 +864,16 @@
             if (adminToken.startsWith('admin_')) {
                 console.log('✅ Admin authentication successful - token is valid');
                 console.log('🎉 Admin authentication completed successfully');
+                // Clear any logout flags since this is a valid login
+                sessionStorage.removeItem('admin_logged_out');
+                sessionStorage.removeItem('logout_timestamp');
                 return; // Authentication successful, continue loading dashboard
             } else {
                 console.log('❌ Invalid admin token format');
                 localStorage.removeItem('admin_token');
                 localStorage.removeItem('admin_login_time');
-                window.location.href = 'login2.html';
+                sessionStorage.setItem('admin_logged_out', 'true');
+                window.location.replace('login2.html');
             }
         }
 
@@ -841,7 +918,6 @@
                 overview: { title: 'Dashboard Overview', desc: 'Monitor system statistics and recent activities' },
                 users: { title: 'User Management', desc: 'View and manage registered users' },
                 experts: { title: 'Expert Applications', desc: 'Review and approve expert applications' },
-                activities: { title: 'System Activities', desc: 'Monitor user activities and system events' },
                 'search-history': { title: 'AI Search History', desc: 'View user AI search queries and responses' },
                 'chat-connections': { title: 'Expert Chat Connections', desc: 'Monitor user-expert chat connections and status' }
             };
@@ -851,10 +927,25 @@
             document.getElementById('sectionDescription').textContent = sectionInfo.desc;
         }
 
-        // Load dashboard data
+        // Load dashboard data - Enhanced version
         async function loadDashboardData() {
-            await loadOverviewData();
-            await updateNavigationBadges();
+            console.log('📊 Loading ALL admin dashboard data...');
+            
+            try {
+                // Load all sections in parallel for better performance
+                await Promise.allSettled([
+                    loadOverviewData(),
+                    updateNavigationBadges(),
+                    loadUsersData(),
+                    loadExpertsData()
+                ]);
+                
+                console.log('✅ All admin dashboard data loaded successfully');
+                showNotification('Dashboard data refreshed successfully', 'success');
+            } catch (error) {
+                console.error('❌ Error loading dashboard data:', error);
+                showNotification('Error loading dashboard data', 'error');
+            }
         }
 
         // Load section data
@@ -869,9 +960,6 @@
                 case 'experts':
                     await loadExpertsData();
                     break;
-                case 'activities':
-                    await loadActivitiesData();
-                    break;
                 case 'search-history':
                     await loadSearchHistoryData();
                     break;
@@ -882,12 +970,16 @@
         }
 
         // Backend API configuration
-    const API_BASE_URL = 'https://lawhub-1.onrender.com';
+    // Auto detect API URL - LOCAL SERVER FIRST
+    const API_BASE_URL = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' 
+        ? 'http://localhost:5000' 
+        : 'https://lawhub-1.onrender.com';
         
-        // Load overview data - WORKING VERSION WITH REAL DATA
+        // Load overview data - Enhanced with better error handling
         async function loadOverviewData() {
             try {
                 console.log('📊 Fetching REAL data from database...');
+                console.log('🌐 API URL:', API_BASE_URL);
                 
                 // Fetch stats from API
                 const statsResponse = await fetch(`${API_BASE_URL}/api/admin/stats`);
@@ -902,12 +994,14 @@
                     document.getElementById('pendingExperts').textContent = stats.pendingExperts || 0;
                     document.getElementById('approvedExperts').textContent = stats.approvedExperts || 0;
                     
-                    console.log('✅ Dashboard updated with REAL database values');
+                    console.log('✅ Dashboard stats updated with REAL database values');
                 } else {
-                    throw new Error(`API responded with status: ${statsResponse.status}`);
+                    console.error('❌ Stats API error:', statsResponse.status, statsResponse.statusText);
+                    throw new Error(`Stats API responded with status: ${statsResponse.status}`);
                 }
                 
                 // Fetch recent activities from API
+                console.log('📈 Fetching recent activities...');
                 const activityResponse = await fetch(`${API_BASE_URL}/api/admin/recent-activity`);
                 
                 if (activityResponse.ok) {
@@ -916,10 +1010,14 @@
                     
                     if (activityData.success && activityData.activities) {
                         displayRecentActivities(activityData.activities);
-                        console.log('✅ Recent activities updated with REAL data');
+                        console.log('✅ Recent activities displayed successfully');
+                    } else {
+                        console.warn('⚠️ No activities found or invalid response format');
+                        displayRecentActivities([]);
                     }
                 } else {
-                    console.warn('⚠️ Could not fetch activities, using fallback');
+                    console.error('❌ Activity API error:', activityResponse.status, activityResponse.statusText);
+                    displayRecentActivities([]);
                 }
                 
             } catch (error) {
@@ -937,9 +1035,9 @@
                     <div class="list-item">
                         <div class="item-header">
                             <div class="item-info">
-                                <h3 style="color: #ff6b6b;">Connection Error</h3>
+                                <h3 style="color: var(--beige-dark);">Connection Error</h3>
                                 <p>Unable to fetch data from database</p>
-                                <small style="color: #888;">Please check server connection</small>
+                                <small style="color: var(--beige-dark);">Please check server connection</small>
                             </div>
                         </div>
                     </div>
@@ -972,7 +1070,7 @@
                         <div class="item-info">
                             <h3>${activity.userName || 'User'}</h3>
                             <p>${activity.action || 'Activity'} • ${formatDate(activity.timestamp || activity.createdAt || new Date())}</p>
-                            <small style="color: #888;">${activity.details || ''}</small>
+                            <small style="color: var(--beige-dark);">${activity.details || ''}</small>
                         </div>
                     </div>
                 </div>
@@ -1043,7 +1141,7 @@
                             </button>
                         </div>
                     </div>
-                    ${user.lastLogin ? `<p style="color: #888; margin-top: 10px;"><i class="fas fa-clock"></i> Last login: ${formatDate(user.lastLogin)}</p>` : ''}
+                    ${user.lastLogin ? `<p style="color: var(--beige-dark); margin-top: 10px;"><i class="fas fa-clock"></i> Last login: ${formatDate(user.lastLogin)}</p>` : ''}
                 </div>
             `).join('');
         }
@@ -1115,70 +1213,7 @@
                             ` : ''}
                         </div>
                     </div>
-                    <p style="color: #888; margin-top: 10px;"><i class="fas fa-calendar"></i> Applied: ${formatDate(expert.submittedAt || expert.createdAt)}</p>
-                </div>
-            `).join('');
-        }
-
-        // Load activities data
-        async function loadActivitiesData() {
-            try {
-                console.log('📊 Loading activities from database...');
-                const adminToken = localStorage.getItem('admin_token');
-                const response = await fetch(`${API_BASE_URL}/api/admin/activities`, {
-                    headers: { 'AdminToken': adminToken }
-                });
-
-                if (response.ok) {
-                    const data = await response.json();
-                    const activities = data.activities || data;
-                    console.log('✅ Loaded', activities.length, 'activities from database');
-                    displayActivities(activities);
-                } else {
-                    throw new Error(`Failed to fetch activities: ${response.status}`);
-                }
-            } catch (error) {
-                console.error('❌ Error loading activities from database:', error);
-                document.getElementById('activitiesList').innerHTML = `
-                    <div class="empty-state">
-                        <i class="fas fa-exclamation-triangle"></i>
-                        <h3>Database Connection Error</h3>
-                        <p>Unable to load activities from database. Please check server connection.</p>
-                    </div>
-                `;
-                showError('Failed to load activities from database');
-            }
-        }
-
-        // Display activities
-        function displayActivities(activities) {
-            const container = document.getElementById('activitiesList');
-            
-            if (!activities || activities.length === 0) {
-                container.innerHTML = `
-                    <div class="empty-state">
-                        <i class="fas fa-activity"></i>
-                        <h3>No Activities Found</h3>
-                        <p>No system activities to display</p>
-                    </div>
-                `;
-                return;
-            }
-
-            container.innerHTML = activities.map(activity => `
-                <div class="list-item">
-                    <div class="item-header">
-                        <div class="item-info">
-                            <h3>${activity.action || 'Unknown Action'}</h3>
-                            <p>${activity.userEmail || 'Unknown User'} • ${formatDate(activity.timestamp)}</p>
-                        </div>
-                        <div class="item-actions">
-                            <button class="action-btn view" onclick="viewActivityDetails('${activity._id}')">
-                                <i class="fas fa-eye"></i> Details
-                            </button>
-                        </div>
-                    </div>
-                    ${activity.details ? `<p style="color: #ccc; margin-top: 10px;">${activity.details}</p>` : ''}
+                    <p style="color: var(--beige-dark); margin-top: 10px;"><i class="fas fa-calendar"></i> Applied: ${formatDate(expert.submittedAt || expert.createdAt)}</p>
                 </div>
             `).join('');
         }
@@ -1269,8 +1304,8 @@
                                     <h4>💫 Account Information</h4>
                                     <div style="background: rgba(255,255,255,0.05); padding: 20px; border-radius: 12px; margin-bottom: 20px;">
                                         <p><strong>Role:</strong> ${user.role || 'User'}</p>
-                                        <p><strong>Account Status:</strong> <span style="color: ${user.isActive ? '#51cf66' : '#ff6b6b'}">${user.isActive ? '✅ Active' : '❌ Inactive'}</span></p>
-                                        <p><strong>Profile Completed:</strong> <span style="color: ${profile.isComplete ? '#51cf66' : '#ffd43b'}">${profile.isComplete ? '✅ Yes' : '⚠️ No'}</span></p>
+                                        <p><strong>Account Status:</strong> <span style="color: ${user.isActive ? 'var(--beige)' : 'var(--beige-dark)'}">${user.isActive ? '✅ Active' : '❌ Inactive'}</span></p>
+                                        <p><strong>Profile Completed:</strong> <span style="color: ${profile.isComplete ? 'var(--beige)' : 'var(--beige-dark)'}">${profile.isComplete ? '✅ Yes' : '⚠️ No'}</span></p>
                                     </div>
                                 </div>
                             </div>
@@ -1287,7 +1322,7 @@
                                 <div style="margin-top: 20px;">
                                     <h4>📝 Bio</h4>
                                     <div style="background: rgba(255,255,255,0.05); padding: 20px; border-radius: 12px;">
-                                        <p style="font-style: italic; color: #e0e0e0; line-height: 1.6;">${user.profile.bio}</p>
+                                        <p style="font-style: italic; color: var(--beige-dark); line-height: 1.6;">${user.profile.bio}</p>
                                     </div>
                                 </div>
                             ` : ''}
@@ -1352,7 +1387,7 @@
                             <div style="margin-bottom: 20px;">
                                 <h4>📝 Professional Bio</h4>
                                 <div style="background: rgba(255,255,255,0.05); padding: 20px; border-radius: 12px;">
-                                    <p style="line-height: 1.6; color: #e0e0e0;">${expert.bio || 'No bio provided'}</p>
+                                    <p style="line-height: 1.6; color: var(--beige-dark);">${expert.bio || 'No bio provided'}</p>
                                 </div>
                             </div>
                             
@@ -1360,7 +1395,7 @@
                                 <div style="margin-bottom: 20px;">
                                     <h4>🏆 Certifications</h4>
                                     <div style="background: rgba(255,255,255,0.05); padding: 20px; border-radius: 12px;">
-                                        <p style="line-height: 1.6; color: #e0e0e0;">${expert.certifications}</p>
+                                        <p style="line-height: 1.6; color: var(--beige-dark);">${expert.certifications}</p>
                                     </div>
                                 </div>
                             ` : ''}
@@ -1368,7 +1403,7 @@
                             <div>
                                 <h4>📊 Application Status</h4>
                                 <div style="background: rgba(255,255,255,0.05); padding: 20px; border-radius: 12px; display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px;">
-                                    <p><strong>Status:</strong> <span class="status-badge status-${expert.status}" style="color: ${expert.status === 'approved' ? '#51cf66' : expert.status === 'rejected' ? '#ff6b6b' : '#ffd43b'}">${expert.status}</span></p>
+                                    <p><strong>Status:</strong> <span class="status-badge status-${expert.status}" style="color: ${expert.status === 'approved' ? 'var(--beige)' : expert.status === 'rejected' ? 'var(--beige-dark)' : 'var(--beige-dark)'}">${expert.status}</span></p>
                                     <p><strong>Applied:</strong> ${formatDate(expert.submittedAt || expert.createdAt)}</p>
                                     ${expert.reviewedAt ? `<p><strong>Reviewed:</strong> ${formatDate(expert.reviewedAt)}</p>` : ''}
                                     ${expert.reviewNotes ? `<p><strong>Review Note:</strong> ${expert.reviewNotes}</p>` : ''}
@@ -1382,43 +1417,6 @@
             } catch (error) {
                 console.error('Error loading expert details:', error);
                 showError('Failed to load expert details');
-            }
-        }
-
-        // View activity details
-        async function viewActivityDetails(activityId) {
-            try {
-                const adminToken = localStorage.getItem('admin_token');
-                const response = await fetch(`${API_BASE_URL}/api/admin/activities/${activityId}`, {
-                    headers: { 'AdminToken': adminToken }
-                });
-
-                if (response.ok) {
-                    const data = await response.json();
-                    const activity = data.activity || data;
-                    showModal('Activity Details', `
-                        <h4>Activity Information</h4>
-                        <p><strong>Action:</strong> ${activity.action}</p>
-                        <p><strong>User:</strong> ${activity.userEmail}</p>
-                        <p><strong>Timestamp:</strong> ${formatDate(activity.timestamp)}</p>
-                        <p><strong>IP Address:</strong> ${activity.ipAddress || 'N/A'}</p>
-                        
-                        ${activity.details ? `
-                            <h4>Details</h4>
-                            <p>${activity.details}</p>
-                        ` : ''}
-                        
-                        ${activity.metadata ? `
-                            <h4>Metadata</h4>
-                            <pre style="background: rgba(255,255,255,0.1); padding: 15px; border-radius: 8px; overflow-x: auto;">${JSON.stringify(activity.metadata, null, 2)}</pre>
-                        ` : ''}
-                    `);
-                } else {
-                    throw new Error('Failed to fetch activity details');
-                }
-            } catch (error) {
-                console.error('Error loading activity details:', error);
-                showError('Failed to load activity details');
             }
         }
 
@@ -1519,26 +1517,59 @@
         }
 
         // Show error message
-        function showError(message) {
+        // Enhanced notification system
+        function showNotification(message, type = 'info') {
             const notification = document.createElement('div');
+            
+            // Set colors based on type
+            let bgColor, textColor, icon;
+            switch (type) {
+                case 'success':
+                    bgColor = 'linear-gradient(135deg, var(--beige), var(--beige-light))';
+                    textColor = 'var(--black)';
+                    icon = 'fas fa-check-circle';
+                    break;
+                case 'error':
+                    bgColor = 'linear-gradient(135deg, var(--beige-dark), var(--beige))';
+                    textColor = 'var(--black)';
+                    icon = 'fas fa-exclamation-circle';
+                    break;
+                case 'warning':
+                    bgColor = 'linear-gradient(135deg, var(--beige-dark), var(--beige))';
+                    textColor = 'var(--black)';
+                    icon = 'fas fa-exclamation-triangle';
+                    break;
+                default:
+                    bgColor = 'linear-gradient(135deg, var(--beige-dark), var(--beige))';
+                    textColor = 'var(--black)';
+                    icon = 'fas fa-info-circle';
+            }
+            
             notification.style.cssText = `
                 position: fixed;
                 top: 20px;
                 right: 20px;
-                background: linear-gradient(135deg, #ff6b6b, #ee5a6f);
-                color: white;
+                background: ${bgColor};
+                color: ${textColor};
                 padding: 15px 20px;
                 border-radius: 10px;
                 z-index: 10000;
                 box-shadow: 0 5px 15px rgba(0,0,0,0.3);
                 animation: slideIn 0.3s ease;
+                max-width: 300px;
+                word-wrap: break-word;
             `;
-            notification.innerHTML = `<i class="fas fa-exclamation-circle"></i> ${message}`;
+            notification.innerHTML = `<i class="${icon}"></i> ${message}`;
             document.body.appendChild(notification);
 
             setTimeout(() => {
                 notification.remove();
             }, 5000);
+        }
+
+        // Legacy error function for compatibility
+        function showError(message) {
+            showNotification(message, 'error');
         }
 
         // Format date
@@ -1631,54 +1662,82 @@
                     let html = '';
                     if (connections.length > 0) {
                         html = connections.map(conn => `
-                            <div class="data-card" style="margin-bottom: 15px; background: rgba(255,255,255,0.1); border-radius: 10px; padding: 20px;">
-                                <div style="display: flex; justify-content: between; align-items: start; margin-bottom: 15px;">
-                                    <div style="flex: 1;">
-                                        <h4 style="color: #4fc3f7; margin-bottom: 5px;">
-                                            <i class="fas fa-user"></i> ${conn.user.email}
-                                        </h4>
-                                        <p style="color: #aaa; font-size: 0.9rem;">User</p>
-                                    </div>
-                                    <div style="flex: 1; text-align: center;">
-                                        <i class="fas fa-arrow-right" style="color: #888; margin: 0 10px;"></i>
-                                    </div>
-                                    <div style="flex: 1; text-align: right;">
-                                        <h4 style="color: #81c784; margin-bottom: 5px;">
-                                            <i class="fas fa-user-tie"></i> ${conn.expert.name}
-                                        </h4>
-                                        <p style="color: #aaa; font-size: 0.9rem;">${conn.expert.specialization}</p>
-                                    </div>
-                                </div>
-                                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
-                                    <span class="badge" style="background: ${getStatusColor(conn.status)}; color: white; padding: 6px 12px; border-radius: 15px; font-size: 0.8rem;">
-                                        <i class="fas ${getStatusIcon(conn.status)}"></i> ${conn.status.toUpperCase()}
-                                    </span>
-                                    <span style="color: #aaa; font-size: 0.9rem;">
-                                        <i class="fas fa-clock"></i> ${formatDate(conn.requestedAt)}
-                                    </span>
-                                </div>
-                                ${conn.message ? `
-                                    <div style="margin-top: 10px;">
-                                        <strong style="color: #fff;">Message:</strong>
-                                        <div style="background: rgba(0,0,0,0.3); padding: 10px; border-radius: 5px; margin-top: 5px; color: #e0e0e0;">
-                                            ${conn.message}
+                            <div class="list-item" style="margin-bottom: 15px;">
+                                <div class="item-header">
+                                    <div style="display: grid; grid-template-columns: 1fr auto 1fr; gap: 20px; align-items: center; width: 100%;">
+                                        <!-- User Info -->
+                                        <div style="text-align: left;">
+                                            <h4 style="color: var(--beige); margin-bottom: 5px;">
+                                                <i class="fas fa-user"></i> ${conn.user.name || 'Unknown User'}
+                                            </h4>
+                                            <p style="color: var(--beige-dark); font-size: 0.9rem;">${conn.user.email}</p>
+                                            <small style="color: var(--beige-dark);">User</small>
+                                        </div>
+                                        
+                                        <!-- Connection Arrow -->
+                                        <div style="text-align: center;">
+                                            <i class="fas fa-comments" style="color: var(--beige); font-size: 1.5rem;"></i>
+                                            <div style="margin-top: 5px;">
+                                                <span class="status-${conn.status}" style="
+                                                    padding: 4px 8px; 
+                                                    border-radius: 10px; 
+                                                    font-size: 0.7rem; 
+                                                    text-transform: uppercase;
+                                                    background: ${conn.status === 'active' ? 'var(--beige)' : 'var(--beige-dark)'};
+                                                    color: var(--black);
+                                                ">
+                                                    ${conn.status}
+                                                </span>
+                                            </div>
+                                        </div>
+                                        
+                                        <!-- Expert Info -->
+                                        <div style="text-align: right;">
+                                            <h4 style="color: var(--beige); margin-bottom: 5px;">
+                                                <i class="fas fa-user-tie"></i> ${conn.expert.name || 'Unknown Expert'}
+                                            </h4>
+                                            <p style="color: var(--beige-dark); font-size: 0.9rem;">${conn.expert.email}</p>
+                                            <small style="color: var(--beige-dark);">Expert</small>
                                         </div>
                                     </div>
-                                ` : ''}
-                                ${conn.chatSessionId ? `
-                                    <div style="margin-top: 10px; padding-top: 10px; border-top: 1px solid rgba(255,255,255,0.1);">
-                                        <small style="color: #aaa;">
-                                            <i class="fas fa-comments"></i> Chat ID: ${conn.chatSessionId}
-                                        </small>
+                                </div>
+                                
+                                <!-- Chat Details -->
+                                <div style="margin-top: 15px; padding-top: 15px; border-top: 1px solid var(--beige-dark); display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 15px;">
+                                    <div>
+                                        <strong style="color: var(--beige);">Last Message:</strong>
+                                        <p style="color: var(--beige-dark); font-size: 0.9rem; margin-top: 5px;">
+                                            ${conn.lastMessage ? conn.lastMessage.substring(0, 50) + (conn.lastMessage.length > 50 ? '...' : '') : 'No messages yet'}
+                                        </p>
                                     </div>
-                                ` : ''}
+                                    <div>
+                                        <strong style="color: var(--beige);">Last Activity:</strong>
+                                        <p style="color: var(--beige-dark); font-size: 0.9rem; margin-top: 5px;">
+                                            <i class="fas fa-clock"></i> ${formatDate(conn.lastMessageTime)}
+                                        </p>
+                                    </div>
+                                    <div>
+                                        <strong style="color: var(--beige);">Unread Messages:</strong>
+                                        <p style="color: var(--beige-dark); font-size: 0.9rem; margin-top: 5px;">
+                                            User: ${conn.unreadCountUser || 0} | Expert: ${conn.unreadCountExpert || 0}
+                                        </p>
+                                    </div>
+                                </div>
+                                
+                                <!-- Connection Started -->
+                                <div style="margin-top: 10px; text-align: center;">
+                                    <small style="color: var(--beige-dark);">
+                                        <i class="fas fa-calendar-plus"></i> Connection started: ${formatDate(conn.createdAt)}
+                                    </small>
+                                </div>
                             </div>
                         `).join('');
                     } else {
                         html = `
-                            <div class="no-data">
+                            <div class="empty-state">
                                 <i class="fas fa-comments"></i>
-                                <p>No chat connections found</p>
+                                <h3>No Chat Connections Found</h3>
+                                <p>No active or completed chat connections between users and experts.</p>
                             </div>
                         `;
                     }
@@ -1720,12 +1779,49 @@
             }
         }
 
-        // Logout function
+        // Update current time and date display
+        function updateCurrentTime() {
+            const now = new Date();
+            const timeOptions = { 
+                hour: '2-digit', 
+                minute: '2-digit', 
+                second: '2-digit',
+                hour12: true 
+            };
+            const dateOptions = { 
+                weekday: 'long', 
+                year: 'numeric', 
+                month: 'long', 
+                day: 'numeric' 
+            };
+            
+            document.getElementById('currentTime').textContent = now.toLocaleTimeString('en-US', timeOptions);
+            document.getElementById('currentDate').textContent = now.toLocaleDateString('en-US', dateOptions);
+        }
+
+        // Logout function with proper security
         function logout() {
             if (confirm('Are you sure you want to logout?')) {
+                console.log('🚪 Admin logout initiated...');
+                
+                // Clear all admin session data
                 localStorage.removeItem('admin_token');
                 localStorage.removeItem('admin_login_time');
-                window.location.href = 'login2.html';
+                sessionStorage.removeItem('admin_session');
+                
+                // Mark logout in session storage to prevent back button access
+                sessionStorage.setItem('admin_logged_out', 'true');
+                sessionStorage.setItem('logout_timestamp', Date.now().toString());
+                
+                // Clear page from browser cache
+                if (window.history && window.history.pushState) {
+                    window.history.pushState(null, null, 'login2.html');
+                }
+                
+                console.log('✅ Admin session cleared, redirecting to login...');
+                
+                // Redirect to login page
+                window.location.replace('login2.html');
             }
         }
 

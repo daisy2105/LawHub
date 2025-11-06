@@ -1,4 +1,35 @@
 
+// Navigation scroll behavior - hide nav menu but keep logo
+window.addEventListener('scroll', function() {
+    const navMenu = document.querySelector('.nav-menu');
+    const navButtons = document.querySelector('.nav-buttons');
+    const scrollY = window.scrollY;
+
+    if (scrollY > 100) { // Hide navigation after scrolling 100px
+        if (navMenu) {
+            navMenu.style.opacity = '0';
+            navMenu.style.transform = 'translateY(-20px)';
+            navMenu.style.pointerEvents = 'none';
+        }
+        if (navButtons) {
+            navButtons.style.opacity = '0';
+            navButtons.style.transform = 'translateY(-20px)';
+            navButtons.style.pointerEvents = 'none';
+        }
+    } else { // Show navigation when at top
+        if (navMenu) {
+            navMenu.style.opacity = '1';
+            navMenu.style.transform = 'translateY(0)';
+            navMenu.style.pointerEvents = 'auto';
+        }
+        if (navButtons) {
+            navButtons.style.opacity = '1';
+            navButtons.style.transform = 'translateY(0)';
+            navButtons.style.pointerEvents = 'auto';
+        }
+    }
+});
+
 let currentCard = 1;
 const totalCards = 3;
 
@@ -137,41 +168,6 @@ function setButtonLoadingById(buttonId, isLoading = true) {
 window.setButtonLoading = setButtonLoading;
 window.setButtonLoadingById = setButtonLoadingById;
 
-// Contact Form Handler
-function handleContactSubmit(event) {
-    event.preventDefault();
-    
-    // Get form data
-    const form = event.target;
-    const submitButton = document.getElementById('contact-button');
-    const name = form.querySelector('input[type="text"]').value;
-    const email = form.querySelector('input[type="email"]').value;
-    const message = form.querySelector('textarea').value;
-    
-    // Simple validation
-    if (!name || !email || !message) {
-        showDialog('⚠️', 'Missing Information', 'Please fill in all fields before submitting.', 'OK');
-        return;
-    }
-    
-    // Start loading state
-    setButtonLoading(submitButton, true);
-    
-    // Simulate form submission delay (replace with actual API call)
-    setTimeout(() => {
-        // Stop loading state
-        setButtonLoading(submitButton, false);
-        
-        // Show success dialog
-        showDialog('📧', 'Message Sent!', `Thank you ${name}! Your message has been received. We'll get back to you soon at ${email}.`, 'Great!', () => {
-            form.reset(); // Clear the form
-        });
-    }, 1500); // Simulate 1.5 second processing time
-}
-
-// Make function globally available
-window.handleContactSubmit = handleContactSubmit;
-
 function parseCSV(data) {
     const lines = data.split('\n');
     const header = lines[0].split(',').map(h => h.trim());
@@ -226,81 +222,275 @@ document.addEventListener('DOMContentLoaded', function() {
             console.log("CSV data loaded successfully.");
             const parsedData = parseCSV(data);
             
-            const cityCounts = {};
-            const crimeDomainCounts = {};
+            // Filter for specific serious crimes and major cities
+            const targetCrimes = ['HOMICIDE', 'SEXUAL ASSAULT', 'ARSON', 'SUICIDE'];
+            const fireAccidentDomain = 'Fire Accident';
+            const majorCities = ['Chennai', 'Mumbai', 'Delhi', 'Kolkata', 'Patna'];
+            
+            const specificCrimeCounts = {};
+            const cityWiseCrimes = {};
+            const crimeDistribution = {}; // For violin plot data
 
             parsedData.forEach(row => {
-                if (row.City) {
-                    cityCounts[row.City] = (cityCounts[row.City] || 0) + 1;
-                }
-                if (row['Crime Domain']) {
-                    crimeDomainCounts[row['Crime Domain']] = (crimeDomainCounts[row['Crime Domain']] || 0) + 1;
+                const crimeDesc = row['Crime Description'];
+                const city = row.City;
+                const domain = row['Crime Domain'];
+                
+                // Only process data for major cities
+                if (!majorCities.includes(city)) return;
+                
+                // Count specific serious crimes
+                if (targetCrimes.includes(crimeDesc) || domain === fireAccidentDomain) {
+                    let crimeCategory = crimeDesc;
+                    if (domain === fireAccidentDomain) {
+                        crimeCategory = 'FIRE ACCIDENT';
+                    }
+                    if (crimeDesc === 'SEXUAL ASSAULT') {
+                        crimeCategory = 'RAPE/SEXUAL ASSAULT';
+                    }
+                    
+                    specificCrimeCounts[crimeCategory] = (specificCrimeCounts[crimeCategory] || 0) + 1;
+                    
+                    if (!cityWiseCrimes[city]) {
+                        cityWiseCrimes[city] = {};
+                    }
+                    cityWiseCrimes[city][crimeCategory] = (cityWiseCrimes[city][crimeCategory] || 0) + 1;
+                    
+                    // Store distribution data for violin plots
+                    if (!crimeDistribution[crimeCategory]) {
+                        crimeDistribution[crimeCategory] = {};
+                    }
+                    if (!crimeDistribution[crimeCategory][city]) {
+                        crimeDistribution[crimeCategory][city] = [];
+                    }
+                    crimeDistribution[crimeCategory][city].push({
+                        city: city,
+                        crimeType: crimeCategory,
+                        date: row['Date Reported'],
+                        victimAge: parseInt(row['Victim Age']) || 25
+                    });
                 }
             });
 
-            console.log("City Counts:", cityCounts);
-            console.log("Crime Domain Counts:", crimeDomainCounts);
+            console.log("Major Cities Crime Counts:", specificCrimeCounts);
+            console.log("City-wise Crime Distribution:", cityWiseCrimes);
+            console.log("Crime Distribution for Violin:", crimeDistribution);
 
-            // Bar Chart
-            const barCtx = document.getElementById('barChart').getContext('2d');
-            if (Object.keys(cityCounts).length > 0) {
-                new Chart(barCtx, {
-                    type: 'bar',
+            // Violin Plot for Crime Distribution across Major Cities
+            const swarmCtx = document.getElementById('swarmChart').getContext('2d');
+            if (Object.keys(cityWiseCrimes).length > 0) {
+                const violinData = [];
+                const colors = {
+                    'Chennai': 'rgba(220, 38, 127, 0.6)',
+                    'Mumbai': 'rgba(239, 68, 68, 0.6)',  
+                    'Delhi': 'rgba(251, 146, 60, 0.6)',
+                    'Kolkata': 'rgba(168, 85, 247, 0.6)',
+                    'Patna': 'rgba(59, 130, 246, 0.6)'
+                };
+                
+                // Create violin-like distribution for each city
+                majorCities.forEach((city, cityIndex) => {
+                    if (cityWiseCrimes[city]) {
+                        Object.entries(cityWiseCrimes[city]).forEach(([crimeType, count]) => {
+                            // Create multiple points to simulate violin shape
+                            for (let i = 0; i < count; i++) {
+                                // Create violin distribution using normal distribution approximation
+                                const normalRandom = () => {
+                                    let u = 0, v = 0;
+                                    while(u === 0) u = Math.random(); // Converting [0,1) to (0,1)
+                                    while(v === 0) v = Math.random();
+                                    const normal = Math.sqrt(-2.0 * Math.log(u)) * Math.cos(2.0 * Math.PI * v);
+                                    return normal;
+                                };
+                                
+                                const violinWidth = 0.3;
+                                const xOffset = normalRandom() * violinWidth;
+                                const yJitter = (Math.random() - 0.5) * 0.2;
+                                
+                                violinData.push({
+                                    x: cityIndex + xOffset,
+                                    y: Object.keys(specificCrimeCounts).indexOf(crimeType) + yJitter,
+                                    city: city,
+                                    crimeType: crimeType,
+                                    pointBackgroundColor: colors[city] || 'rgba(245, 232, 211, 0.6)'
+                                });
+                            }
+                        });
+                    }
+                });
+
+                new Chart(swarmCtx, {
+                    type: 'scatter',
                     data: {
-                        labels: Object.keys(cityCounts),
                         datasets: [{
-                            label: '# of Crimes',
-                            data: Object.values(cityCounts),
-                            backgroundColor: 'rgba(75, 192, 192, 0.2)',
-                            borderColor: 'rgba(75, 192, 192, 1)',
-                            borderWidth: 1
+                            label: 'Crime Distribution',
+                            data: violinData,
+                            backgroundColor: violinData.map(point => point.pointBackgroundColor),
+                            borderColor: 'rgba(0, 0, 0, 0.4)',
+                            borderWidth: 1,
+                            pointRadius: 4,
+                            pointHoverRadius: 7
                         }]
                     },
                     options: {
+                        responsive: true,
+                        plugins: {
+                            title: {
+                                display: true,
+                                text: 'Serious Crimes Distribution - Major Cities (Violin Plot)',
+                                color: 'rgba(245, 232, 211, 1)',
+                                font: { size: 16, weight: 'bold' }
+                            },
+                            legend: {
+                                display: false
+                            },
+                            tooltip: {
+                                callbacks: {
+                                    label: function(context) {
+                                        const point = violinData[context.dataIndex];
+                                        return `${point.crimeType} in ${point.city}`;
+                                    }
+                                }
+                            }
+                        },
                         scales: {
+                            x: {
+                                type: 'linear',
+                                position: 'bottom',
+                                min: -0.7,
+                                max: majorCities.length - 0.3,
+                                ticks: {
+                                    callback: function(value) {
+                                        const cityIndex = Math.round(value);
+                                        return majorCities[cityIndex] || '';
+                                    },
+                                    color: 'rgba(245, 232, 211, 1)',
+                                    stepSize: 1
+                                },
+                                grid: {
+                                    color: 'rgba(245, 232, 211, 0.3)'
+                                },
+                                title: {
+                                    display: true,
+                                    text: 'Major Cities',
+                                    color: 'rgba(245, 232, 211, 1)',
+                                    font: { size: 14, weight: 'bold' }
+                                }
+                            },
                             y: {
-                                beginAtZero: true
+                                min: -0.5,
+                                max: Object.keys(specificCrimeCounts).length - 0.5,
+                                ticks: {
+                                    callback: function(value) {
+                                        const crimeTypes = Object.keys(specificCrimeCounts);
+                                        return crimeTypes[Math.round(value)] || '';
+                                    },
+                                    color: 'rgba(245, 232, 211, 1)',
+                                    stepSize: 1
+                                },
+                                grid: {
+                                    color: 'rgba(245, 232, 211, 0.3)'
+                                },
+                                title: {
+                                    display: true,
+                                    text: 'Crime Types',
+                                    color: 'rgba(245, 232, 211, 1)',
+                                    font: { size: 14, weight: 'bold' }
+                                }
                             }
                         }
                     }
                 });
             } else {
-                console.error("No data available for the bar chart.");
+                console.error("No data available for the swarm chart.");
             }
 
+            // Bar Chart for Crime Frequency Analysis
+            const boxCtx = document.getElementById('boxChart').getContext('2d');
+            if (Object.keys(specificCrimeCounts).length > 0) {
+                const domains = Object.keys(specificCrimeCounts);
+                const counts = Object.values(specificCrimeCounts);
+                
+                const crimeColors = [
+                    'rgba(220, 38, 127, 0.8)', // Pink for Rape/Sexual Assault
+                    'rgba(239, 68, 68, 0.8)',  // Red for Homicide  
+                    'rgba(251, 146, 60, 0.8)', // Orange for Fire Accident
+                    'rgba(168, 85, 247, 0.8)', // Purple for Arson
+                    'rgba(59, 130, 246, 0.8)'  // Blue for Suicide
+                ];
 
-            // Pie Chart
-            const pieCtx = document.getElementById('pieChart').getContext('2d');
-            if (Object.keys(crimeDomainCounts).length > 0) {
-                new Chart(pieCtx, {
-                    type: 'pie',
+                new Chart(boxCtx, {
+                    type: 'bar',
                     data: {
-                        labels: Object.keys(crimeDomainCounts),
+                        labels: domains,
                         datasets: [{
-                            label: 'Crime Domain Distribution',
-                            data: Object.values(crimeDomainCounts),
-                            backgroundColor: [
-                                'rgba(255, 99, 132, 0.2)',
-                                'rgba(54, 162, 235, 0.2)',
-                                'rgba(255, 206, 86, 0.2)',
-                                'rgba(75, 192, 192, 0.2)',
-                                'rgba(153, 102, 255, 0.2)',
-                                'rgba(255, 159, 64, 0.2)'
-                            ],
-                            borderColor: [
-                                'rgba(255, 99, 132, 1)',
-                                'rgba(54, 162, 235, 1)',
-                                'rgba(255, 206, 86, 1)',
-                                'rgba(75, 192, 192, 1)',
-                                'rgba(153, 102, 255, 1)',
-                                'rgba(255, 159, 64, 1)'
-                            ],
-                            borderWidth: 1
+                            label: 'Number of Cases',
+                            data: counts,
+                            backgroundColor: crimeColors.slice(0, domains.length),
+                            borderColor: crimeColors.slice(0, domains.length).map(color => color.replace('0.8)', '1)')),
+                            borderWidth: 2,
+                            borderRadius: 8,
+                            borderSkipped: false
                         }]
+                    },
+                    options: {
+                        responsive: true,
+                        plugins: {
+                            title: {
+                                display: true,
+                                text: 'Serious Crime Frequency - Major Cities (Bar Chart)',
+                                color: 'rgba(245, 232, 211, 1)',
+                                font: { size: 16, weight: 'bold' }
+                            },
+                            legend: {
+                                display: false
+                            },
+                            tooltip: {
+                                callbacks: {
+                                    label: function(context) {
+                                        return `${context.label}: ${context.parsed.y} cases`;
+                                    }
+                                }
+                            }
+                        },
+                        scales: {
+                            x: {
+                                ticks: {
+                                    color: 'rgba(245, 232, 211, 1)',
+                                    font: { size: 12 },
+                                    maxRotation: 45
+                                },
+                                grid: {
+                                    color: 'rgba(245, 232, 211, 0.3)'
+                                },
+                                title: {
+                                    display: true,
+                                    text: 'Crime Categories',
+                                    color: 'rgba(245, 232, 211, 1)',
+                                    font: { size: 14, weight: 'bold' }
+                                }
+                            },
+                            y: {
+                                beginAtZero: true,
+                                ticks: {
+                                    color: 'rgba(245, 232, 211, 1)',
+                                    stepSize: 1
+                                },
+                                grid: {
+                                    color: 'rgba(245, 232, 211, 0.3)'
+                                },
+                                title: {
+                                    display: true,
+                                    text: 'Number of Cases',
+                                    color: 'rgba(245, 232, 211, 1)',
+                                    font: { size: 14, weight: 'bold' }
+                                }
+                            }
+                        }
                     }
                 });
             } else {
-                console.error("No data available for the pie chart.");
+                console.error("No data available for the box chart.");
             }
         })
         .catch(error => {

@@ -4,7 +4,14 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>LAW HUB - Sign Up</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
     <style>
+        :root {
+            --beige: #F5E8D3;
+            --beige-light: #FAF2E6;
+            --beige-dark: #E6D4B7;
+        }
+
         * {
             margin: 0;
             padding: 0;
@@ -13,7 +20,8 @@
         }
 
         body {
-            background: #000;
+            background: url('/images/login-bg.jpg') center/cover;
+            background-attachment: fixed;
             min-height: 100vh;
             display: flex;
             align-items: center;
@@ -156,7 +164,7 @@
         .logo-text {
             font-size: 2rem;
             font-weight: 600;
-            color: #f9fafb;
+            color: var(--beige);
             letter-spacing: 1px;
             text-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
         }
@@ -164,7 +172,7 @@
         .welcome-message {
             font-size: 2.5rem;
             font-weight: 600;
-            color: #f9fafb;
+            color: var(--beige);
             margin-bottom: 20px;
             text-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
             letter-spacing: 0.5px;
@@ -173,7 +181,7 @@
         .welcome-subtitle {
             font-size: 1.1rem;
             font-weight: 300;
-            color: #d1d5db;
+            color: var(--beige-light);
             margin-bottom: 40px;
             line-height: 1.6;
             text-shadow: 0 1px 5px rgba(0, 0, 0, 0.4);
@@ -182,7 +190,7 @@
         .quote-text {
             font-size: 1.35rem;
             font-weight: 300;
-            color: #e5e7eb;
+            color: var(--beige-light);
             line-height: 1.7;
             margin-bottom: 25px;
             font-style: italic;
@@ -193,7 +201,7 @@
         .quote-author {
             font-size: 1.1rem;
             font-weight: 400;
-            color: #d1d5db;
+            color: var(--beige-color);
             letter-spacing: 1px;
             text-shadow: 0 1px 5px rgba(0, 0, 0, 0.4);
         }
@@ -209,7 +217,7 @@
         .form-panel {
             position: relative;
             flex: 1;
-            background: linear-gradient(135deg, #e0e7ff 0%, #ddd6fe 30%, #fae8ff 60%, #fce7f3 100%);
+            background: linear-gradient(135deg, rgba(0, 0, 0, 0.95) 0%, rgba(20, 20, 20, 0.98) 100%);
             display: flex;
             align-items: center;
             justify-content: center;
@@ -284,16 +292,16 @@
         .forms-container {
             position: relative;
             width: 700px;
-            min-height: 580px;
-            background: rgba(255, 255, 255, 0.25);
+            min-height: 520px;
+            background: rgba(0, 0, 0, 0.95);
             backdrop-filter: blur(20px);
             -webkit-backdrop-filter: blur(20px);
             border-radius: 24px;
-            border: 1px solid rgba(255, 255, 255, 0.4);
-            box-shadow: 0 8px 32px rgba(31, 38, 135, 0.15),
-                        0 0 0 1px rgba(255, 255, 255, 0.2) inset;
+            border: 2px solid var(--beige);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.7),
+                        0 0 0 1px var(--beige) inset;
             overflow: hidden;
-            padding: 50px 80px;
+            padding: 40px 60px;
             z-index: 1;
             margin: 0 auto;
         }
@@ -353,21 +361,22 @@
         }
 
         .form-title {
-            font-size: 2.5rem;
+            font-size: 2.2rem;
             font-weight: 300;
-            color: #374151;
-            margin-bottom: 35px;
+            color: var(--beige);
+            margin-bottom: 25px;
             letter-spacing: 1px;
-            text-shadow: 0 2px 4px rgba(255, 255, 255, 0.5);
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.8);
             text-align: center;
             width: 100%;
+            font-family: 'Playfair Display', serif;
         }
 
         .input-group {
             position: relative;
             width: 100%;
             max-width: 520px;
-            margin-bottom: 25px;
+            margin-bottom: 18px;
             margin-left: auto;
             margin-right: auto;
         }
@@ -387,7 +396,7 @@
         .name-row {
             width: 100%;
             max-width: 520px;
-            margin: 0 auto 25px auto;
+            margin: 0 auto 18px auto;
             text-align: left;
             font-size: 0; /* Remove whitespace between inline-block elements */
         }
@@ -410,27 +419,28 @@
 
         .input-field {
             width: 100%;
-            padding: 14px 40px 14px 12px;
-            background: rgba(255, 255, 255, 0.4);
+            padding: 12px 40px 12px 12px;
+            background: rgba(0, 0, 0, 0.8);
             border: none;
-            border-bottom: 2px solid rgba(55, 65, 81, 0.4);
-            color: #1f2937;
-            font-size: 1.05rem;
+            border-bottom: 2px solid var(--beige-dark);
+            color: var(--beige);
+            font-size: 1rem;
             font-weight: 400;
             transition: all 0.3s ease;
             outline: none;
             border-radius: 8px 8px 0 0;
+            font-family: 'Playfair Display', serif;
         }
 
         .input-field::placeholder {
-            color: rgba(55, 65, 81, 0.6);
+            color: var(--beige-dark);
             font-weight: 300;
         }
 
         .input-field:focus {
-            border-bottom-color: #4f46e5;
+            border-bottom-color: var(--beige);
             background: rgba(255, 255, 255, 0.6);
-            box-shadow: 0 4px 12px rgba(79, 70, 229, 0.15);
+            box-shadow: 0 4px 12px rgba(245, 232, 211, 0.15);
         }
 
         .input-icon {
@@ -443,27 +453,28 @@
         }
 
         .auth-btn {
-            width: 200px;
-            padding: 16px 36px;
-            background: linear-gradient(135deg, #4f46e5 0%, #6366f1 100%);
+            width: 180px;
+            padding: 14px 30px;
+            background: linear-gradient(135deg, var(--beige-dark) 0%, var(--beige) 100%);
             border: none;
             border-radius: 32px;
-            color: white;
-            font-size: 1.05rem;
+            color: #000;
+            font-size: 1rem;
             font-weight: 600;
             cursor: pointer;
-            margin-top: 35px;
+            margin-top: 25px;
             transition: all 0.3s ease;
-            box-shadow: 0 8px 24px rgba(79, 70, 229, 0.35),
-                        0 0 0 1px rgba(255, 255, 255, 0.1) inset;
+            box-shadow: 0 8px 24px rgba(245, 232, 211, 0.35),
+                        0 0 0 1px rgba(0, 0, 0, 0.1) inset;
             letter-spacing: 0.5px;
+            font-family: 'Playfair Display', serif;
         }
 
         .auth-btn:hover {
             transform: translateY(-3px);
-            box-shadow: 0 12px 32px rgba(79, 70, 229, 0.45),
-                        0 0 0 1px rgba(255, 255, 255, 0.2) inset;
-            background: linear-gradient(135deg, #4338ca 0%, #4f46e5 100%);
+            box-shadow: 0 12px 32px rgba(245, 232, 211, 0.45),
+                        0 0 0 1px rgba(0, 0, 0, 0.2) inset;
+            background: linear-gradient(135deg, var(--beige) 0%, var(--beige-light) 100%);
         }
 
         .auth-btn:active {
@@ -474,12 +485,12 @@
             display: flex;
             justify-content: center;
             width: 100%;
-            margin-top: 30px;
-            font-size: 0.95rem;
+            margin-top: 20px;
+            font-size: 0.9rem;
         }
 
         .form-link {
-            color: rgba(55, 65, 81, 0.75);
+            color: var(--beige);
             text-decoration: none;
             cursor: pointer;
             transition: all 0.2s ease;
@@ -488,7 +499,7 @@
         }
 
         .form-link:hover {
-            color: #4f46e5;
+            color: var(--beige-light);
         }
 
         .form-link::after {
@@ -627,7 +638,7 @@
             </div>
             <div class="quote-container">
                 <div class="brand-logo">
-                    <div class="logo-icon">⚖️</div>
+                    <div class="logo-icon"></div>
                     <div class="logo-text">LawHub</div>
                 </div>
                 <h2 class="welcome-message">Join LawHub!</h2>
@@ -714,6 +725,15 @@
     </div>
 
     <script>
+        // API Base URL Configuration
+        // Use local server when running on localhost, when opened via file://, or when hostname is empty
+        const isLocal = window.location.hostname === 'localhost' 
+            || window.location.hostname === '127.0.0.1'
+            || window.location.protocol === 'file:'
+            || window.location.hostname === '';
+
+        const API_BASE_URL = isLocal ? 'http://localhost:5000' : 'https://lawhub-1.onrender.com';
+        
         // Start with signup form visible (since this is signup2.html)
         function switchToSignup() {
             document.getElementById('formPanel').classList.add('signup-mode');
@@ -755,7 +775,7 @@
             clearMessages();
             
             if (!email || !password) {
-                showMessage('loginError', '❌ Please enter both email and password');
+                showMessage('loginError', 'Please enter both email and password');
                 return;
             }
             
@@ -763,7 +783,27 @@
             button.textContent = 'Logging in...';
             
             try {
-                const response = await fetch('https://lawhub-1.onrender.com/api/auth/login', {
+                // Admin credentials check (hardcoded for security)
+                const ADMIN_CREDENTIALS = {
+                    email: 'admin@lawhub',
+                    password: 'admin123'
+                };
+                
+                // Check if admin credentials
+                if (email === ADMIN_CREDENTIALS.email && password === ADMIN_CREDENTIALS.password) {
+                    // Admin login
+                    localStorage.setItem('admin_token', `admin_${Date.now()}_${Math.random().toString(36).substring(2)}`);
+                    localStorage.setItem('admin_login_time', new Date().toISOString());
+                    
+                    showMessage('loginSuccess', 'Admin login successful! Redirecting to admin dashboard...', false);
+                    setTimeout(() => {
+                        window.location.href = 'admin-dashboard.html';
+                    }, 1000);
+                    return;
+                }
+                
+                // Regular user login
+                const response = await fetch(`${API_BASE_URL}/api/auth/login`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
@@ -777,16 +817,16 @@
                     localStorage.setItem('lawhub_token', result.token);
                     localStorage.setItem('lawhub_user', JSON.stringify(result.user));
                     
-                    showMessage('loginSuccess', '✅ Login successful! Redirecting...', false);
+                    showMessage('loginSuccess', 'Login successful! Redirecting...', false);
                     setTimeout(() => {
                         window.location.href = 'modern-dashboard.html';
                     }, 1000);
                 } else {
-                    showMessage('loginError', `❌ ${result.message}`);
+                    showMessage('loginError', `${result.message}`);
                 }
             } catch (error) {
                 console.error('Login error:', error);
-                showMessage('loginError', '❌ Login failed. Please check your connection.');
+                showMessage('loginError', 'Login failed. Please check your connection.');
             } finally {
                 button.disabled = false;
                 button.textContent = 'Login';
@@ -807,17 +847,17 @@
             clearMessages();
             
             if (!firstName || !lastName || !email || !password || !confirmPassword) {
-                showMessage('signupError', '❌ Please fill in all fields');
+                showMessage('signupError', 'Please fill in all fields');
                 return;
             }
             
             if (password.length < 6) {
-                showMessage('signupError', '❌ Password must be at least 6 characters');
+                showMessage('signupError', 'Password must be at least 6 characters');
                 return;
             }
             
             if (password !== confirmPassword) {
-                showMessage('signupError', '❌ Passwords do not match');
+                showMessage('signupError', 'Passwords do not match');
                 return;
             }
             
@@ -825,7 +865,7 @@
             button.textContent = 'Creating Account...';
             
             try {
-                const response = await fetch('https://lawhub-1.onrender.com/api/auth/register', {
+                const response = await fetch(`${API_BASE_URL}/api/auth/register`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
@@ -840,17 +880,17 @@
                 const result = await response.json();
                 
                 if (result.success) {
-                    showMessage('signupSuccess', '✅ Account created successfully! Switching to login...', false);
+                    showMessage('signupSuccess', 'Account created successfully! Switching to login...', false);
                     setTimeout(() => {
                         switchToLogin();
                         document.getElementById('loginEmail').value = email;
                     }, 1500);
                 } else {
-                    showMessage('signupError', `❌ ${result.message}`);
+                    showMessage('signupError', `${result.message}`);
                 }
             } catch (error) {
                 console.error('Signup error:', error);
-                showMessage('signupError', '❌ Registration failed. Please check your connection.');
+                showMessage('signupError', 'Registration failed. Please check your connection.');
             } finally {
                 button.disabled = false;
                 button.textContent = 'Sign Up';

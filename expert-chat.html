@@ -1553,12 +1553,14 @@
                 // Decrypt AES key with our private key (RSA)
                 const decrypt = new JSEncrypt();
                 decrypt.setPrivateKey(userKeys.privateKey);
-                const aesKey = decrypt.decrypt(encryptedKey);
-                
+                let aesKey = decrypt.decrypt(encryptedKey);
+
                 if (!aesKey) {
-                    // Could not decrypt the key (not meant for us)
-                    console.log('⚠️ Could not decrypt AES key');
-                    return encryptedMessage;
+                    // Could not decrypt the key with RSA. It's possible the sender
+                    // did not have our public key and sent the raw AES key instead.
+                    // In that case, try using encryptedKey directly as the AES key.
+                    console.log('⚠️ Could not decrypt AES key with RSA - attempting raw key fallback');
+                    aesKey = encryptedKey;
                 }
                 
                 // Decrypt message with AES key

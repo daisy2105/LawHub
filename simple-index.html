@@ -4,6 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>LawHub - Learn the Constitution</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="simple-style.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
@@ -11,122 +14,90 @@
 
     <div class="header">
         <div class="nav-container">
-            <h2 class="logo">LawHub</h2>
-            <div class="nav-menu">
-                <a href="#home">Home</a>
-                <a href="#about">About Us</a>
-                <a href="#features">Why LawHub</a>
-                <a href="#data-visualization">Data Visuals</a>
-                <a href="#contact">Contact Us</a>
+            <div class="logo-container">
+                <img src="/images/logo.jpg" alt="LawHub Logo" class="logo-image">
+                <h2 class="logo">LawHub</h2>
             </div>
-            <div class="auth-section">
-                <button class="login-button" onclick="window.location.href='login2.html'">Login</button>
-                <button class="signup-button" onclick="window.location.href='signup2.html'">Sign Up</button>
+            <div class="right-nav-section">
+                <div class="nav-menu">
+                    <a href="#home">Home</a>
+                    <a href="#about">About Us</a>
+                    <a href="#data-visualization">Data Visuals</a>
+                </div>
+                <div class="auth-section">
+                    <button class="login-button" onclick="window.location.href='login2.html'">Login</button>
+                    <button class="signup-button" onclick="window.location.href='signup2.html'">Sign Up</button>
+                </div>
             </div>
         </div>
     </div>
 
     <div id="home" class="hero-section">
-        <h1>Your Journey to Understanding the Constitution Starts Here.</h1>
-        <p class="hero-quote">"The safety of the people shall be the highest law." - Cicero</p>
+        <h1 class="hero-quote-didot">"EVERYTHING IS ILLEGAL IF YOU CAN'T JUSTIFY IT"</h1>
         <button class="discover-button">Discover More</button>
     </div>
 
     <div id="about" class="about-section">
         <div class="content-box">
-            <h2>About Us</h2>
-            <blockquote>"The law is reason, free from passion." - Aristotle</blockquote>
+            <h2 class="about-tagline">Learn.Ask.Justify.</h2>
             <p>
-                Welcome to LawHub, your dedicated platform for mastering the intricacies of the constitution. 
-                We believe that understanding the foundational laws of a nation is not just for lawyers and scholars, 
-                but for every citizen. Our mission is to make constitutional education accessible, engaging, and clear 
-                for everyone, empowering you with the knowledge to become a more informed and active member of society.
+                Welcome to Our LawHub - Learn the constitution as a citizen of India, Ask whenever wherever you want, Justify yourself - get connected with experts to learn more.
             </p>
         </div>
     </div>
 
-    <div id="features" class="features-section">
-        <h2>Why LawHub?</h2>
-        
-   
-        <div class="feature-card" id="card1">
-            <div class="feature-image">
-                <img src="https://images.unsplash.com/photo-1589829545856-d10d557cf95f?q=80&w=2070&auto=format&fit=crop" alt="Interactive Learning">
-            </div>
-            <div class="feature-content">
-                <h3>⚖️ Interactive Learning</h3>
-                <p>Transform complex legal text into engaging, easy-to-understand lessons with real-world examples and interactive exercises.</p>
-                <div class="nav-buttons">
-                    <button onclick="showPrevCard()">❮</button>
-                    <button onclick="showNextCard()">❯</button>
-                </div>
-            </div>
-        </div>
-
-        <div class="feature-card" id="card2" style="display: none;">
-            <div class="feature-image">
-                <img src="https://images.unsplash.com/photo-1481627834876-b7833e8f5570?q=80&w=2070&auto=format&fit=crop" alt="Comprehensive Content">
-            </div>
-            <div class="feature-content">
-                <h3>📚 Comprehensive Content</h3>
-                <p>Access simplified summaries and detailed explanations of constitutional principles, amendments, and landmark cases.</p>
-                <div class="nav-buttons">
-                    <button onclick="showPrevCard()">❮</button>
-                    <button onclick="showNextCard()">❯</button>
-                </div>
-            </div>
-        </div>
-
-        <!-- Feature 3 -->
-        <div class="feature-card" id="c ard3" style="display: none;">
-            <div class="feature-image">
-                <img src="https://images.unsplash.com/photo-1434030216411-0b793f4b4173?q=80&w=2070&auto=format&fit=crop" alt="Self-Paced Learning">
-            </div>
-            <div class="feature-content">
-                <h3>🎯 Self-Paced Learning</h3>
-                <p>Learn at your own pace with personalized progress tracking, adaptive learning paths, and achievement badges.</p>
-                <div class="nav-buttons">
-                    <button onclick="showPrevCard()">❮</button>
-                    <button onclick="showNextCard()">❯</button>
-                </div>
-            </div>
-        </div>
-
-        <!-- Dots indicator -->
-        <div class="dots-container">
-            <span class="dot active-dot" onclick="showCard(1)"></span>
-            <span class="dot" onclick="showCard(2)"></span>
-            <span class="dot" onclick="showCard(3)"></span>
-        </div>
-    </div>
-
     <div id="data-visualization" class="data-viz-section">
-        <h2>Crime Data Visualization</h2>
+        <h2>Major Cities Crime Analysis</h2>
+        
+        <!-- Color Legend -->
+        <div style="background: rgba(0, 0, 0, 0.7); border-radius: 10px; padding: 15px; margin-bottom: 20px;">
+            <h4 style="color: rgba(245, 232, 211, 1); margin-bottom: 10px;">Color Legend:</h4>
+            <div style="display: flex; flex-wrap: wrap; gap: 15px;">
+                <div style="display: flex; align-items: center; gap: 5px;">
+                    <span style="width: 12px; height: 12px; border-radius: 50%; background: rgba(220, 38, 127, 0.7); display: inline-block;"></span>
+                    <span style="color: rgba(245, 232, 211, 0.9); font-size: 12px;">Chennai / Rape</span>
+                </div>
+                <div style="display: flex; align-items: center; gap: 5px;">
+                    <span style="width: 12px; height: 12px; border-radius: 50%; background: rgba(239, 68, 68, 0.7); display: inline-block;"></span>
+                    <span style="color: rgba(245, 232, 211, 0.9); font-size: 12px;">Mumbai / Homicide</span>
+                </div>
+                <div style="display: flex; align-items: center; gap: 5px;">
+                    <span style="width: 12px; height: 12px; border-radius: 50%; background: rgba(251, 146, 60, 0.7); display: inline-block;"></span>
+                    <span style="color: rgba(245, 232, 211, 0.9); font-size: 12px;">Delhi / Fire Accident</span>
+                </div>
+                <div style="display: flex; align-items: center; gap: 5px;">
+                    <span style="width: 12px; height: 12px; border-radius: 50%; background: rgba(168, 85, 247, 0.7); display: inline-block;"></span>
+                    <span style="color: rgba(245, 232, 211, 0.9); font-size: 12px;">Kolkata / Arson</span>
+                </div>
+                <div style="display: flex; align-items: center; gap: 5px;">
+                    <span style="width: 12px; height: 12px; border-radius: 50%; background: rgba(59, 130, 246, 0.7); display: inline-block;"></span>
+                    <span style="color: rgba(245, 232, 211, 0.9); font-size: 12px;">Patna / Suicide</span>
+                </div>
+            </div>
+        </div>
+        
         <div class="chart-container">
-            <h3>Crimes by City</h3>
-            <canvas id="barChart"></canvas>
+            <h3>Crime Distribution - Major Cities (Violin Plot)</h3>
+            <p style="color: rgba(245, 232, 211, 0.8); font-size: 14px; margin-bottom: 15px;">
+                Shows distribution density of serious crimes across Chennai, Mumbai, Delhi, Kolkata, and Patna using violin plots
+            </p>
+            <canvas id="swarmChart"></canvas>
         </div>
         <div class="chart-container">
-            <h3>Crime Domain Distribution</h3>
-            <canvas id="pieChart"></canvas>
-        </div>
-    </div>
-
-    <div id="contact" class="contact-section">
-        <div class="contact-box">
-            <h2>Contact Us</h2>
-            <p>Have questions or feedback? We'd love to hear from you.</p>
-            
-            <form class="contact-form" onsubmit="handleContactSubmit(event)">
-                <input type="text" placeholder="Your Name" required>
-                <input type="email" placeholder="Your Email" required>
-                <textarea placeholder="Your Message" rows="3" required></textarea>
-                <button type="submit" id="contact-button">Send Message</button>
-            </form>
+            <h3>Crime Frequency Analysis (Bar Chart)</h3>
+            <p style="color: rgba(245, 232, 211, 0.8); font-size: 14px; margin-bottom: 15px;">
+                Total crime counts across major cities displayed as a bar chart for easy comparison
+            </p>
+            <canvas id="boxChart"></canvas>
         </div>
     </div>
 
     <div class="footer">
+        <div class="contact-info">
+            <h3>Contact</h3>
+            <p>Email: lawhubrar@gmail.com</p>
+            <p>Phone: 9345712434, 7845402933</p>
+        </div>
         <p>&copy; 2025 LawHub. All Rights Reserved.</p>
     </div>
 
