@@ -34,7 +34,35 @@ ${query}
 Provide specific legal information including relevant articles, sections, or acts when applicable.`;
 
         // Use a working Hugging Face API key and simpler models
-        const HF_API_KEY = process.env.HUGGINGFACE_API_KEY || process.env.HF_API_KEY || 'YOUR_HUGGINGFACE_API_KEY_HERE';
+        const HF_API_KEY = process.env.HUGGINGFACE_API_KEY || process.env.HF_API_KEY;
+        
+        // If no API key is available, use fallback response
+        if (!HF_API_KEY) {
+            console.log('No Hugging Face API key available, using fallback response');
+            const fallbackResponse = await generateFallbackResponse(query);
+            
+            // Save to search history if user is authenticated
+            if (userId) {
+                try {
+                    await SearchHistory.create({
+                        userId: userId,
+                        query: query,
+                        response: fallbackResponse,
+                        model: 'fallback-knowledge-base'
+                    });
+                } catch (historyError) {
+                    console.error('Error saving search history:', historyError);
+                }
+            }
+            
+            return res.json({
+                success: true,
+                query: query,
+                response: fallbackResponse,
+                timestamp: new Date().toISOString(),
+                source: 'Legal Knowledge Base'
+            });
+        }
         
         let response, result;
         const fetch = (await import('node-fetch')).default;
